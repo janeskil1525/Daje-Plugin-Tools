@@ -1,7 +1,7 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Mojolicious Plugin",
    "author" : [
-      "janeskil1525 <janeskil1525@gmail.com>"
+      "janeskil1525 <janeskil1525@gmail.com"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
@@ -42,7 +42,8 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008001"
+            "Mojo::Base" : "0",
+            "perl" : "v5.40.0"
          }
       },
       "test" : {
@@ -52,7 +53,21 @@
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/janeskil1525/Daje-Plugin-Tools/issues"
+      },
+      "homepage" : "https://github.com/janeskil1525/Daje-Plugin-Tools",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/janeskil1525/Daje-Plugin-Tools.git",
+         "web" : "https://github.com/janeskil1525/Daje-Plugin-Tools"
+      }
+   },
    "version" : "0.01",
+   "x_contributors" : [
+      "janeskil1525 <janeskil1525@gmail.com>"
+   ],
    "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }
