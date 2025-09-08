@@ -17,8 +17,6 @@ sub load_pkey($self, $tools_projects_pkey) {
     return $result;
 }
 
-
-
 sub insert_document_builder($self, $data) {
     my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
     return $result;
@@ -29,7 +27,6 @@ sub update_document_builder($self, $data, $keys) {
     my $result = $self->update($self->table_name, $data, $keys);
     return $result;
 }
-
 
 sub load_list($self, $key_value) {
     my $result = $self->load_a_list(

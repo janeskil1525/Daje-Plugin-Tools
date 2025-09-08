@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.03';
+our $VERSION = '0.05';
 
 use Daje::Database::Model::ToolsProjects;
 
