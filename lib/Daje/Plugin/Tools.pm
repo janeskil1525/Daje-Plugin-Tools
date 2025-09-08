@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Daje::Database::Model::ToolsProjects;
 
@@ -129,9 +129,9 @@ CREATE TABLE IF NOT EXISTS tools_objects
     modby varchar NOT NULL DEFAULT 'System',
     moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
     tools_version_fkey bigint not null,
-    type varchar NOT NULL DEFAULT 'Table'
+    type varchar NOT NULL DEFAULT 'Table',
     name varchar NOT NULL UNIQUE,
-    active NOT NULL DEFAULT 1,
+    active bigint NOT NULL DEFAULT 1,
     CONSTRAINT tools_objects_tools_version_fkey FOREIGN KEY (tools_version_fkey)
         REFERENCES tools_version (tools_version_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -149,17 +149,17 @@ CREATE TABLE IF NOT EXISTS tools_object_tables
     moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
     tools_version_fkey bigint not null,
     tools_objects_fkey bigint not null,
-    fieldname varchar not bull,
+    fieldname varchar not null,
     datatype varchar not null,
     length bigint not null default 0,
     scale bigint not null default 0,
-    active not null default 1,
-    visible not null default 0,
+    active bigint not null default 1,
+    visible bigint not null default 0,
     CONSTRAINT tools_object_tables_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-        DEFERRABLE
+        DEFERRABLE,
     CONSTRAINT tools_object_tables_tools_version_fkey FOREIGN KEY (tools_version_fkey)
         REFERENCES tools_version (tools_version_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
