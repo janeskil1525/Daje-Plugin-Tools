@@ -1,4 +1,4 @@
-package Daje::Controller::Toolsprojects;
+package Daje::Controller::ToolsProjects;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use v5.40;
 
@@ -39,14 +39,15 @@ use v5.40;
 
 sub load_projects ($self) {
 
+    $self->app->log->debug('Daje::Controller::Toolsprojects::load_projects');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
     # );
 
-    my $setting = $self->param('setting');
-    $self->projects->load_projects()->then(sub($result) {
-        $self->render(json => { 'result' => 'success', data => $result });
+    # my $setting = $self->param('setting');
+    $self->tools_projects->load_full_list_p()->then(sub($result) {
+        $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->render(json => { 'result' => 'failed', data => $err });
     })->wait;
@@ -56,7 +57,7 @@ sub save_projects ($self) {
     $self->render_later;
 
     my $json_hash = decode_json ($self->req->body);
-    $self->projects->save_projects($json_hash)->then(sub ($result) {
+    $self->tools_projects->save_projects($json_hash)->then(sub ($result) {
         $self->render(json => {'result' => $result});
     })->catch( sub ($err) {
         $self->render(json => {'result' => $err});

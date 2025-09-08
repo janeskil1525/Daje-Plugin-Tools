@@ -58,11 +58,21 @@ use v5.40;
 #
 
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
+
+use Daje::Database::Model::ToolsProjects;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
 
+    $app->helper(
+        tools_projects => sub {
+            state  $tools_projects = Daje::Database::Model::ToolsProjects->new(db => shift->pg->db)
+        });
+
+    my $r = $app->routes;
+    $r->get('/tools/api/v1/tools/projects')->to('ToolsProjects#load_projects');
+    $r->put('/tools/api/v1/tools/projects')->to('ToolsProjects#save_projects');
 
     $app->log->debug("route loading done");
 }
@@ -88,10 +98,79 @@ CREATE TABLE IF NOT EXISTS tools_projects
 
 -- 1 down
 
+-- 2 up
+CREATE TABLE IF NOT EXISTS tools_version
+(
+    tools_version_pkey serial NOT NULL PRIMARY KEY,
+    editnum bigint NOT NULL DEFAULT 1,
+    insby varchar NOT NULL DEFAULT 'System',
+    insdatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    modby varchar NOT NULL DEFAULT 'System',
+    moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    tools_projects_fkey BIGINT NOT NULL,
+    version BIGINT NOT NULL DEFAULT 1,
+    locked BIGINT NOT NULL DEFAULT 0,
+    CONSTRAINT tools_version_tools_projects_fkey FOREIGN KEY (tools_projects_fkey)
+        REFERENCES tools_projects (tools_projects_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+);
 
+CREATE UNIQUE INDEX IF NOT EXISTS tools_version_pkey_tools_projects_fkey
+    ON tools_version (tools_projects_fkey, version);
 
+CREATE TABLE IF NOT EXISTS tools_objects
+(
+    tools_objects_pkey serial NOT NULL PRIMARY KEY,
+    editnum bigint NOT NULL DEFAULT 1,
+    insby varchar NOT NULL DEFAULT 'System',
+    insdatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    modby varchar NOT NULL DEFAULT 'System',
+    moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    tools_version_fkey bigint not null,
+    type varchar NOT NULL DEFAULT 'Table'
+    name varchar NOT NULL UNIQUE,
+    active NOT NULL DEFAULT 1,
+    CONSTRAINT tools_objects_tools_version_fkey FOREIGN KEY (tools_version_fkey)
+        REFERENCES tools_version (tools_version_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+);
 
+CREATE TABLE IF NOT EXISTS tools_object_tables
+(
+    tools_object_tables_pkey serial NOT NULL PRIMARY KEY,
+    editnum bigint NOT NULL DEFAULT 1,
+    insby varchar NOT NULL DEFAULT 'System',
+    insdatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    modby varchar NOT NULL DEFAULT 'System',
+    moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
+    tools_version_fkey bigint not null,
+    tools_objects_fkey bigint not null,
+    fieldname varchar not bull,
+    datatype varchar not null,
+    length bigint not null default 0,
+    scale bigint not null default 0,
+    active not null default 1,
+    visible not null default 0,
+    CONSTRAINT tools_object_tables_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
+        REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+    CONSTRAINT tools_object_tables_tools_version_fkey FOREIGN KEY (tools_version_fkey)
+        REFERENCES tools_version (tools_version_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+);
 
+CREATE UNIQUE INDEX tools_object_tables_fieldbname_tools_objects_fkey
+    ON tools_object_tables (tools_objects_fkey, fieldname);
+
+-- 2 down
 
 
 
