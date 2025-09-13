@@ -17,13 +17,24 @@ sub load_pkey($self, $tools_projects_pkey) {
     return $result;
 }
 
-sub insert_document_builder($self, $data) {
+async sub insert_tools_projects_p($self, $data) {
     my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
     return $result;
 }
 
 
-sub update_document_builder($self, $data, $keys) {
+async sub update_tools_projects_p($self, $data, $keys) {
+    my $result = $self->update($self->table_name, $data, $keys);
+    return $result;
+}
+
+sub insert_tools_projects($self, $data) {
+    my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
+    return $result;
+}
+
+
+sub update_tools_projects($self, $data, $keys) {
     my $result = $self->update($self->table_name, $data, $keys);
     return $result;
 }
