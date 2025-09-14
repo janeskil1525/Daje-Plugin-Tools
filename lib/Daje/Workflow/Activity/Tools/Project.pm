@@ -32,10 +32,31 @@ use v5.40;
 #
 
 use Data::Dumper;
+use Daje::Database::Model::Super::ToolsProjects;
+use Daje::Database::Model::ToolsVersion;
 
-sub execute ($self) {
+sub new_project ($self) {
 
-    say Dumper("Inside Daje::Workflow::Activity::Tools::Project::execute " . $self->context->{context});
+    say "Inside Daje::Workflow::Activity::Tools::Project::execute " . Dumper($self->context->{context});
+    try {
+        my $data = $self->context->{context}->{payload};
+        my $tools_projects_pkey = Daje::Database::Model::Super::ToolsProjects->new(
+            db => $self->db
+        )->insert_tools_projects($data);
+
+        my $connection->{connector} = $self->context->{context}->{workflow}->{connector};
+        $connection->{workflow_fkey} = $self->model->workflow_pkey();
+        $connection->{connector_fkey} = $tools_projects_pkey;
+        $self->model->insert_connector($data);
+
+        my $tools_projects->{tools_projects_fkey} = $tools_projects_pkey;
+        Daje::Database::Model::ToolsVersion->new(
+            db => $self->db
+        )->insert_tools_version($tools_projects);
+
+    } catch ($e) {
+        $self->error->add_error($e);
+    };
 
     return 1;
 }
