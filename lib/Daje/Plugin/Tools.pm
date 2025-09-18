@@ -61,6 +61,7 @@ use v5.40;
 our $VERSION = '0.06';
 
 use Daje::Database::Model::ToolsProjects;
+use Daje::Database::Helper::TreeList;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -69,10 +70,14 @@ sub register ($self, $app, $config) {
         tools_projects => sub {
             state  $tools_projects = Daje::Database::Model::ToolsProjects->new(db => shift->pg->db)
         });
-
+    $app->helper(
+        tools_helper_treelist => sub {
+            state  $tools_projects = Daje::Database::Helper::TreeList->new(db => shift->pg->db)
+        });
     my $r = $app->routes;
-    $r->get('/tools/api/v1/tools/projects')->to('ToolsProjects#load_projects');
-    $r->put('/tools/api/v1/tools/projects')->to('ToolsProjects#save_projects');
+    $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
+    $r->put('/tools/api/v1/projects')->to('ToolsProjects#save_projects');
+    $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
 
     $app->log->debug("route loading done");
 }
@@ -172,6 +177,12 @@ CREATE UNIQUE INDEX tools_object_tables_fieldbname_tools_objects_fkey
 
 -- 2 down
 
+-- 3 up
+
+ALTER TABLE tools_version
+    ADD COLUMN name varchar NOT NULL DEFAULT '';
+
+-- 3 down
 
 
 
