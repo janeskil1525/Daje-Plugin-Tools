@@ -36,6 +36,7 @@ use v5.40;
 # janeskil1525 E<lt>janeskil1525@gmail.com
 #
 
+use Data::Dumper;
 
 sub load_projects ($self) {
 
@@ -47,7 +48,7 @@ sub load_projects ($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_projects->load_full_list_p()->then(sub($result) {
+    $self->v_tools_projects->load_full_list_p()->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->render(json => { 'result' => 'failed', data => $err });

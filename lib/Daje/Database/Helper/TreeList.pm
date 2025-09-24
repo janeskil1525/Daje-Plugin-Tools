@@ -16,7 +16,6 @@ async sub load_treelist($self, $tools_projects_pkey) {
     # $self->_add_node($treelist, $project->{data}, 'tools_projects');
 
     my $versions = $self->_load_versions($tools_projects_pkey);
-    say "Daje::Database::Helper::TreeList::load_treelist" . Dumper($versions);
     my $length = scalar @{$versions->{data}};
     for (my $i = 0; $i < $length; $i++) {
 
@@ -32,13 +31,11 @@ async sub load_treelist($self, $tools_projects_pkey) {
 
 sub _add_node($self, $treelist, $data, $type, $level) {
 
-    say "Daje::Database::Helper::TreeList::_add_node data " . Dumper($data);
     my $res->{id} = $data->{tools_version_pkey} . "-" . $type;
     $res->{label} = $data->{name} ;
     $res->{data} = $data->{name} . ' ' . $data->{version} ;
-    $res->{icon} = 'pi pi-fw pi-inbox';
+    $res->{icon} = 'pi pi-fw pi-folder';
     $res->{children} = [];
-    say "Daje::Database::Helper::TreeList::_add_node res " . Dumper($res);
 
     my $test = 1;
     return $res;
