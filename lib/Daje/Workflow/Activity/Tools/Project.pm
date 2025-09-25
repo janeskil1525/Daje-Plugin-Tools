@@ -32,7 +32,7 @@ use v5.40;
 #
 
 use Data::Dumper;
-use Daje::Database::Model::Super::ToolsProjects;
+use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Model::ToolsVersion;
 
 sub new_project ($self) {
@@ -40,7 +40,7 @@ sub new_project ($self) {
     say "Inside Daje::Workflow::Activity::Tools::Project::new_project " . Dumper($self->context->{context});
     try {
         my $data = $self->context->{context}->{payload};
-        my $tools_projects_pkey = Daje::Database::Model::Super::ToolsProjects->new(
+        my $tools_projects_pkey = Daje::Database::Model::ToolsProjects->new(
             db => $self->db
         )->insert_tools_projects($data);
 
