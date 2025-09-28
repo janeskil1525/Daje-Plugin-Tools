@@ -45,5 +45,29 @@ async sub load_full_list_p($self) {
     return $result;
 }
 
+async sub load_full_list($self) {
+    my $result = $self->load_a_full_list(
+        $self->view_name,
+        $self->fields
+    );
+    return $result;
+}
 
+sub load_pkey($self, $tools_version_pkey) {
+
+    my $result = $self->load_pk(
+        $self->view_name,
+        $self->fields,
+        $self->primary_keys,
+        $tools_version_pkey
+    );
+    return $result;
+}
+
+sub load_tools_version_fkey($self, $tools_projects_pkey) {
+
+    return $self->load_fkey(
+        $self->view_name, $self->fields(), "tools_projects_fkey", $tools_projects_pkey
+    );
+}
 1;

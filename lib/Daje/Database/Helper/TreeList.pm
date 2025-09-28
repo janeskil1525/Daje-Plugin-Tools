@@ -5,7 +5,7 @@ use v5.40;
 use Data::Dumper;
 
 use Daje::Database::Model::ToolsProjects;
-use Daje::Database::Model::ToolsVersion;
+use Daje::Database::View::VToolsVersion;
 
 has 'db';
 
@@ -42,7 +42,7 @@ sub _add_node($self, $treelist, $data, $type, $level) {
 }
 
 sub _load_versions($self, $tools_projects_pkey) {
-    return Daje::Database::Model::ToolsVersion->new(
+    return Daje::Database::View::VToolsVersion->new(
         db => $self->db
     )->load_tools_version_fkey($tools_projects_pkey)
 }

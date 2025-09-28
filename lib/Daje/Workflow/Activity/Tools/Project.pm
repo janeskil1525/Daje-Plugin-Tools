@@ -39,6 +39,11 @@ sub new_project ($self) {
 
     say "Inside Daje::Workflow::Activity::Tools::Project::new_project " . Dumper($self->context->{context});
     try {
+        $self-model->insert_history(
+                "New project",
+            "Daje::Workflow::Activity::Tools::Project::new_project",
+            1
+        );
         my $data = $self->context->{context}->{payload};
         my $tools_projects_pkey = Daje::Database::Model::ToolsProjects->new(
             db => $self->db
