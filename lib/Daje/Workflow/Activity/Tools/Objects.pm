@@ -40,7 +40,7 @@ sub new_object ($self) {
 
     say "Inside Daje::Workflow::Activity::Tools::Objects::new_object " . Dumper($self->context->{context});
     try {
-        $self-model->insert_history(
+        $self->model->insert_history(
             "New object",
             "Daje::Workflow::Activity::Tools::Objects::new_object",
             1

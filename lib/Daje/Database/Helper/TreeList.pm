@@ -16,9 +16,9 @@ async sub load_treelist($self, $tools_projects_pkey) {
     # $self->_add_node($treelist, $project->{data}, 'tools_projects');
 
     my $versions = $self->_load_versions($tools_projects_pkey);
+
     my $length = scalar @{$versions->{data}};
     for (my $i = 0; $i < $length; $i++) {
-
 
         my $node = $self->_add_node($treelist, @{$versions->{data}}[$i], 'tools_version', 0);
         push (@{$treelist->{data}}, $node);
