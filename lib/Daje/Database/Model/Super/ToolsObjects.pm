@@ -19,4 +19,8 @@ sub insert_tools_objects($self, $data) {
     return $result;
 }
 
+
+sub update_tools_objects($self, $data) {
+    return $self->update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
+}
 1;

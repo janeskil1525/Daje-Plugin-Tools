@@ -33,7 +33,7 @@ sub _add_node($self, $treelist, $data, $type, $level) {
 
     my $res->{id} = $data->{tools_version_pkey} . "-" . $type;
     $res->{label} = $data->{name} ;
-    $res->{data} = $data->{name} . ' ' . $data->{version} ;
+    $res->{data} = $data ;
     $res->{icon} = 'pi pi-fw pi-folder';
     $res->{children} = [];
 

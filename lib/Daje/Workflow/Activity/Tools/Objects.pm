@@ -36,20 +36,34 @@ use Daje::Database::Model::ToolsObjects;
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Model::ToolsVersion;
 
-sub new_object ($self) {
+sub save_object ($self) {
 
-    say "Inside Daje::Workflow::Activity::Tools::Objects::new_object " . Dumper($self->context->{context});
+    say "Inside Daje::Workflow::Activity::Tools::Objects::save_object " . Dumper($self->context->{context});
+    my $data = $self->context->{context}->{payload};
     try {
-        $self->model->insert_history(
-            "New object",
-            "Daje::Workflow::Activity::Tools::Objects::new_object",
-            1
-        );
-        my $data = $self->context->{context}->{payload};
-        my $tools_projects_pkey = Daje::Database::Model::ToolsObjects->new(
-            db => $self->db
-        )->insert_tools_objects($data);
-
+        if ($data->{tools_objects_pkey} > 0) {
+            $self->model->insert_history(
+                "Update object " . $data->{name} . " " . $data->{type},
+                "Daje::Workflow::Activity::Tools::Objects::save_object",
+                1
+            );
+            my $result = Daje::Database::Model::ToolsObjects->new(
+                db => $self->db
+            )->update_tools_objects($data);
+            if($result->{result} == 0) {
+                $self->error->add_error($result->{error});
+            }
+        } else {
+            $self->model->insert_history(
+                "New object "  . $data->{name} . " " . $data->{type},
+                "Daje::Workflow::Activity::Tools::Objects::save_object",
+                1
+            );
+            delete %$data{tools_objects_pkey};
+            my $tools_projects_pkey = Daje::Database::Model::ToolsObjects->new(
+                db => $self->db
+            )->insert_tools_objects($data);
+        }
     } catch ($e) {
         $self->error->add_error($e);
     };
