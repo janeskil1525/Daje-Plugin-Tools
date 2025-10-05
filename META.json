@@ -43,6 +43,7 @@
       "runtime" : {
          "requires" : {
             "Mojo::Base" : "0",
+            "Scalar::Util" : "0",
             "perl" : "v5.40.0"
          }
       },
