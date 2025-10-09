@@ -7,6 +7,13 @@ has 'table_name' => "tools_objects_tables";
 
 
 
+async sub load_tools_objects_tables_fkey_p($self, $tools_objects_pkey) {
+
+    return $self->load_fkey(
+        $self->table_name, $self->fields(), "tools_objects_fkey", $tools_objects_pkey
+    );
+}
+
 sub load_tools_objects_tables_fkey($self, $tools_objects_pkey) {
 
     return $self->load_fkey(
