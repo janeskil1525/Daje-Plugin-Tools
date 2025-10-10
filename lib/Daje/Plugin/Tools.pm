@@ -65,6 +65,7 @@ use Daje::Database::Helper::TreeList;
 use Daje::Database::View::VToolsProjects;
 use Daje::Database::View::VToolsVersion;
 use Daje::Database::Model::ToolsObjectsTables;
+use Daje::Database::Model::ToolsObjectsTablesDatatypes;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -91,15 +92,23 @@ sub register ($self, $app, $config) {
             state  $tools_objects_tables = Daje::Database::Model::ToolsObjectsTables->new(db => shift->pg->db)
         });
 
-    ;
+    $app->helper(
+        tools_objects_tables_datatypes => sub {
+            state  $tools_objects_tables_datatypes = Daje::Database::Model::ToolsObjectsTablesDatatypes->new(db => shift->pg->db)
+        });
+
     my $r = $app->routes;
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
+    $r->get('/tools/api/v1/table/object/datatypes/')->to('ToolsTableObjectDatatypes#load_table_objects_datatypes');
+
 
     $app->log->debug("route loading done");
+
+    $app->log->debug("Daje::Plugin::Tools::register done");
 }
 
 1;
@@ -239,7 +248,7 @@ CREATE TABLE IF NOT EXISTS tools_objects_tables_datatypes
     scale BIGINT NOT NULL DEFAULT 0
 );
 
-INSERT INTO tools_objects_tables_datatypes (name, length, scale) VALUE
+INSERT INTO tools_objects_tables_datatypes (name, length, scale) VALUES
     ('VARCHAR', 1, 0),
     ('BIGINT', 0, 0),
     ('NUMERIC', 1, 1),

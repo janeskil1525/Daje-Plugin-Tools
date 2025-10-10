@@ -38,7 +38,6 @@ sub _add_objects($self, $node, $tools_versions_pkey) {
 
 
     if($objects->{result} > 0) {
-        say Dumper($objects);
         my $length = scalar @{$objects->{data}};
         for (my $i = 0; $i < $length; $i++) {
             my $res->{id} = @{$objects->{data}}[$i]->{tools_objects_pkey} . "-tools_objects";
