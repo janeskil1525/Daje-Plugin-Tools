@@ -66,6 +66,7 @@ use Daje::Database::View::VToolsProjects;
 use Daje::Database::View::VToolsVersion;
 use Daje::Database::Model::ToolsObjectsTables;
 use Daje::Database::Model::ToolsObjectsTablesDatatypes;
+use Daje::Database::Model::ToolsObjects;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -74,6 +75,11 @@ sub register ($self, $app, $config) {
         tools_projects => sub {
             state  $tools_projects = Daje::Database::Model::ToolsProjects->new(db => shift->pg->db)
         });
+    $app->helper(
+        tools_objects => sub {
+            state  $tools_objects = Daje::Database::Model::ToolsObjects->new(db => shift->pg->db)
+        });
+
     $app->helper(
         tools_helper_treelist => sub {
             state  $tools_helper_treelist = Daje::Database::Helper::TreeList->new(db => shift->pg->db)
@@ -104,7 +110,7 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
     $r->get('/tools/api/v1/table/object/datatypes/')->to('ToolsTableObjectDatatypes#load_table_objects_datatypes');
-
+    $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
 
     $app->log->debug("route loading done");
 
