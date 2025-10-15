@@ -8,6 +8,18 @@ has 'table_name' => "tools_object_tables";
 
 use Data::Dumper;
 
+async sub load_tools_objects_tables_pkey_p($self, $primary_key) {
+    return $self->load_pk(
+        $self->table_name(), $self->fields(), $self->primary_key_name(), $primary_key
+    );
+}
+
+async sub load_tools_objects_tables_pkey($self, $primary_key) {
+    return $self->load_pk(
+        $self->table_name(), $self->fields(), $self->primary_key_name(), $primary_key
+    );
+}
+
 async sub load_tools_objects_tables_fkey_p($self, $tools_objects_pkey) {
 
     return $self->load_fkey(

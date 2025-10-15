@@ -109,6 +109,7 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
+    $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
     $r->get('/tools/api/v1/table/object/datatypes/')->to('ToolsTableObjectDatatypes#load_table_objects_datatypes');
     $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
 
