@@ -1,4 +1,4 @@
-package Daje::Controller::ToolsVersion;
+package Daje::Controller::ToolsVersions;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use v5.40;
 
@@ -39,7 +39,7 @@ use v5.40;
 
 sub load_versions_list ($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsVersion::load_versions_list');
+    $self->app->log->debug('Daje::Controller::ToolsVersions::load_versions_list');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
@@ -56,7 +56,7 @@ sub load_versions_list ($self) {
 
 sub load_versions ($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsVersion::load_versions');
+    $self->app->log->debug('Daje::Controller::ToolsVersions::load_versions');
     my $tools_version_pkey = $self->param('tools_version_pkey');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
