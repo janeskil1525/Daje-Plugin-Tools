@@ -37,9 +37,9 @@ use v5.40;
 #
 use Data::Dumper;
 
-sub load_table_objects_datatypes($self) {
+sub load_table_object_datatypes($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsTableObjectDatatypes::load_table_objects_datatypes');
+    $self->app->log->debug('Daje::Controller::ToolsTableObjectDatatypes::load_table_object_datatypes');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')

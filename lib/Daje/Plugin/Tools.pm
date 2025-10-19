@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
@@ -110,7 +110,7 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
     $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
-    $r->get('/tools/api/v1/table/object/datatypes/')->to('ToolsTableObjectDatatypes#load_table_objects_datatypes');
+    $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
     $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
 
     $app->log->debug("route loading done");

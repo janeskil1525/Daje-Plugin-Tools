@@ -54,6 +54,7 @@ sub save_object_table ($self) {
                 $self->error->add_error($result->{error});
             }
         } else {
+            say "Inside Daje::Workflow::Activity::Tools::ObjectsTable::save_object_table data = " . Dumper($data);
             $self->model->insert_history(
                 "New object "  . $data->{fieldname} . " ",
                 "Daje::Workflow::Activity::Tools::ObjectsTable::save_object_table",
@@ -66,6 +67,7 @@ sub save_object_table ($self) {
         }
     } catch ($e) {
         $self->error->add_error($e);
+        say $e;
     };
 
     return 1;

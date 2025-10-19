@@ -36,6 +36,7 @@ sub load_tools_objects_tables_fkey($self, $tools_objects_pkey) {
 
 sub insert_tools_objects_tables($self, $data) {
     my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
+    say "Daje::Database::Model::Super::ToolsObjectsTables::insert_tools_objects_tables " . Dumper($result);
     return $result;
 }
 
