@@ -38,7 +38,6 @@ use Daje::Database::Model::ToolsVersion;
 
 sub save_object ($self) {
 
-    say "Inside Daje::Workflow::Activity::Tools::Objects::save_object " . Dumper($self->context->{context});
     my $data = $self->context->{context}->{payload};
     try {
         if ($data->{tools_objects_pkey} > 0) {

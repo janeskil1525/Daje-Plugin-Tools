@@ -38,9 +38,6 @@ sub save_object_table ($self) {
 
     my $data = $self->context->{context}->{payload};
     try {
-        $data->{visible} = $data->{visible}[0];
-        $data->{active} = $data->{active}[0];
-        say "Inside Daje::Workflow::Activity::Tools::ObjectsTable::save_object_table " . Dumper($self->context->{context});
         if ($data->{tools_object_tables_pkey} > 0) {
             $self->model->insert_history(
                 "Update object " . $data->{fieldname} . " ",
@@ -54,7 +51,6 @@ sub save_object_table ($self) {
                 $self->error->add_error($result->{error});
             }
         } else {
-            say "Inside Daje::Workflow::Activity::Tools::ObjectsTable::save_object_table data = " . Dumper($data);
             $self->model->insert_history(
                 "New object "  . $data->{fieldname} . " ",
                 "Daje::Workflow::Activity::Tools::ObjectsTable::save_object_table",
