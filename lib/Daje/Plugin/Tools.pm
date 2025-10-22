@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
@@ -67,6 +67,7 @@ use Daje::Database::View::VToolsVersion;
 use Daje::Database::Model::ToolsObjectsTables;
 use Daje::Database::Model::ToolsObjectsTablesDatatypes;
 use Daje::Database::Model::ToolsObjects;
+use Daje::Database::Model::ToolsObjectTypes;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -103,6 +104,12 @@ sub register ($self, $app, $config) {
             state  $tools_objects_tables_datatypes = Daje::Database::Model::ToolsObjectsTablesDatatypes->new(db => shift->pg->db)
         });
 
+    $app->helper(
+        tools_object_types => sub {
+            state  $tools_objects_tables_datatypes =  Daje::Database::Model::ToolsObjectTypes->new(db => shift->pg->db)
+        });
+
+
     my $r = $app->routes;
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
@@ -112,6 +119,8 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
     $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
     $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
+    $r->get('/tools/api/v1/objects/types/')->to('ToolsObjectTypes#load_object_types');
+
 
     $app->log->debug("route loading done");
 
