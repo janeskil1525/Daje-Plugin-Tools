@@ -38,6 +38,23 @@ use v5.40;
 
 use Data::Dumper;
 
+sub load_object_indexes ($self) {
+    $self->app->log->debug('Daje::Controller::ToolsObjectIndex::load_object_indexes');
+    $self->render_later;
+    # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
+    #     $self->req->headers->header('X-Token-Check')
+    # );
+    my $tools_objects_fkey = $self->param('tools_objects_fkey');
+
+    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
+    # my $setting = $self->param('setting');
+    $self->tools_objects_index->load_tools_object_fkey_p($tools_objects_fkey)->then(sub($result) {
+        $self->render(json => { data => $result->{data}, result => => 1 });
+    })->catch(sub($err) {
+        $self->render(json => { 'result' => 0, data => $err });
+    })->wait;
+}
+
 sub load_object_index ($self) {
 
     $self->app->log->debug('Daje::Controller::ToolsObjectIndex::load_object_index');
@@ -49,7 +66,7 @@ sub load_object_index ($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_objects->load_tools_object_index_pkey_p($tools_object_index_pkey)->then(sub($result) {
+    $self->tools_objects_index->load_tools_object_index_pkey_p($tools_object_index_pkey)->then(sub($result) {
         $self->render(json => { data => $result->{data}, result => => 1 });
     })->catch(sub($err) {
         $self->render(json => { 'result' => 0, data => $err });

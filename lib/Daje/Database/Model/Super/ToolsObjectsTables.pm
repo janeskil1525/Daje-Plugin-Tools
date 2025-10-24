@@ -40,7 +40,6 @@ sub insert_tools_objects_tables($self, $data) {
     return $result;
 }
 
-
 sub update_tools_objects_tables($self, $data) {
     return $self->update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
 }

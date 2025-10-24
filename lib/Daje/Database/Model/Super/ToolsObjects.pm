@@ -6,8 +6,6 @@ has 'primary_key_name' => "tools_objects_pkey";
 has 'table_name' => "tools_objects";
 
 
-
-
 sub load_tools_object_pkey($self, $tools_objects_pkey) {
 
     return $self->load_pk(

@@ -1,4 +1,4 @@
-package Daje::Controller::ToolsObjectSQL;
+package Daje::Controller::ToolsParameters;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use v5.40;
 
@@ -38,18 +38,18 @@ use v5.40;
 
 use Data::Dumper;
 
-sub load_object_sql ($self) {
+sub load_parameter ($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsObjectSQL::load_object_sql');
+    $self->app->log->debug('Daje::Controller::ToolsObjectIndex::load_object_index');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
     # );
-    my $tools_object_sql_pkey = $self->param('tools_object_sql_pkey');
+    my $tools_parameters_pkey = $self->param('tools_parameters_pkey');
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_objects_sql->load_tools_object_sql_pkey_p($tools_object_sql_pkey)->then(sub($result) {
+    $self->tools_parameters->load_tools_parameters_pkey_p($tools_parameters_pkey)->then(sub($result) {
         $self->render(json => { data => $result->{data}, result => => 1 });
     })->catch(sub($err) {
         $self->render(json => { 'result' => 0, data => $err });

@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
@@ -68,6 +68,10 @@ use Daje::Database::Model::ToolsObjectsTables;
 use Daje::Database::Model::ToolsObjectsTablesDatatypes;
 use Daje::Database::Model::ToolsObjects;
 use Daje::Database::Model::ToolsObjectTypes;
+use Daje::Database::Model::ToolsObjectIndex;
+use Daje::Database::Model::ToolsObjectSQL;
+use Daje::Database::Model::Super::ToolsParameters;
+use Daje::Database::Model::ToolsParameterValues;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -109,6 +113,25 @@ sub register ($self, $app, $config) {
             state  $tools_objects_tables_datatypes =  Daje::Database::Model::ToolsObjectTypes->new(db => shift->pg->db)
         });
 
+    $app->helper(
+        tools_objects_index => sub {
+            state  $tools_objects_index =  Daje::Database::Model::ToolsObjectIndex->new(db => shift->pg->db)
+        });
+
+    $app->helper(
+        tools_objects_sql => sub {
+            state  $tools_objects_sql =  Daje::Database::Model::ToolsObjectSQL->new(db => shift->pg->db)
+        });
+
+    $app->helper(
+        tools_parameters => sub {
+            state  $tools_parameters =  Daje::Database::Model::Super::ToolsParameters->new(db => shift->pg->db)
+        });
+
+    $app->helper(
+        tools_parameter_values => sub {
+            state  $tools_parameter_values =  Daje::Database::Model::ToolsParameterValues->new(db => shift->pg->db)
+        });
 
     my $r = $app->routes;
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
@@ -120,7 +143,10 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
     $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
     $r->get('/tools/api/v1/objects/types/')->to('ToolsObjectTypes#load_object_types');
-
+    $r->get('/tools/api/v1/objects/index/:tools_object_index_pkey')->to('ToolsObjectIndex#load_object_index');
+    $r->get('/tools/api/v1/objects/sql/:tools_object_sql_pkey')->to('ToolsObjectSQL#load_object_sql');
+    $r->get('/tools/api/v1/objects/parameters/:tools_parameters_pkey')->to('ToolsParameters#load_parameter');
+    $r->get('/tools/api/v1/objects/parameter/values/:tools_parameter_values_pkey')->to('ToolsParameterValues#load_parameter_value');
 
     $app->log->debug("route loading done");
 

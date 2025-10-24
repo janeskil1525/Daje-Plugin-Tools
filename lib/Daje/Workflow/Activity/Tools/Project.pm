@@ -1,6 +1,6 @@
 package Daje::Workflow::Activity::Tools::Project;
 use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
-use v5.40;
+use v5.42;
 
 # NAME
 # ====
