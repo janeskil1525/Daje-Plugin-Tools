@@ -1,7 +1,7 @@
 package Daje::Database::Model::Super::ToolsObjects;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 
-has 'fields' => "tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, name, type, active";
+has 'fields' => "tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, name, active, tools_object_types_fkey";
 has 'primary_key_name' => "tools_objects_pkey";
 has 'table_name' => "tools_objects";
 

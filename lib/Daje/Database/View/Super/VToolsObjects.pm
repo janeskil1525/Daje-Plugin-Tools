@@ -31,8 +31,8 @@ use v5.40;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-has 'fields' => "tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, type, name, workflow_fkey";
-has 'primary_keys' => "tools_projects_pkey";
+has 'fields' => "tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, name, tools_object_types_fkey, workflow_fkey";
+has 'primary_keys' => "tools_objects_pkey";
 has 'foreign_keys' => "tools_version_fkey, workflow_fkey";
 has 'view_name' => "v_tools_objects_workflow_fkey";
 
