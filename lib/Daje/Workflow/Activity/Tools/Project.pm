@@ -46,7 +46,7 @@ sub new_project ($self) {
         my $data = $self->context->{context}->{payload};
         my $tools_projects_pkey = Daje::Database::Model::ToolsProjects->new(
             db => $self->db
-        )->insert_tools_projects($data);
+        )->insert($data);
 
         my $connection->{connector} = $self->context->{context}->{workflow}->{connector};
         $connection->{workflow_fkey} = $self->model->workflow_pkey();
@@ -56,7 +56,7 @@ sub new_project ($self) {
         my $tools_projects->{tools_projects_fkey} = $tools_projects_pkey->{data}->{tools_projects_pkey};
         Daje::Database::Model::ToolsVersion->new(
             db => $self->db
-        )->insert_tools_version($tools_projects);
+        )->insert($tools_projects);
 
     } catch ($e) {
         $self->error->add_error($e);

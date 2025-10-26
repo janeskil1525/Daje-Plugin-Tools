@@ -24,14 +24,14 @@ sub load_tools_parameters_fkey($self, $tools_parameters_fkey) {
     );
 }
 
-sub insert_tools_parameter_values($self, $data) {
-    my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
+sub insert($self, $data) {
+    my $result = $self->SUPER::insert($self->table_name, $data, $self->primary_key_name);
     return $result;
 }
 
 
-sub update_tools_parameter_values($self, $data) {
-    return $self->update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
+sub update($self, $data) {
+    return $self->SUPER::update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
 }
 
 

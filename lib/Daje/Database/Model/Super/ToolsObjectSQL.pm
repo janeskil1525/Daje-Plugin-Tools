@@ -18,21 +18,21 @@ sub load_tools_object_sql_pkey($self, $tools_object_sql_pkey) {
     );
 }
 
-sub load_tools_objects_sql_fkey($self, $tools_version_fkey) {
+sub load_tools_objects_sql_fkey($self, $foregin_key_name, $tools_version_fkey) {
 
     return $self->load_fkey(
-        $self->table_name, $self->fields(), "tools_version_fkey", $tools_version_fkey
+        $self->table_name, $self->fields(), $foregin_key_name, $tools_version_fkey
     );
 }
 
-sub insert_tools_objects_sql($self, $data) {
-    my $result = $self->insert($self->table_name, $data, $self->primary_key_name);
+sub insert($self, $data) {
+    my $result = $self->SUPER::insert($self->table_name, $data, $self->primary_key_name);
     return $result;
 }
 
 
-sub update_tools_objects_sql($self, $data) {
-    return $self->update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
+sub update($self, $data) {
+    return $self->SUPER::update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
 }
 
 
