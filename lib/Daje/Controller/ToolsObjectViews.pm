@@ -38,7 +38,7 @@ use v5.42;
 
 use Data::Dumper;
 
-sub load_object_indexes ($self) {
+sub load_object_views ($self) {
     $self->app->log->debug('Daje::Controller::ToolsObjectIndex::load_object_indexes');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
@@ -55,7 +55,7 @@ sub load_object_indexes ($self) {
     })->wait;
 }
 
-sub load_object_index ($self) {
+sub load_object_view ($self) {
 
     $self->app->log->debug('Daje::Controller::ToolsObjectIndex::load_object_index');
     $self->render_later;
