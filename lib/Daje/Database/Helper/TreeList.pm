@@ -11,6 +11,7 @@ use Daje::Database::View::VToolsObjects;
 use Daje::Database::Model::ToolsObjectsTables;
 use Daje::Database::Model::ToolsObjectIndex;
 use Daje::Database::Model::ToolsObjectSQL;
+use Daje::Database::Model::ToolsObjectViews;
 
 has 'db';
 
@@ -48,7 +49,18 @@ async sub load_treelist($self, $tools_projects_pkey) {
 }
 
 sub _add_tools_object_views($self, $node, $tools_objects_fkey) {
-
+    my $objects_view = $self->_load_tools_object_view($tools_objects_fkey);
+    if($objects_view->{result} > 0) {
+        my $length = scalar @{$objects_view->{data}};
+        for (my $i = 0; $i < $length; $i++) {
+            my $res->{id} = @{$objects_view->{data}}[$i]->{tools_object_view_pkey} . "-tools_object_view";
+            $res->{label} = @{$objects_view->{data}}[$i]->{name};
+            $res->{data} = @{$objects_view->{data}}[$i];
+            $res->{icon} = 'pi pi-fw pi-folder';
+            $res->{children} = [];
+            push(@{$node->{children}}, $res);
+        }
+    }
 }
 
 sub _add_tools_object_sql($self, $node, $tools_objects_fkey) {
@@ -100,6 +112,11 @@ sub _add_tools_object_tables($self, $node, $tools_objects_fkey) {
         }
     }
     return $node;
+}
+sub _load_tools_object_view($self, $tools_objects_fkey) {
+    return Daje::Database::Model::ToolsObjectViews->new(
+        db => $self->db
+    )->load_tools_objects_views_fkey('tools_objects_fkey', $tools_objects_fkey);
 }
 
 sub _load_tools_object_sql($self, $tools_objects_fkey) {

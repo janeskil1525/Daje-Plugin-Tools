@@ -73,6 +73,7 @@ use Daje::Database::Model::ToolsObjectSQL;
 use Daje::Database::Model::Super::ToolsParameters;
 use Daje::Database::Model::ToolsParameterValues;
 use Daje::Database::Model::ToolsObjectViews;
+use Daje::Database::Helper::ParameterTreelist;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
@@ -89,6 +90,11 @@ sub register ($self, $app, $config) {
     $app->helper(
         tools_helper_treelist => sub {
             state  $tools_helper_treelist = Daje::Database::Helper::TreeList->new(db => shift->pg->db)
+        });
+
+    $app->helper(
+        tools_helper_parameter_treelist => sub {
+            state  $tools_helper_parameter_treelist = Daje::Database::Helper::ParameterTreelist->new(db => shift->pg->db)
         });
 
     $app->helper(
@@ -145,6 +151,7 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
+    $r->get('/tools/api/v1/parameters/treelist/:tools_projects_pkey')->to('ToolsParameterTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
     $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
     $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
