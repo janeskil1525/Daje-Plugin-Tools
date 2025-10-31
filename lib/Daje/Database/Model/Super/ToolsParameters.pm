@@ -1,7 +1,7 @@
 package Daje::Database::Model::Super::ToolsParameters;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 
-has 'fields' => "tools_parameters_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_projects_fkey, parameter";
+has 'fields' => "tools_parameters_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_parameter_groups_fkey, parameter";
 has 'primary_key_name' => "tools_parameters_pkey";
 has 'table_name' => "tools_parameters";
 
@@ -17,10 +17,10 @@ sub load_tools_parameters_pkey($self, $tools_parameters_pkey) {
     );
 }
 
-sub load_tools_projects_fkey($self, $tools_projects_pkey) {
+sub load_tools_parameters_fkey($self, $tools_parameter_groups_pkey) {
 
     return $self->load_fkey(
-        $self->table_name, $self->fields(), "tools_projects_fkey", $tools_projects_pkey
+        $self->table_name, $self->fields(), "tools_parameter_groups_fkey", $tools_parameter_groups_pkey
     );
 }
 
