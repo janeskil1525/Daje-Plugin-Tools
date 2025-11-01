@@ -151,7 +151,7 @@ sub register ($self, $app, $config) {
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
-    $r->get('/tools/api/v1/parameters/treelist/:tools_projects_pkey')->to('ToolsParameterTreelist#load_treelist');
+    $r->get('/tools/api/v1/parameters/treelist/')->to('ToolsParameterTreelist#load_treelist');
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
     $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
     $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');

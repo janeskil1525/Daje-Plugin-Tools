@@ -1,7 +1,7 @@
 package Daje::Database::Model::Super::ToolsParameterGroups;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 
-has 'fields' => "tools_parameter_groups_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_projects_fkey, parameter_group";
+has 'fields' => "tools_parameter_groups_pkey, editnum, insby, insdatetime, modby, moddatetime, parameter_group";
 has 'primary_key_name' => "tools_parameter_groups_pkey";
 has 'table_name' => "tools_parameter_groups";
 

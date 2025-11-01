@@ -41,9 +41,9 @@ sub load_treelist($self) {
 
     $self->app->log->debug('Daje::Controller::ToolsTreelist::load_treelist');
     $self->render_later;
-    my $tools_projects_pkey = $self->param('tools_projects_pkey');
 
-    $self->tools_helper_parameter_treelist->load_treelist($tools_projects_pkey)->then(sub ($result){
+
+    $self->tools_helper_parameter_treelist->load_treelist()->then(sub ($result){
         $self->render(json => { data => $result->{data}, result => => 1 });
     })->catch(sub ($err) {
         $self->render(json => { 'result' => 0, data => $err });
