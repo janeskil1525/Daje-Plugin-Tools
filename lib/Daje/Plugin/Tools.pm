@@ -145,13 +145,17 @@ sub register ($self, $app, $config) {
             state  $tools_objects_views = Daje::Database::Model::ToolsObjectViews->new(db => shift->pg->db)
         });
 
-
     my $r = $app->routes;
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/parameters/treelist/')->to('ToolsParameterTreelist#load_treelist');
+    $r->get(
+        '/tools/api/v1/parameters/value/:tools_projects_fkey/:tools_parameters_fkey'
+    )->to(
+        'ToolsParameterValues#load_parameter_value'
+    );
     $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
     $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
     $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');

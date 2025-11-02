@@ -20,7 +20,7 @@ async sub load_treelist($self) {
         my $node = $self->_add_groups(
             @{$groups->{data}}[$i], 'tools_parameter_groups'
         );
-        say "Daje::Database::Helper::ParameterTreelist add_parameters " . Dumper($groups);
+
         $self->add_parameters($node,@{$groups->{data}}[$i]->{tools_parameter_groups_pkey});
         push (@{$treelist->{data}}, $node);
     }
@@ -34,11 +34,11 @@ sub add_parameters($self, $node, $tools_parameter_groups_fkey) {
     )->load_tools_parameters_fkey(
         $tools_parameter_groups_fkey
     );
-    say "Daje::Database::Helper::ParameterTreelist add_parameters " . Dumper($parameters);
+
     my $length = scalar @{$parameters->{data}};
     for (my $i = 0; $i < $length; $i++) {
         my $res->{id} = @{$parameters->{data}}[$i]->{tools_parameters_pkey} . "-tools_parameters";
-        $res->{label} = @{$parameters->{data}}[$i]->{parameter_group};
+        $res->{label} = @{$parameters->{data}}[$i]->{parameter};
         $res->{data} = @{$parameters->{data}}[$i];
         $res->{icon} = 'pi pi-fw pi-folder';
         $res->{children} = [];

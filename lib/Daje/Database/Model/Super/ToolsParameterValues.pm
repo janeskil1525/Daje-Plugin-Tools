@@ -1,7 +1,7 @@
 package Daje::Database::Model::Super::ToolsParameterValues;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 
-has 'fields' => "tools_parameter_values_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_parameters_fkey, name, parameter_value";
+has 'fields' => "tools_parameter_values_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_parameters_fkey, tools_projects_fkey, value, description, active";
 has 'primary_key_name' => "tools_parameter_values_pkey";
 has 'table_name' => "tools_parameter_values";
 

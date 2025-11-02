@@ -99,7 +99,7 @@ sub _add_tools_object_indexes($self, $node, $tools_objects_fkey) {
 
 sub _add_tools_object_tables($self, $node, $tools_objects_fkey) {
     my $objects_tables = $self->_load_tools_object_tables($tools_objects_fkey);
-    say "Daje::Database::Helper::TreeList::_add_tools_object_tables " . Dumper($objects_tables);
+
     if($objects_tables->{result} > 0) {
         my $length = scalar @{$objects_tables->{data}};
         for (my $i = 0; $i < $length; $i++) {

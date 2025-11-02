@@ -40,16 +40,19 @@ use Data::Dumper;
 
 sub load_parameter_value ($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsParameterValues::load_parameter_value');
+
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
     # );
-    my $tools_parameter_values_pkey = $self->param('tools_parameter_values_pkey');
-
+    my $tools_projects_fkey = $self->param('tools_projects_fkey');
+    my $tools_parameters_fkey = $self->param('tools_parameters_fkey');
+    $self->app->log->debug('Daje::Controller::ToolsParameterValues::load_parameter_value tools_projects_pkey = ' . $tools_projects_fkey . ' tools_parameter_pkey = ' . $tools_parameters_fkey);
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_parameter_values->load_tools_parameter_values_pkey_p($tools_parameter_values_pkey)->then(sub($result) {
+    $self->tools_parameter_values->load_tools_parameters_values_project_parameter_fkey(
+        $tools_projects_fkey, $tools_parameters_fkey
+    )->then(sub($result) {
         $self->render(json => { data => $result->{data}, result => => 1 });
     })->catch(sub($err) {
         $self->render(json => { 'result' => 0, data => $err });
