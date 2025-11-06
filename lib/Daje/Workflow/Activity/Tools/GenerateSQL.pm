@@ -32,13 +32,32 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+use Daje::Database::View::VToolsParameterValues;
+
+has 'parameters';
+
 sub generate_sql($self) {
     $self->model->insert_history(
         "New project",
         "Daje::Workflow::Activity::Tools::GenerateSQL::generate_sql",
         1
     );
-    my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_pkey};
 
+    my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_pkey};
+    if($self->load_parameters(), $tools_projects_pkey) {
+
+    }
+}
+
+sub load_parameters($self, $tools_projects_pkey) {
+    my $parameters = Daje::Database::View::VToolsParameterValues->new(
+        db => $self->db
+    )->load_parameters_from_group(
+        'Sql', $tools_projects_pkey
+    );
+
+    $self->parameters($parameters->{data}) if ($parameters->{result} == 1) ;
+
+    return $parameters->{result};
 }
 1;
