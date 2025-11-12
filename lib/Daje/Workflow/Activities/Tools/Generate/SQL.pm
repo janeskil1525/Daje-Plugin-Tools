@@ -41,11 +41,11 @@ has 'tables';
 
 sub generate_sql($self) {
     my $tables;
-    $self->model->insert_history(
-        "New project",
-        "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
-        1
-    );
+    # $self->model->insert_history(
+    #     "New project",
+    #     "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
+    #     1
+    # );
 
     try {
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_pkey};
@@ -64,7 +64,8 @@ sub generate_sql($self) {
             }
         }
     } catch ($e) {
-        $self->error->add_error($e);
+        say $e
+        #$self->error->add_error($e);
     };
 }
 

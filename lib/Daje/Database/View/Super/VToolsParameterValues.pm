@@ -31,10 +31,10 @@ use v5.40;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-has 'fields' => "tools_parameter_values_pkey, parameter_group, parameter, value, description, active, tools_projects_fkey, name, tools_object_types_fkey, tools_projects_fkey, tools_parameter_values_pkey";
+has 'fields' => "tools_parameter_values_pkey, parameter_group, parameter, value, description, active, tools_projects_fkey";
 has 'primary_keys' => "tools_parameter_values_pkey";
 has 'foreign_keys' => "tools_projects_fkey";
-has 'view_name' => "v_tools_objects_workflow_fkey";
+has 'view_name' => "v_tools_parameter_values";
 
 
 async sub load_full_list_p($self) {

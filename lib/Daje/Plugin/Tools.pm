@@ -382,11 +382,11 @@ CREATE TABLE IF NOT EXISTS tools_object_types
     insdatetime timestamp without time zone NOT NULL DEFAULT NOW(),
     modby varchar NOT NULL DEFAULT 'System',
     moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
-    name varchar not null UNIQUE,
+    type_name varchar not null UNIQUE,
     type bigint NOT NULL DEFAULT 0
 );
 
-INSERT INTO tools_object_types (name, type) VALUES
+INSERT INTO tools_object_types (type_name, type) VALUES
     ('Table', 1),
     ('Index', 2),
     ('SQL', 3),
@@ -606,7 +606,7 @@ CREATE TABLE IF NOT EXISTS tools_parameter_values
 -- 11 down
 -- 12 up
 CREATE OR REPLACE VIEW v_tools_parameter_values AS
-select parameter_group, parameter, value, description, active tools_projects_fkey, tools_parameter_values_pkey from tools_parameter_groups
+select tools_parameter_values_pkey, parameter_group, parameter, value, description, active, tools_projects_fkey  from tools_parameter_groups
 	JOIN tools_parameters ON tools_parameter_groups_fkey = tools_parameter_groups_pkey
 	JOIN tools_parameter_values ON tools_parameters_fkey = tools_parameters_pkey
 
