@@ -1,21 +1,21 @@
-package Daje::Workflow::Activity::Tools::GenerateBase;
+package Daje::Workflow::Activities::Tools::Generate::Base;
 use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 use v5.42;
 
 # NAME
 # ====
 #
-# Daje::Workflow::Activity::Tools::GenerateBase - Base class fro generate activities
+# Daje::Workflow::Activities::Tools::Generate::Base - Base class fro generate activities
 #
 # SYNOPSIS
 # ========
 #
-#     use Daje::Workflow::Activity::Tools::GenerateBase
+#     use Daje::Workflow::Activities::Tools::Generate::Base
 #
 # DESCRIPTION
 # ===========
 #
-# Daje::Workflow::Activity::Tools::GenerateBase is a base class holding common methods
+# Daje::Workflow::Activities::Tools::Generate::Base is a base class holding common methods
 #
 # LICENSE
 # =======

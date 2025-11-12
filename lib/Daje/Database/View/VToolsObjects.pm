@@ -31,4 +31,7 @@ use v5.40;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+sub load_tables($self, $tools_projects_pkey, $tools_version_pkey) {
+
+}
 1;
