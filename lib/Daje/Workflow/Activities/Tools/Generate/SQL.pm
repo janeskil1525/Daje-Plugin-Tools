@@ -35,6 +35,7 @@ use v5.42;
 
 use Daje::Database::View::VToolsVersion;
 use Daje::Database::View::VToolsObjectsTypes;
+use Daje::Database::View::VToolsObjectsTables;;
 
 has 'versions';
 has 'tables';
@@ -56,10 +57,12 @@ sub generate_sql($self) {
                     if ($self->load_tables($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
                         my $len = scalar @{$self->tables};
                         for ( my $j = 0; $j < $len; $j++) {
-                            my $table = $self->process_table(@{$self->tables}[$j]);
+                            my $table = $self->process_table(@{$self->tables}[$j], @{$self->versions}[$i]);
                             push @{$tables}, $table;
                         }
+                        $self->create_sql_string("table",$tables);
                     }
+
                 }
             }
         }
@@ -69,8 +72,19 @@ sub generate_sql($self) {
     };
 }
 
-sub process_table($self, $table) {
+sub create_sql_string($self, $template, $data) {
 
+}
+
+sub process_table($self, $table, $tools_version) {
+    my $fields = Daje::Database::View::VToolsObjectsTables->new(
+        db => $self->db
+    )->load_objects_tables(
+        $table->{tools_objects_pkey}, $tools_version->{tools_version_pkey}
+    );
+
+    $table->{fields} = $fields;
+    return $table;
 }
 
 sub load_tables($self, $tools_projects_pkey, $tools_version_pkey) {
