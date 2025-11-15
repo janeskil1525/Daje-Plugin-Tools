@@ -45,6 +45,7 @@
             "Future::AsyncAwait" : "0.52",
             "Mojo::Base" : "0",
             "Scalar::Util" : "0",
+            "Template" : "3.102",
             "perl" : "5.042000"
          }
       },

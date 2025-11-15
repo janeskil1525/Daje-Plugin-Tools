@@ -6,21 +6,28 @@ use v5.42;
 
 __DATA__
 
-@@ table
+@@ sql
 
-CREATE TABLE IF NOT EXISTS [% tablename %]
+
+[% FOREACH version IN versions %]
+-- up [% version.version %]
+    [% FOREACH table IN version.tables %]
+CREATE TABLE IF NOT EXISTS [% table.table_name %]
 (
-    [% tablename %]_pkey SERIAL NOT NULL,
+    [% table.table_name %]_pkey  SERIAL NOT NULL,
     editnum bigint NOT NULL DEFAULT 1,
     insby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
     insdatetime timestamp without time zone NOT NULL DEFAULT now(),
     modby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
     moddatetime timestamp without time zone NOT NULL DEFAULT now(),
-    [% FOREACH team = teams -%]
-        [% team.name %] [% team.played -%]
-        [% team.won %] [% team.drawn %] [% team.lost %]
+    [% FOREACH field IN table.fields %]
+    [% field.fieldname %]  [% field.datatype %] [% length_default_calc(field.length, field.scale, field.notnull, field.default) %],
     [% END %]
-    CONSTRAINT [% tablename %]_pkey PRIMARY KEY ([% tablename %]_pkey)
+    CONSTRAINT [% table.table_name %]_pkey PRIMARY KEY ([% table.table_name %]_pkey)
 );
+    [% END %]
 
-__END__
+-- down [% version.version %]
+
+[% END %]
+

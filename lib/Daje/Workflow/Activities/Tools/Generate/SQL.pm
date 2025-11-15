@@ -41,7 +41,7 @@ has 'versions';
 has 'tables';
 
 sub generate_sql($self) {
-    my $tables;
+    my $versions;
     # $self->model->insert_history(
     #     "New project",
     #     "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
@@ -54,15 +54,17 @@ sub generate_sql($self) {
             if ($self->load_versions($tools_projects_pkey)) {
                 my $length = scalar @{$self->versions};
                 for (my $i = 0; $i < $length; $i++) {
+                    my $data->{version} = @{$self->versions}[$i]->{version};
                     if ($self->load_tables($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
+                        my $tables;
                         my $len = scalar @{$self->tables};
-                        for ( my $j = 0; $j < $len; $j++) {
+                        for (my $j = 0; $j < $len; $j++) {
                             my $table = $self->process_table(@{$self->tables}[$j], @{$self->versions}[$i]);
                             push @{$tables}, $table;
                         }
-                        $self->create_sql_string("table",$tables);
+                        $data->{tables} = $tables;
                     }
-
+                    push @{$versions->{data}}, $data;
                 }
             }
         }
