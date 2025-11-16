@@ -12,6 +12,7 @@ use feature 'say';
 use feature 'signatures';
 use Daje::Workflow::Activities::Tools::Generate::SQL;
 use Daje::Workflow::Database::Model;
+use Daje::Workflow::Errors::Error;
 
 use namespace::clean -except => [qw/_options_data _options_config/];
 
@@ -28,6 +29,7 @@ sub genereate_sql() {
         db      => $pg->db,
         context => $context,
         model   => $model,
+        error   => Daje::Workflow::Errors::Error->new(),
     );
 
 

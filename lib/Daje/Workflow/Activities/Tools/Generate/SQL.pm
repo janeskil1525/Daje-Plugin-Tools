@@ -68,6 +68,7 @@ sub build_documents ($self, $tools_projects_pkey) {
     $builder->process();
 
     my $documents = $builder->output();
+    my $test = 1;
 }
 
 
