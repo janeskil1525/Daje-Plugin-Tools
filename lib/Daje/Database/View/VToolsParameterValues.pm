@@ -40,4 +40,15 @@ sub load_parameters_from_group($self, $group, $tools_projects_pkey) {
             }
     );
 }
+
+sub load_parameters_from_group_and_parameter($self, $group, $parameter, $tools_projects_pkey) {
+    return $self->load_a_list(
+        $self->view_name(), $self->fields(),
+        {
+            tools_projects_fkey => $tools_projects_pkey,
+            parameter_group     => $group,
+            parameter           => $parameter,
+        }
+    );
+}
 1;

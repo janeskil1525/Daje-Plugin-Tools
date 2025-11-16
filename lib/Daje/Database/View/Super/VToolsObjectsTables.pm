@@ -38,12 +38,14 @@ has 'view_name' => "v_tools_objects_tables_datatypes";
 
 
 sub load_objects_tables($self, $tools_objects_fkey, $tools_version_pkey) {
-    return $self->load_a_list(
+    my $result = $self->load_a_list(
         $self->view_name(), $self->fields(),
         {
             tools_objects_fkey => $tools_objects_fkey,
             tools_version_fkey  => $tools_version_pkey,
         }
     );
+
+    return $result;
 }
 1;

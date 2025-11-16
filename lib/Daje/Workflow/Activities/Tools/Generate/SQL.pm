@@ -32,16 +32,12 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+use Data::Dumper;
+use Daje::Document::Builder;
 
-use Daje::Database::View::VToolsVersion;
-use Daje::Database::View::VToolsObjectsTypes;
-use Daje::Database::View::VToolsObjectsTables;;
-
-has 'versions';
-has 'tables';
 
 sub generate_sql($self) {
-    my $versions;
+
     # $self->model->insert_history(
     #     "New project",
     #     "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
@@ -50,23 +46,8 @@ sub generate_sql($self) {
 
     try {
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_pkey};
-        if ($self->load_parameters('Sql', $tools_projects_pkey)) {
-            if ($self->load_versions($tools_projects_pkey)) {
-                my $length = scalar @{$self->versions};
-                for (my $i = 0; $i < $length; $i++) {
-                    my $data->{version} = @{$self->versions}[$i]->{version};
-                    if ($self->load_tables($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
-                        my $tables;
-                        my $len = scalar @{$self->tables};
-                        for (my $j = 0; $j < $len; $j++) {
-                            my $table = $self->process_table(@{$self->tables}[$j], @{$self->versions}[$i]);
-                            push @{$tables}, $table;
-                        }
-                        $data->{tables} = $tables;
-                    }
-                    push @{$versions->{data}}, $data;
-                }
-            }
+        if ($self->load_generate_data($tools_projects_pkey)) {
+            $self->build_documents($tools_projects_pkey);
         }
     } catch ($e) {
         say $e
@@ -74,39 +55,21 @@ sub generate_sql($self) {
     };
 }
 
-sub create_sql_string($self, $template, $data) {
+sub build_documents ($self, $tools_projects_pkey) {
+    my $source = $self->get_parameter('Sql', 'Template Source', $tools_projects_pkey);
 
-}
-
-sub process_table($self, $table, $tools_version) {
-    my $fields = Daje::Database::View::VToolsObjectsTables->new(
-        db => $self->db
-    )->load_objects_tables(
-        $table->{tools_objects_pkey}, $tools_version->{tools_version_pkey}
+    my $builder = Daje::Document::Builder->new(
+        source        => $source,
+        data_sections => 'sql',
+        data          => $self->versions(),
+        error         => $self->error()
     );
 
-    $table->{fields} = $fields;
-    return $table;
+    $builder->process();
+
+    my $documents = $builder->output();
 }
 
-sub load_tables($self, $tools_projects_pkey, $tools_version_pkey) {
-    my $objects = Daje::Database::View::VToolsObjectsTypes->new(
-        db => $self->db
-    )->load_objects_type(
-        1,$tools_projects_pkey,$tools_version_pkey
-    );
-    $self->tables($objects->{data});
-    return $objects->{result};
-}
 
-sub load_versions($self, $tools_projects_pkey) {
-    my $versions = Daje::Database::View::VToolsVersion->new(
-        db => $self->db
-    )->load_tools_version_fkey(
-        $tools_projects_pkey
-    );
-    $self->versions($versions->{data});
-    return $versions->{result};
-}
 
 1;

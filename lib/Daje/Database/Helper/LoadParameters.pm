@@ -3,8 +3,18 @@ use Mojo::Base  -base, -signatures, -async_await;
 use v5.42;
 
 has 'db';
+has 'parameters';
 
-sub load_parameters($self, $group) {
+sub load_parameter($self, $group, $parameter, $tools_projects_pkey) {
+        my $parameters = Daje::Database::View::VToolsParameterValues->new(
+            db => $self->db
+        )->load_parameters_from_group_and_parameter(
+            $group, $parameter, $tools_projects_pkey
+        );
 
+        $self->parameters(@{ $parameters->{data} }[0]) if ($parameters->{result} == 1) ;
+
+        return $parameters->{result};
 }
+
 1;
