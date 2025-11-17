@@ -65,6 +65,9 @@ sub build_documents ($self, $tools_projects_pkey) {
         error         => $self->error()
     );
 
+    my $data = $self->versions();
+    say Dumper($data);
+
     $builder->process();
 
     my $documents = $builder->output();

@@ -606,6 +606,11 @@ CREATE TABLE IF NOT EXISTS tools_parameter_values
 
 -- 11 down
 -- 12 up
+
+ALTER TABLE tools_object_tables
+    ADD COLUMN IF NOT EXISTS "notnull" BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN IF NOT EXISTS "default" VARCHAR NOT NULL DEFAULT '';
+
 CREATE OR REPLACE VIEW v_tools_parameter_values AS
 select tools_parameter_values_pkey, parameter_group, parameter, value, description, active, tools_projects_fkey  from tools_parameter_groups
 	JOIN tools_parameters ON tools_parameter_groups_fkey = tools_parameter_groups_pkey

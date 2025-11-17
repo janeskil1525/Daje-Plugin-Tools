@@ -71,7 +71,7 @@ sub load_generate_data($self, $tools_projects_pkey) {
                 }
                 $data->{tables} = $tables;
             }
-            push @{$version->{version}}, $data;
+            push @{$version}, $data;
         }
         $versions->{versions} = $version;
         $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
@@ -94,8 +94,16 @@ sub process_table($self, $table, $tools_version) {
     )->load_objects_tables(
         $table->{tools_objects_pkey}, $tools_version->{tools_version_pkey}
     );
+    my $arr = [];
+    my $fieldarray = $fields->{data};
+    my $test = ref($fieldarray);
+    if(ref($fieldarray) ne 'ARRAY') {
+        $fieldarray->each(sub($e, $num) {
+            push @{$arr}, $e;
+        });
+    }
 
-    $table->{fields} = $fields->{data};
+    $table->{fields} = $arr;
     return $table;
 }
 
@@ -108,7 +116,7 @@ sub load_tables($self, $tools_projects_pkey, $tools_version_pkey) {
     my $tables = $objects->{data};
     my $length = scalar @{$tables};
     for(my $i = 0; $i < $length; $i++) {
-        @{$tables}[$i]->{tablename} = @{$tables}[$i]->{name};
+        @{$tables}[$i]->{table_name} = @{$tables}[$i]->{name};
         delete @{$tables}[$i]->{name};
     }
     $self->tables($tables);
