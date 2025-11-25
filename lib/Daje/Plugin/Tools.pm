@@ -621,7 +621,7 @@ select tools_objects.name, active, type, tools_version_fkey, tools_projects_fkey
 	ON tools_object_types_pkey = tools_object_types_fkey
 
 CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes AS
-	SELECT tools_object_tables_pkey, tools_version_fkey, tools_objects_fkey, fieldname, tools_object_tables.length, tools_object_tables.scale, tools_objects_tables_datatypes_fkey, active, visible, name as datatype
+	SELECT tools_object_tables_pkey, tools_version_fkey, tools_objects_fkey, fieldname, tools_object_tables.length, tools_object_tables.scale, tools_objects_tables_datatypes_fkey, active, visible, name as datatype, "notnull", "default"
 		FROM tools_object_tables JOIN tools_objects_tables_datatypes
 			ON tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes_pkey
 

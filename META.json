@@ -42,6 +42,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Daje::Document::Builder" : "0.01",
             "Future::AsyncAwait" : "0.52",
             "Mojo::Base" : "0",
             "Scalar::Util" : "0",
