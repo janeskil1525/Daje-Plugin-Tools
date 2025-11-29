@@ -148,6 +148,7 @@ sub register ($self, $app, $config) {
     my $r = $app->routes;
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
+    $r->get('/tools/api/v1/version/:tools_projects_pkey')->to('ToolsVersions#load_current_version');
     $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
     $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
     $r->get('/tools/api/v1/parameters/treelist/')->to('ToolsParameterTreelist#load_treelist');
