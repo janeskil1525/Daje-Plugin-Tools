@@ -58,12 +58,13 @@ use v5.40;
 #
 
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
 use Daje::Database::View::VToolsProjects;
 use Daje::Database::View::VToolsVersion;
+use Daje::Database::Model::ToolsVersion;
 use Daje::Database::Model::ToolsObjectsTables;
 use Daje::Database::Model::ToolsObjectsTablesDatatypes;
 use Daje::Database::Model::ToolsObjects;
@@ -104,6 +105,10 @@ sub register ($self, $app, $config) {
     $app->helper(
         v_tools_versions => sub {
             state  $v_tools_versions = Daje::Database::View::VToolsVersion->new(db => shift->pg->db)
+        });
+    $app->helper(
+        tools_versions => sub {
+            state  $tools_versions = Daje::Database::Model::ToolsVersion->new(db => shift->pg->db)
         });
     $app->helper(
         tools_objects_tables => sub {
@@ -330,7 +335,8 @@ ALTER TABLE tools_object_tables
     ADD COLUMN tools_objects_tables_datatypes_fkey BIGINT NOT NULL;
 
 ALTER TABLE tools_object_tables
-      ADD CONSTRAINT tools_object_tables_tools_objects_tables_datatypes_fkey FOREIGN KEY (tools_objects_tables_datatypes_fkey)
+      ADD CONSTRAINT tools_object_tables_tools_objects_tables_datatypes_fkey
+        FOREIGN KEY (tools_objects_tables_datatypes_fkey)
           REFERENCES tools_objects_tables_datatypes (tools_objects_tables_datatypes_pkey);
 
 -- 6 down

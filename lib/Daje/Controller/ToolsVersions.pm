@@ -46,7 +46,7 @@ sub load_current_version($self) {
     my $tools_projects_pkey = $self->param('tools_projects_pkey');
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_tools_versions->load_current_version_p($tools_projects_pkey)->then(sub($result) {
+    $self->tools_versions->load_current_version_p($tools_projects_pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::ToolsVersions::load_current_version ' . $err);
