@@ -1,6 +1,6 @@
 package Daje::Database::View::VToolsProjects;
 use Mojo::Base 'Daje::Database::View::Super::VToolsProjects', -base, -signatures, -async_await;
-use v5.40;
+use v5.42;
 
 # NAME
 # ====

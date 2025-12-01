@@ -51,6 +51,7 @@ sub load_projects ($self) {
     $self->v_tools_projects->load_full_list_p()->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
+        $self->app->log->error('Daje::Controller::Toolsprojects::load_projects ' . $err);
         $self->render(json => { 'result' => 0, data => $err });
     })->wait;
 }

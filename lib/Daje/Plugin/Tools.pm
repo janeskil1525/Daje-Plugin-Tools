@@ -58,7 +58,7 @@ use v5.40;
 #
 
 
-our $VERSION = '0.18';
+our $VERSION = '0.20';
 
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
@@ -372,10 +372,11 @@ CREATE OR REPLACE VIEW v_tools_version_workflow_fkey AS
     SELECT tools_version.*, workflow_fkey FROM tools_version JOIN workflow_connections
 	    ON tools_projects_fkey = connector_fkey AND connector = 'tools_projects';
 
+DROP VIEW v_tools_objects_workflow_fkey;
 CREATE OR REPLACE VIEW v_tools_objects_workflow_fkey AS
 	select tools_objects.*, workflow_fkey from tools_objects JOIN tools_version
 		ON tools_version_fkey = tools_version_pkey
-		JOIN workflow_connections ON connector_fkey = tools_projects_fkey AND connector = 'tools_projects';
+		JOIN workflow_connections ON connector_fkey = tools_objects.tools_projects_fkey AND connector = 'tools_projects';
 
 -- 7 down
 
@@ -575,17 +576,6 @@ CREATE TABLE IF NOT EXISTS tools_parameters
     DEFERRABLE
 );
 
-INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
-    ('Database Connection', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Project')),
-    ('Output Path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
-    ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
-    ('Output file name', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
-    ('Output Name Space', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
-    ('Base file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
-    ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
-    ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
-
-
 CREATE TABLE IF NOT EXISTS tools_parameter_values
 (
     tools_parameter_values_pkey serial NOT NULL PRIMARY KEY,
@@ -596,7 +586,7 @@ CREATE TABLE IF NOT EXISTS tools_parameter_values
     moddatetime timestamp without time zone NOT NULL DEFAULT NOW(),
     tools_parameters_fkey BIGINT NOT NULL,
     tools_projects_fkey bigint NOT NULL,
-    value VARCHAR NOT NULL UNIQUE DEFAULT '',
+    "value" VARCHAR NOT NULL UNIQUE DEFAULT '',
     description VARCHAR NOT NULL UNIQUE DEFAULT '',
     active boolean not null default false,
     CONSTRAINT tools_parameter_values_tools_parameters_fkey FOREIGN KEY (tools_parameters_fkey)
@@ -611,6 +601,17 @@ CREATE TABLE IF NOT EXISTS tools_parameter_values
     DEFERRABLE
 );
 
+INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
+    ('Database Connection', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Project')),
+    ('Output Path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
+    ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
+    ('Output file name', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
+    ('Output Name Space', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
+    ('Base file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
+
+
 -- 11 down
 -- 12 up
 
@@ -619,18 +620,18 @@ ALTER TABLE tools_object_tables
     ADD COLUMN IF NOT EXISTS "default" VARCHAR NOT NULL DEFAULT '';
 
 CREATE OR REPLACE VIEW v_tools_parameter_values AS
-select tools_parameter_values_pkey, parameter_group, parameter, value, description, active, tools_projects_fkey  from tools_parameter_groups
+select tools_parameter_values_pkey, parameter_group, "parameter", "value", description, active, tools_projects_fkey  from tools_parameter_groups
 	JOIN tools_parameters ON tools_parameter_groups_fkey = tools_parameter_groups_pkey
-	JOIN tools_parameter_values ON tools_parameters_fkey = tools_parameters_pkey
+	JOIN tools_parameter_values ON tools_parameters_fkey = tools_parameters_pkey;
 
 CREATE OR REPLACE VIEW v_tools_objects_types AS
 select tools_objects.name, active, type, tools_version_fkey, tools_projects_fkey, tools_objects_pkey  from tools_objects JOIN tools_object_types
-	ON tools_object_types_pkey = tools_object_types_fkey
+	ON tools_object_types_pkey = tools_object_types_fkey;
 
 CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes AS
 	SELECT tools_object_tables_pkey, tools_version_fkey, tools_objects_fkey, fieldname, tools_object_tables.length, tools_object_tables.scale, tools_objects_tables_datatypes_fkey, active, visible, name as datatype, "notnull", "default"
 		FROM tools_object_tables JOIN tools_objects_tables_datatypes
-			ON tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes_pkey
+			ON tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes_pkey;
 
 
 -- 12 down
