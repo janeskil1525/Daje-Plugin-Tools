@@ -51,7 +51,7 @@ sub generate_sql($self) {
         }
     } catch ($e) {
         say $e
-        #$self->error->add_error($e);
+        $self->error->add_error($e);
     };
 }
 
@@ -66,8 +66,6 @@ sub build_documents ($self, $tools_projects_pkey) {
     );
 
     my $data = $self->versions();
-    say Dumper($data);
-
     $builder->process();
 
     my $documents = $builder->output();
