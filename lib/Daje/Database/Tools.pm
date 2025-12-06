@@ -161,6 +161,7 @@ CREATE TABLE IF NOT EXISTS tools_object_tables
     "notnull" boolean NOT NULL DEFAULT true,
     "default" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     foreign_key boolean NOT NULL DEFAULT false,
+    "unique" boolean NOT NULL DEFAULT false,
     CONSTRAINT tools_object_tables_pkey PRIMARY KEY (tools_object_tables_pkey),
     CONSTRAINT tools_object_tables_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
