@@ -332,7 +332,9 @@ CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
     tools_object_tables.visible,
     tools_objects_tables_datatypes.name AS datatype,
     tools_object_tables."notnull",
-    tools_object_tables."default"
+    tools_object_tables."default",
+    tools_object_tables.foreign_key,
+    tools_object_tables."unique"
    FROM tools_object_tables
      JOIN tools_objects_tables_datatypes
      ON tools_object_tables.tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes.tools_objects_tables_datatypes_pkey;

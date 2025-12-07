@@ -32,12 +32,13 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+use Mojo::Util qw { camelize };
 use Data::Dumper;
 use Daje::Document::Builder;
 
 
 sub generate_sql($self) {
-
+    my @data;
      $self->model->insert_history(
          "Generate SQL",
          "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
@@ -45,9 +46,16 @@ sub generate_sql($self) {
      );
 
     try {
-        my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_pkey};
+        my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
         if ($self->load_generate_data($tools_projects_pkey)) {
-            $self->build_documents($tools_projects_pkey);
+            my $documents = $self->build_documents($tools_projects_pkey);
+            my $length = scalar @{$documents};
+            for (my $i = 0; $i < $length; $i++) {
+                my $data->{data} = @{$documents}[$i]->{document};
+                $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . camelize($self->versions->{project_name});
+                push(@data, $data);
+            }
+            $self->context->{context}->{sql} = \@data;
         }
     } catch ($e) {
         say $e
@@ -68,8 +76,7 @@ sub build_documents ($self, $tools_projects_pkey) {
     my $data = $self->versions();
     $builder->process();
 
-    my $documents = $builder->output();
-    my $test = 1;
+    return $builder->output();
 }
 
 
