@@ -55,7 +55,7 @@ sub generate_sql($self) {
                 $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . camelize($self->versions->{project_name});
                 push(@data, $data);
             }
-            $self->context->{context}->{sql} = \@data;
+            $self->context->{context}->{payload}->{sql} = \@data;
         }
     } catch ($e) {
         say $e
