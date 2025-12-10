@@ -75,6 +75,7 @@ sub load_generate_data($self, $tools_projects_pkey) {
         }
         $versions->{versions} = $version;
         $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
+        $versions->{name_space} = $self->get_parameter('Sql', 'Output Name Space', $tools_projects_pkey);
         $self->versions($versions);
     }
     return 1;

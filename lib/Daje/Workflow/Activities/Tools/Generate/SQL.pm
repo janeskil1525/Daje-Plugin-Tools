@@ -52,7 +52,9 @@ sub generate_sql($self) {
             my $length = scalar @{$documents};
             for (my $i = 0; $i < $length; $i++) {
                 my $data->{data} = @{$documents}[$i]->{document};
-                $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . camelize($self->versions->{project_name});
+                my $filename = $self->get_parameter('Sql', 'Output file name', $tools_projects_pkey);
+                $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . $filename;
+                $data->{path} = 1;
                 push(@data, $data);
             }
             $self->context->{context}->{payload}->{sql} = \@data;
@@ -74,6 +76,7 @@ sub build_documents ($self, $tools_projects_pkey) {
     );
 
     my $data = $self->versions();
+
     $builder->process();
 
     return $builder->output();
