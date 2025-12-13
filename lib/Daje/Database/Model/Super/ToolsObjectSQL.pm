@@ -8,7 +8,7 @@ has 'table_name' => "tools_object_sql";
 
 
 async sub load_tools_object_sql_pkey_p($self, $tools_object_sql_pkey) {
-    return $self->load_tools_object_pkey($tools_object_sql_pkey)
+    return $self->load_tools_object_sql_pkey($tools_object_sql_pkey)
 }
 
 sub load_tools_object_sql_pkey($self, $tools_object_sql_pkey) {
