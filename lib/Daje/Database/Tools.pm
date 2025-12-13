@@ -253,6 +253,7 @@ CREATE TABLE IF NOT EXISTS tools_object_sql
     tools_version_fkey bigint NOT NULL,
     tools_objects_fkey bigint NOT NULL,
     name character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    comment character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     sql_string character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     CONSTRAINT tools_object_sql_pkey PRIMARY KEY (tools_object_sql_pkey),
     CONSTRAINT tools_object_sql_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)

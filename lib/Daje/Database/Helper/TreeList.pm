@@ -156,6 +156,8 @@ sub _add_objects($self, $data, $type ) {
     $res->{data} = $data ;
     if($data->{tools_object_types_fkey} == 1) {
         $res->{icon} = 'pi pi-fw pi-envelope';
+    } elsif ($data->{tools_object_types_fkey} == 3) {
+        $res->{icon} = 'pi pi-fw pi-sort-alpha-up';
     }
     $res->{children} = [];
 
