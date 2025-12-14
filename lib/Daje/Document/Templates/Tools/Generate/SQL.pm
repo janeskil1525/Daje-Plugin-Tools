@@ -102,6 +102,13 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
     CONSTRAINT [% project_name %]_[% table.table_name %]_pkey PRIMARY KEY ([% project_name %]_[% table.table_name %]_pkey)
 );
     [% END -%]
+
+[% FOREACH sql IN version.sql -%]
+-- [% sql.comment %]
+[% sql.sql_string %]
+
+[% END %]
+
   [% FOREACH table IN version.tables -%]
   [% FOREACH field IN table.fields -%]
   [% IF field.foreign_key -%]

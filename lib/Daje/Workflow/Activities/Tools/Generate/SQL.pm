@@ -39,11 +39,11 @@ use Daje::Document::Builder;
 
 sub generate_sql($self) {
     my @data;
-     $self->model->insert_history(
-         "Generate SQL",
-         "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
-         1
-     );
+     # $self->model->insert_history(
+     #     "Generate SQL",
+     #     "Daje::Workflow::Activity::Tools::Generate::SQL::generate_sql",
+     #     1
+     # );
 
     try {
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};

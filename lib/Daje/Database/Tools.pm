@@ -458,6 +458,9 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
 
+CREATE OR REPLACE VIEW v_tools_objects_sql AS
+SELECT tools_object_sql_pkey, tools_version_fkey, tools_objects_fkey, "name", sql_string, "comment"
+	FROM tools_object_sql;
 
 -- 1 down
 
