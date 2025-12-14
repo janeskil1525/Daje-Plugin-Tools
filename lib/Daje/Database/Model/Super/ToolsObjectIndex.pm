@@ -12,7 +12,7 @@ async sub load_tools_object_fkey_p($self, $tools_objects_fkey) {
 }
 
 async sub load_tools_object_index_pkey_p($self, $tools_object_index_pkey) {
-    return $self->load_tools_object_pkey($tools_object_index_pkey)
+    return $self->load_tools_object_index_pkey($tools_object_index_pkey)
 }
 
 sub load_tools_object_index_pkey($self, $tools_object_index_pkey) {

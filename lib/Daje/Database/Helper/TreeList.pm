@@ -89,7 +89,7 @@ sub _add_tools_object_indexes($self, $node, $tools_objects_fkey) {
         my $length = scalar @{$objects_index->{data}};
         for (my $i = 0; $i < $length; $i++) {
             my $res->{id} = @{$objects_index->{data}}[$i]->{tools_object_index_pkey} . "-tools_object_index";
-            $res->{label} = @{$objects_index->{data}}[$i]->{tablename};
+            $res->{label} = @{$objects_index->{data}}[$i]->{table_name};
             $res->{data} = @{$objects_index->{data}}[$i];
             $res->{icon} = 'pi pi-fw pi-forward';
             $res->{children} = [];
@@ -158,6 +158,8 @@ sub _add_objects($self, $data, $type ) {
     $res->{data} = $data ;
     if($data->{tools_object_types_fkey} == 1) {
         $res->{icon} = 'pi pi-fw pi-envelope';
+    } elsif ($data->{tools_object_types_fkey} == 2) {
+        $res->{icon} = 'pi pi-fw pi-arrow-up';
     } elsif ($data->{tools_object_types_fkey} == 3) {
         $res->{icon} = 'pi pi-fw pi-sort-alpha-up';
     } elsif ($data->{tools_object_types_fkey} == 4) {
