@@ -32,18 +32,27 @@ use v5.42;
 #
 
 use Daje::Database::View::VToolsParameterValues;
-use Daje::Database::Model::ToolsProjects;
-use Daje::Database::View::VToolsVersion;
-use Daje::Database::View::VToolsObjectsTypes;
-use Daje::Database::View::VToolsObjectsTables;
 use Daje::Database::Helper::LoadParameters;
-use Daje::Database::View::VToolsObjectsSql;
-use POSIX;
+use Daje::Document::Builder;
 
 has 'versions';
 has 'tables';
 has 'parameters';
-has 'sqls';
+
+
+sub build_documents ($self, $tools_projects_pkey, $source, $data_sections) {
+
+    my $builder = Daje::Document::Builder->new(
+        source        => $source,
+        data_sections => $data_sections,
+        data          => $self->versions(),
+        error         => $self->error()
+    );
+
+    $builder->process();
+
+    return $builder->output();
+}
 
 sub get_parameter($self, $group, $parameter, $tools_projects_pkey) {
     my $param = Daje::Database::Helper::LoadParameters->new(
@@ -54,65 +63,6 @@ sub get_parameter($self, $group, $parameter, $tools_projects_pkey) {
     );
 
     return $param->parameters->{value};
-}
-
-sub load_generate_data($self, $tools_projects_pkey) {
-    my $versions;
-    my $version;
-
-    if ($self->load_versions($tools_projects_pkey)) {
-        my $length = scalar @{$self->versions};
-        for (my $i = 0; $i < $length; $i++) {
-            my $data->{version} = @{$self->versions}[$i]->{version};
-            if ($self->load_tables($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
-                my $tables;
-                my $len = scalar @{$self->tables};
-                for (my $j = 0; $j < $len; $j++) {
-                    my $table = $self->process_table(@{$self->tables}[$j], @{$self->versions}[$i]);
-                    push @{$tables}, $table;
-                }
-                $data->{tables} = $tables;
-            }
-
-            if ($self->load_sql($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
-                my $sqls;
-                my $len = scalar @{$self->sqls};
-                for (my $k = 0; $k < $len; $k++) {
-                    my $sql = $self->process_sql(@{$self->sqls}[$k], @{$self->versions}[$i]);
-                    my $lent = scalar @{$sql};
-                    for(my $l = 0; $l < $lent; $l++) {
-                        push @{$sqls}, @{$sql}[$l];
-                    }
-                }
-                $data->{sql} = $sqls;
-            }
-            push @{$version}, $data;
-        }
-        $versions->{versions} = $version;
-        $versions->{data_sectioner} = "__DATA__";
-        $versions->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
-        $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
-        $versions->{name_space} = $self->get_parameter('Sql', 'Output Name Space', $tools_projects_pkey);
-        $self->versions($versions);
-    }
-    return 1;
-}
-
-sub process_sql($self, $sql, $tools_version) {
-    my $sql_rec = Daje::Database::View::VToolsObjectsSql->new(
-        db => $self->db
-    )->load_objects_sql(
-        $sql->{tools_objects_pkey}, $tools_version->{tools_version_pkey}
-    );
-
-    return $sql_rec->{data};
-}
-
-sub load_sql($self, $tools_projects_pkey,$tools_version_pkey) {
-    my $sqls = $self->load_objects_from_type(3, $tools_projects_pkey, $tools_version_pkey);
-    my $sql = $sqls->{data};
-    $self->sqls($sql);
-    return $sqls->{result};
 }
 
 sub load_project_name($self,$tools_projects_pkey) {
@@ -167,7 +117,6 @@ sub load_versions($self, $tools_projects_pkey) {
 
 
 sub load_objects_from_type($self, $type, $tools_projects_pkey, $tools_version_pkey) {
-
     my $objects = Daje::Database::View::VToolsObjectsTypes->new(
         db => $self->db
     )->load_objects_type(

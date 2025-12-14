@@ -5,7 +5,7 @@ use v5.42;
 # NAME
 # ====
 #
-# Daje::Templates::Tools::Generate::SQL; - It creates perl code
+# Daje::Templates::Tools::Generate::SQL; - It creates sql code
 #
 # SYNOPSIS
 # ========
@@ -103,22 +103,32 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
 );
     [% END -%]
 
-[% FOREACH sql IN version.sql -%]
--- [% sql.comment %]
-[% sql.sql_string %]
+
+[% FOREACH table IN version.tables -%]
+CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS
+    SELECT
+     [% FOREACH field IN table.fields -%]
+     [% field.fieldname %][% "," IF loop.last() == 0 %]
+     [% END -%]
+     FROM [% project_name %]_[% table.table_name %];
 
 [% END %]
 
-  [% FOREACH table IN version.tables -%]
-  [% FOREACH field IN table.fields -%]
-  [% IF field.foreign_key -%]
-    ALTER TABLE [% project_name %]_[% table.table_name %]
-        ADD CONSTRAINT [% project_name %]_[% table.table_name %]_[% project_name %]_[% field.fieldname %]_fkey
-    FOREIGN KEY ([% project_name %]_[% field.fieldname -%]_fkey)
-        REFERENCES [% project_name %]_[% field.fieldname -%] ([% project_name %]_[% field.fieldname -%]_pkey);
+[% FOREACH sql IN version.sql -%]
+-- [% sql.comment %]
+[% sql.sql_string %]
+[% END %]
 
-    CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]_fkey
-        ON [% project_name %]_[% table.table_name %]([%- project_name %]_[% field.fieldname %]_fkey);
+[%- FOREACH table IN version.tables -%]
+[%- FOREACH field IN table.fields -%]
+[%- IF field.foreign_key -%]
+ALTER TABLE [% project_name %]_[% table.table_name %]
+    ADD CONSTRAINT [% project_name %]_[% table.table_name %]_[% project_name %]_[% field.fieldname %]_fkey
+FOREIGN KEY ([% project_name %]_[% field.fieldname -%]_fkey)
+    REFERENCES [% project_name %]_[% field.fieldname -%] ([% project_name %]_[% field.fieldname -%]_pkey);
+
+CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]_fkey
+    ON [% project_name %]_[% table.table_name %]([%- project_name %]_[% field.fieldname %]_fkey);
   [% END -%]
   [% END -%]
   [% END -%]
