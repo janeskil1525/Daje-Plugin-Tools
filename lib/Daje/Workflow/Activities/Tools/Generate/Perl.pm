@@ -4,30 +4,44 @@ use v5.42;
 
 
 sub generate_perl($self) {
-    my $output = ('plugin');
+    # $self->model->insert_history(
+    #     "Generate SQL",
+    #     "Daje::Workflow::Activity::Tools::Generate::Perl::generate_perl",
+    #     1
+    # );
+    my @outputs = ('plugin');
     try {
+        my $documents;
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
-        if ($self->load_generate_data($tools_projects_pkey)) {
-            my $source = $self->get_parameter('Perl', 'Template Source', $tools_projects_pkey);
-            my $documents = $self->build_documents($tools_projects_pkey, $source,'sql');
-            my $length = scalar @{$documents};
-            for (my $i = 0; $i < $length; $i++) {
-                my $data->{data} = @{$documents}[$i]->{document};
-                my $filename = $self->get_parameter('Sql', 'Output file name', $tools_projects_pkey);
-                $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . $filename;
-                $data->{path} = 1;
-                push(@data, $data);
-            }
-            $self->context->{context}->{payload}->{perl} = \@data;
+        my $source = $self->get_parameter('Perl', 'Template Source', $tools_projects_pkey);
+        foreach my $output (@outputs) {
+            my $generate = "generate_$output";
+            my $doc = $self->$generate($tools_projects_pkey, $source);
+            $doc->{name} = $output;
+            push @{$documents}, $doc;
         }
+    my @data;
+        my $length = scalar @{$documents};
+        for (my $i = 0; $i < $length; $i++) {
+            my $data->{data} = @{$documents}[$i]->{document};
+            my $filename = $self->get_parameter('Sql', 'Output file name', $tools_projects_pkey);
+            $data->{file} = $self->get_parameter('Sql', 'Output Path', $tools_projects_pkey) . '/' . $filename;
+            $data->{path} = 1;
+            push(@data, $data);
+        }
+        $self->context->{context}->{payload}->{perl} = \@data;
+
     } catch($e) {
         say $e
             $self->error->add_error($e);
     };
 }
 
-sub load_generate_data($self, $tools_projects_pkey) {
+sub generate_plugin($self, $tools_projects_pkey, $source) {
 
-
+    my $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
+    $self->versions($versions);
+    my $documents = $self->build_documents($tools_projects_pkey, $source,'plugin');
+    return $documents;
 }
 1;

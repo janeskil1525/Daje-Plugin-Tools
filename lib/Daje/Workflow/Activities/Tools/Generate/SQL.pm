@@ -59,7 +59,7 @@ sub generate_sql($self) {
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
         if ($self->load_generate_data($tools_projects_pkey)) {
             my $source = $self->get_parameter('Sql', 'Template Source', $tools_projects_pkey);
-            my $documents = $self->build_documents($tools_projects_pkey, $source,'sql');
+            my $documents = $self->build_documents($source,'sql');
             my $length = scalar @{$documents};
             for (my $i = 0; $i < $length; $i++) {
                 my $data->{data} = @{$documents}[$i]->{document};

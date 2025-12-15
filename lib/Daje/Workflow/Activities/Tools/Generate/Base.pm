@@ -40,7 +40,7 @@ has 'tables';
 has 'parameters';
 
 
-sub build_documents ($self, $tools_projects_pkey, $source, $data_sections) {
+sub build_documents ($self, $source, $data_sections) {
 
     my $builder = Daje::Document::Builder->new(
         source        => $source,
