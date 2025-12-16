@@ -35,6 +35,8 @@ use Daje::Database::View::VToolsParameterValues;
 use Daje::Database::Helper::LoadParameters;
 use Daje::Document::Builder;
 use Daje::Database::Model::ToolsProjects;
+use Daje::Database::View::VToolsObjectsActive;
+use Daje::Database::View::VToolsObjectsTablesActive;;
 
 has 'versions';
 has 'tables';
@@ -91,6 +93,33 @@ sub process_table($self, $table, $tools_version) {
 
     $table->{fields} = $arr;
     return $table;
+}
+
+sub load_active_table_fields($self, $tools_objects_pkey) {
+    my $fields = Daje::Database::View::VToolsObjectsTablesActive->new(
+        db => $self->db
+    )->load_objects_tables_active(
+        $tools_objects_pkey
+    );
+
+    return $fields->{data};
+}
+
+sub load_active_tables($self, $tools_projects_pkey) {
+    my $objects = Daje::Database::View::VToolsObjectsActive->new(
+        db => $self->db
+    )->load_tools_objects_active(
+        $tools_projects_pkey
+    );
+
+    my $tables = $objects->{data};
+    my $length = scalar @{$tables};
+    for(my $i = 0; $i < $length; $i++) {
+        @{$tables}[$i]->{table_name} = @{$tables}[$i]->{name};
+        delete @{$tables}[$i]->{name};
+    }
+    $self->tables($tables);
+    return $objects->{result};
 }
 
 sub load_tables($self, $tools_projects_pkey, $tools_version_pkey) {

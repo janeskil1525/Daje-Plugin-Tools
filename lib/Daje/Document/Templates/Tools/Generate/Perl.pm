@@ -45,6 +45,10 @@ sub set_subs($self) {
 __DATA__
 
 @@ db_model_super
+package Daje::Database::Model::Super[% table_name %];
+use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
+v5.42;
+
 
 @@ plugin
 
