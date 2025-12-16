@@ -208,13 +208,15 @@ CREATE TABLE IF NOT EXISTS tools_parameters
     tools_parameter_groups_fkey bigint NOT NULL,
     parameter character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     CONSTRAINT tools_parameters_pkey PRIMARY KEY (tools_parameters_pkey),
-    CONSTRAINT tools_parameters_parameter_key UNIQUE (parameter),
     CONSTRAINT tools_parameters_tools_parameter_groups_fkey FOREIGN KEY (tools_parameter_groups_fkey)
         REFERENCES tools_parameter_groups (tools_parameter_groups_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         DEFERRABLE
 );
+
+CREATE UNIQUE INDEX tools_parameters_parameter_parameter_groups_key
+ON tools_parameters(parameter, tools_parameter_groups_fkey);
 
 CREATE TABLE IF NOT EXISTS tools_parameter_values
 (
@@ -455,6 +457,7 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Output file name', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
     ('Output Name Space', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
     ('Base file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
 

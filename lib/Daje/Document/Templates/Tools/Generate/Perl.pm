@@ -52,7 +52,7 @@ package Daje::Plugin::[% plugin_name %];
 use Mojo::Base 'Mojolicious::Plugin', -signatures;
 use v5.42;
 
- NAME
+# NAME
 # ====
 #
 # Daje::Plugin::[% plugin_name %] - Mojolicious Plugin
@@ -106,6 +106,10 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.com
 #
 
+# This file is generated once automatically by Daje Tools [% date_time %].
+# It will not be touched by Daje Tools again.
+
+
 use Daje::Plugin::[% plugin_name %]::Routes;
 use Daje::Plugin::[% plugin_name %]::Helpers;
 
@@ -113,8 +117,11 @@ our $VERSION = '0.01';
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::[% plugin_name %]::register start");
+
     Daje::Plugin::[% plugin_name %]::Routes->new()->routes($app, $config);
     Daje::Plugin::[% plugin_name %]::Helpers->new()->helpers($app, $config);
+
+
     $app->log->debug("Daje::Plugin::[% plugin_name %]::register ends");
 }
 

@@ -34,6 +34,7 @@ use v5.42;
 use Daje::Database::View::VToolsParameterValues;
 use Daje::Database::Helper::LoadParameters;
 use Daje::Document::Builder;
+use Daje::Database::Model::ToolsProjects;
 
 has 'versions';
 has 'tables';

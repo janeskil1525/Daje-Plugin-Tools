@@ -33,7 +33,7 @@ use v5.42;
 #
 
 use Daje::Database::View::VToolsParameterValues;
-use Daje::Database::Model::ToolsProjects;
+
 use Daje::Database::View::VToolsVersion;
 use Daje::Database::View::VToolsObjectsTypes;
 use Daje::Database::View::VToolsObjectsTables;
@@ -75,8 +75,6 @@ sub generate_sql($self) {
         $self->error->add_error($e);
     };
 }
-
-
 
 sub load_generate_data($self, $tools_projects_pkey) {
     my $versions;

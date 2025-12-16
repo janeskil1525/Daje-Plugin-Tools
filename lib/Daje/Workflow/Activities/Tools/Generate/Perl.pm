@@ -2,6 +2,8 @@ package Daje::Workflow::Activities::Tools::Generate::Perl;
 use Mojo::Base 'Daje::Workflow::Activities::Tools::Generate::Base', -base, -signatures;
 use v5.42;
 
+use POSIX;
+use Mojo::Util qw { camelize };
 
 sub generate_perl($self) {
     # $self->model->insert_history(
@@ -40,8 +42,10 @@ sub generate_perl($self) {
 sub generate_plugin($self, $tools_projects_pkey, $source) {
 
     my $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
+    $versions->{plugin_name} = camelize $versions->{project_name};
+    $versions->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
     $self->versions($versions);
-    my $documents = $self->build_documents($tools_projects_pkey, $source,'plugin');
+    my $documents = $self->build_documents($source,'plugin');
     return $documents;
 }
 1;
