@@ -44,11 +44,165 @@ sub set_subs($self) {
 
 __DATA__
 
-@@ db_model_super
-package Daje::Database::Model::Super[% table_name %];
-use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
+@@ db_model
+
+package Daje::Database::Model::[%- class_name -%];
+use Mojo::Base 'Daje::Database::Model::Super::[%- class_name -%]', -base, -async_await;;
 v5.42;
 
+# NAME
+# ====
+#
+# Daje::Database::Model::[%- class_name -%] - Model class
+#
+# SYNOPSIS
+# ========
+#
+#       use Daje::Database::Model::[%- class_name -%];
+#
+#       my $class = Daje::Database::Model::[%- class_name -%]->new(db => $db);
+#
+# DESCRIPTION
+# ===========
+#
+# Daje::Database::Model::[%- class_name -%] is the model
+# class that's only generated once. It inherits all
+# methods from Daje::Database::Model::Super::[%- class_name -%]
+# This class is meant for non standard methods.
+#
+# METHODS
+# =======
+#
+#
+# LICENSE
+# =======
+#
+# Copyright (C) janeskil1525.
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+#
+# AUTHOR
+# ======
+#
+# janeskil1525 E<lt>janeskil1525@gmail.com
+#
+
+# This file is generated once automatically by Daje Tools [% date_time %].
+# It will not be touched by Daje Tools again.
+
+our $VERSION = '0.01';
+
+1;
+@@ db_model_super
+
+package Daje::Database::Model::Super::[%- class_name -%];
+use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -async_await;;
+v5.42;
+
+ NAME
+# ====
+#
+# Daje::Database::Model::Super::[%- class_name -%] - Daje db model
+#
+# SYNOPSIS
+# ========
+#
+#
+#       use Daje::Database::Model::Super::[%- class_name -%];
+#
+#       my $table = Daje::Database::Model::Super::[%- class_name -%]->new(db => $db);
+#
+#       my $result = $table->load_[%- project_name -%]_[%- table.table_name -%]_pkey($self, $[%- project_name -%]_[%- table.table_name -%]_pkey);
+#
+[%- FOREACH field IN fields -%]
+[%- IF field.foreign_key %]
+#       my $result = $table->load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey);
+#
+[%- END -%]
+[%- END -%]
+#
+#       my $result = $table->insert($self, $data);
+#
+#       $table->update($self, $data) ;
+#
+#
+# DESCRIPTION
+# ===========
+#
+# Daje::Database::Model::Super::[%- class_name -%] is a Model super class
+#
+# METHODS
+# =======
+#
+#
+# LICENSE
+# =======
+#
+# Copyright (C) janeskil1525.
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+#
+# AUTHOR
+# ======
+#
+# janeskil1525 E<lt>janeskil1525@gmail.com
+#
+
+# This file is generated automatically by Daje Tools [% date_time %].
+# It will be re-created by Daje Tools again and any changes
+# will be over written.
+#
+
+our $VERSION = '0.01';
+
+has 'fields' => '[%- project_name -%]_[%- table.table_name -%]_pkey, editnum, insby, insdatetime, modby, moddatetime,
+[%- FOREACH field IN fields -%]
+[%- IF field.foreign_key %]
+[%- project_name -%]_[%- field.fieldname %]_fkey[% "," IF loop.last() == 0 %]
+[%- ELSE -%]
+[%- field.fieldname %][% "," IF loop.last() == 0 %]
+[%- END -%]
+[%- END -%]';
+has 'primary_key_name' => "[%- project_name -%]_[%- table.table_name -%]_pkey";
+has 'table_name' => "[%- project_name -%]_[%- table.table_name -%]";
+
+[%- FOREACH field IN fields -%]
+[%- IF field.foreign_key %]
+sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) [
+    return $self->load_fkey(
+        $self->table_name, $self->fields(), $[%- project_name -%]_[%- field.fieldname -%]_fkey, $[%- project_name -%]_[%- field.fieldname -%]_fkey
+    );
+}
+[%- END -%]
+[%- END -%]
+
+
+sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
+    return $self->load_pk(
+        $self->table_name, $self->fields(), $self->primary_key_name(), $[%- project_name -%]_[%- table.table_name -%]_pkey
+    );
+}
+
+sub insert($self, $data) {
+    my $result = $self->SUPER::insert(
+        $self->table_name, $data, $self->primary_key_name
+    );
+    return $result;
+}
+
+sub update($self, $data) {
+    return $self->SUPER::update
+    (
+        $self->table_name, $data,
+            {
+                $self->primary_key_name() => $data->{$self->primary_key_name()}
+            }
+    );
+}
+
+1;
 
 @@ plugin
 

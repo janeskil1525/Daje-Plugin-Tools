@@ -106,9 +106,14 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
 
 [% FOREACH table IN version.tables -%]
 CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS
-    SELECT
-     [% FOREACH field IN table.fields -%]
-     [% field.fieldname %][% "," IF loop.last() == 0 %]
+    SELECT [%- project_name %]_[% table.table_name -%]_pkey, editnum, insby, insdatetime, modby, moddatetime,
+     [%- FOREACH field IN table.fields -%]
+     [%- IF field.foreign_key -%]
+ [%- project_name %]_[% field.fieldname %]_fkey
+     [%- ELSE -%]
+ [% field.fieldname %]
+     [%- END -%]
+     [%- "," IF loop.last() == 0 %]
      [% END -%]
      FROM [% project_name %]_[% table.table_name %];
 

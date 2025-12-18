@@ -101,8 +101,15 @@ sub load_active_table_fields($self, $tools_objects_pkey) {
     )->load_objects_tables_active(
         $tools_objects_pkey
     );
-
-    return $fields->{data};
+    my $arr = [];
+    my $fieldarray = $fields->{data};
+    my $test = ref($fieldarray);
+    if(ref($fieldarray) ne 'ARRAY') {
+        $fieldarray->each(sub($e, $num) {
+            push @{$arr}, $e;
+        });
+    }
+    return $arr;
 }
 
 sub load_active_tables($self, $tools_projects_pkey) {

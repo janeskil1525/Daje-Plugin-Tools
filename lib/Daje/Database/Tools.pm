@@ -457,6 +457,7 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Output file name', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
     ('Output Name Space', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Sql')),
     ('Base file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Plugin file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
