@@ -44,6 +44,23 @@ sub set_subs($self) {
 
 __DATA__
 
+@@ helpers
+
+[% USE Dumper %]
+
+[% Dumper.dump(tables) %]
+
+package Daje::Plugin::[%- class_name -%]::Helpers;
+use Mojo::Base, -base;
+v5.42;
+
+
+sub helpers($app, $config) {
+
+
+}
+
+1;
 @@ routes
 
 package Daje::Plugin::[%- class_name -%]::Routes;
@@ -61,6 +78,16 @@ v5.42;
 #       use Daje::Plugin::[%- class_name -%]::Routes;
 #
 #       my $class = Daje::Plugin::[%- class_name -%]::Routes->new();
+       [%- FOREACH table IN tables %]
+#       $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name %]_pkey');
+       [%- FOREACH field IN table.fields %]
+       [%- IF field.foreign_key %]
+#       $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/;[%- project_name -%]_[%- field.fieldname %]_fkey');
+
+       [% END %]
+       [%- END -%]
+       [%- END -%]
+#
 #
 # DESCRIPTION
 # ===========
@@ -92,11 +119,12 @@ our $VERSION = '0.01';
 
 sub routes($app, $config) {
     my $r = $app->routes;
-    [%- FOREACH table IN tables -%]
+    [%- FOREACH table IN tables %]
     $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name -%]_pkey')->to('[%- table.class_name -%]#[%- project_name -%]_[%- table.table_name -%]_pkey');
-    [%- FOREACH field IN table.fields -%]
+    [%- FOREACH field IN table.fields %]
     [%- IF field.foreign_key %]
     $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/;[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_[%- project_name -%]_[%- field.fieldname -%]_fkey');
+    [%- END -%]
     [%- END -%]
     [%- END -%]
 }

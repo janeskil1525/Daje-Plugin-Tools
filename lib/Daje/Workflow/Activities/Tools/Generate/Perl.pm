@@ -51,14 +51,16 @@ sub generate_routes($self, $tools_projects_pkey, $source) {
     my $docs;
     my $tables;
     my $project_name = $self->load_project_name($tools_projects_pkey);
+    my $class_name = camelize $project_name;
     if($self->load_active_tables($tools_projects_pkey)) {
         $tables->{project_name} = $project_name;
+        $tables->{class_name} = $class_name;
         my $length = scalar @{$self->tables};
         for (my $i = 0; $i < $length; $i++) {
-            my $table->{table} = @{$self->tables}[$i];
-            $table->{class_name} = camelize $project_name . "_" . $table->{table}->{table_name};
-            $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
-            push @{$tables->{table}}, $table;
+            my $table = @{$self->tables}[$i];
+            $table->{class_name} = camelize $project_name . "_" . $table->{table_name};
+            $table->{fields} = $self->load_active_table_fields($table->{tools_objects_pkey});
+            push @{$tables->{tables}}, $table;
         }
         $self->versions($tables);
         my $documents = $self->build_documents($source,'routes');
