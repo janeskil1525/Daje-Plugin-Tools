@@ -82,7 +82,7 @@ v5.42;
 #       $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name %]_pkey');
        [%- FOREACH field IN table.fields %]
        [%- IF field.foreign_key %]
-#       $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/;[%- project_name -%]_[%- field.fieldname %]_fkey');
+#       $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/:[%- project_name -%]_[%- field.fieldname %]_fkey');
 
        [% END %]
        [%- END -%]
@@ -123,7 +123,7 @@ sub routes($app, $config) {
     $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name -%]_pkey')->to('[%- table.class_name -%]#[%- project_name -%]_[%- table.table_name -%]_pkey');
     [%- FOREACH field IN table.fields %]
     [%- IF field.foreign_key %]
-    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/;[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_[%- project_name -%]_[%- field.fieldname -%]_fkey');
+    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_[%- project_name -%]_[%- field.fieldname -%]_fkey');
     [%- END -%]
     [%- END -%]
     [%- END -%]
