@@ -1,6 +1,6 @@
 package Daje::Controller::ToolsObjectIndex;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
-use v5.40;
+use v5.42;
 
 # NAME
 # ====
