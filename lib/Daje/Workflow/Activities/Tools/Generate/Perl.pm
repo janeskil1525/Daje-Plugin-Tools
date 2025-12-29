@@ -12,7 +12,7 @@ sub generate_perl($self) {
     #     "Daje::Workflow::Activity::Tools::Generate::Perl::generate_perl",
     #     1
     # );
-    my @outputs = ('plugin', 'db_model_super', 'db_model', 'routes');
+    my @outputs = ('plugin', 'db_model_super', 'db_model', 'routes', 'helpers');
     try {
         my $documents;
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
@@ -45,6 +45,29 @@ sub generate_perl($self) {
         say $e
             $self->error->add_error($e);
     };
+}
+
+sub generate_helpers($self, $tools_projects_pkey, $source) {
+    my $docs;
+    my $tables;
+    my $project_name = $self->load_project_name($tools_projects_pkey);
+    my $class_name = camelize $project_name;
+    if($self->load_active_tables($tools_projects_pkey)) {
+        $tables->{project_name} = $project_name;
+        $tables->{class_name} = $class_name;
+        my $length = scalar @{$self->tables};
+        for (my $i = 0; $i < $length; $i++) {
+            my $table = @{$self->tables}[$i];
+            $table->{class_name} = camelize $project_name . "_" . $table->{table_name};
+            $table->{fields} = $self->load_active_table_fields($table->{tools_objects_pkey});
+            push @{$tables->{tables}}, $table;
+        }
+        $self->versions($tables);
+        my $documents = $self->build_documents($source,'helpers');
+        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Helpers file path', $tools_projects_pkey) . "Helpers.pm";
+        @{ $documents }[0]->{new_only} = 0;
+        push @{$docs}, @{ $documents }[0];
+    }
 }
 
 sub generate_routes($self, $tools_projects_pkey, $source) {
