@@ -470,6 +470,14 @@ sub update($self, $data) {
     );
 }
 
+sub delete($self, $data) {
+    return $self->SUPER::delete(
+        $self->table_name,
+            {
+                $self->primary_key_name() => $data->{$self->primary_key_name()}
+            }
+     );
+}
 1;
 
 @@ plugin

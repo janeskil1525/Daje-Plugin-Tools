@@ -43,8 +43,8 @@ sub update($self, $data) {
     return $self->SUPER::update($self->table_name, $data, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
 }
 
-sub delete($self, $data) {
-    return $self->SUPER::delete($self->table_name, { $self->primary_key_name() => $data->{$self->primary_key_name()}});
+sub delete($self, $primary_key) {
+    return $self->SUPER::delete($self->table_name, { $self->primary_key_name() => $primary_key});
 }
 
 1;

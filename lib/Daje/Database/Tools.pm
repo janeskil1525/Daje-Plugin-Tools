@@ -463,6 +463,8 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Helpers file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
+    ('Interface file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
 
 CREATE OR REPLACE VIEW v_tools_objects_sql AS
