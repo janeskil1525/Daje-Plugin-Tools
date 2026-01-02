@@ -84,7 +84,43 @@ import { ActivatedRoute } from "@angular/router";
   imports: [
 
   ],
-  templateUrl: './table.object.index.component.html',
-  styleUrl: './table.object.index.component.css',
+  templateUrl: './[%table.table_name%].component.html',
+  styleUrl: './[%table.table_name%].component.css',
   standalone: true,
 })
+
+export class [%- class_name -%]Component {
+  payload:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
+  private activatedRoute = inject(ActivatedRoute);
+
+  constructor(
+        private workflow: WorkflowService,
+        private database: DatabaseService,
+  ) {}
+};
+
+@@ component_html
+
+div class="w-full flex flex-wrap justify-center ">
+        <p-card [style]="{ width: '25rem', overflow: 'hidden' }">
+            <div class="flex gap-4 mt-1 p-3 ">
+            [%- FOREACH field IN fields -%]
+
+                [% IF field.datatype == 'BOOLEAN' %]
+                <div class="flex gap-4 mt-1 p-3">
+                    <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload.[%- field.fieldname %]" [binary]="true"/>
+                    <label for="[%- field.fieldname %]" class="ml-2"> [%- field.fieldname %] </label>
+                </div>
+                [% ELSE %]
+                <div class ="w-full">
+                 <p-floatlabel variant="on">
+                        <input pInputText id="[%- field.fieldname %]" [(ngModel)]="payload.[%- field.fieldname %]" autocomplete="off" fluid="true"/>
+                        <label for="[%- field.fieldname %]">[%- field.fieldname %]</label>
+                    </p-floatlabel>
+                 </div>
+                [%- END -%]
+                [%- END -%]
+
+            </div>
+       </p-card>
+ </div>
