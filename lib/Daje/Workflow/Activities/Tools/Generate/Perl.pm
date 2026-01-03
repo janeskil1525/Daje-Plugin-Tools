@@ -7,15 +7,17 @@ use Mojo::Util qw { camelize };
 
 
 sub generate_perl($self) {
-    # $self->model->insert_history(
-    #     "Generate SQL",
-    #     "Daje::Workflow::Activity::Tools::Generate::Perl::generate_perl",
-    #     1
-    # );
-    my @outputs = ('plugin', 'db_model_super', 'db_model', 'routes', 'helpers', 'super_controller','controller');
+    $self->model->insert_history(
+        "Generate Perl",
+        "Daje::Workflow::Activities::Tools::Generate::Perl::generate_perl",
+        1
+    );
+
+    my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
+    my $outputs = $self->get_parameter('Perl', 'Outputs', $tools_projects_pkey);
+    my @outputs = ($outputs);
     try {
         my $documents;
-        my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
         my $source = $self->get_parameter('Perl', 'Template Source', $tools_projects_pkey);
         foreach my $output (@outputs) {
             my $generate = "generate_$output";

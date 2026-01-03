@@ -7,8 +7,13 @@ use Mojo::Util qw { camelize };
 
 
 sub generate_angular($self) {
-    my @outputs = ('interface', 'component');
+    $self->model->insert_history(
+        "Generate Angular",
+        "Daje::Workflow::Activities::Tools::Generate::Angular::generate_angular",
+        1
+    );
 
+    my @outputs = ('interface', 'component');
     try {
         my $documents;
         my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
@@ -36,7 +41,7 @@ sub generate_angular($self) {
             $data->{path} = 1;
             push(@data, $data);
         }
-        $self->context->{context}->{payload}->{perl} = \@data;
+        $self->context->{context}->{payload}->{angular} = \@data;
 
     } catch($e) {
         say $e
@@ -52,18 +57,19 @@ sub generate_interface($self, $tools_projects_pkey, $source) {
         my $length = scalar @{$self->tables};
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $table->{project_name} = $project_name;
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $self->versions($table);
             my $documents = $self->build_documents($source,'interface');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Interface file path', $tools_projects_pkey) . 'Super/' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Interface file path', $tools_projects_pkey) .  $table->{project_name} . "." . $table->{table}->{table_name}. '.interface.ts';
             @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
         }
     }
-
+    return $docs;
 }
 
 sub generate_component($self, $tools_projects_pkey, $source) {
@@ -73,22 +79,24 @@ sub generate_component($self, $tools_projects_pkey, $source) {
         my $length = scalar @{$self->tables};
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $table->{project_name} = $project_name;
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $self->versions($table);
             my $documents = $self->build_documents($source,'component');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table_name} . '.component.ts';
-            @{ $documents }[0]->{new_only} = 1;
+            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table}->{table_name} . '/' . $table->{table}->{table_name} . '.component.ts';
+            @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'component_html');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{class_name} . '.component.html';
-            @{ $documents }[0]->{new_only} = 1;
+            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table}->{table_name} . '/' . $table->{table}->{table_name} . '.component.html';
+            @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
-
         }
     }
+
+    return $docs;
 }
 1;
