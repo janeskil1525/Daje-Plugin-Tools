@@ -162,6 +162,8 @@ CREATE TABLE IF NOT EXISTS tools_object_tables
     "default" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     foreign_key boolean NOT NULL DEFAULT false,
     "unique" boolean NOT NULL DEFAULT false,
+    "mandatory" boolean NOT NULL DEFAULT false,
+    "project" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     CONSTRAINT tools_object_tables_pkey PRIMARY KEY (tools_object_tables_pkey),
     CONSTRAINT tools_object_tables_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
@@ -337,7 +339,9 @@ CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
     tools_object_tables."notnull",
     tools_object_tables."default",
     tools_object_tables.foreign_key,
-    tools_object_tables."unique"
+    tools_object_tables."unique",
+    tools_object_tables."mandatory",
+    tools_object_tables."project"
    FROM tools_object_tables
      JOIN tools_objects_tables_datatypes
      ON tools_object_tables.tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes.tools_objects_tables_datatypes_pkey;
@@ -466,7 +470,8 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Interface file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Component file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
-       ('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
+    ('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
+    ('Test file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
 	('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
 
@@ -479,7 +484,7 @@ SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tool
 	FROM tools_objects WHERE tools_object_types_fkey = 1 and active = true;
 
 CREATE OR REPLACE VIEW v_tools_object_table_active AS
-SELECT tools_object_tables_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, fieldname, "length", "scale", (SELECT name FROM tools_objects_tables_datatypes WHERE tools_objects_tables_datatypes_pkey = tools_objects_tables_datatypes_fkey) as datatype, tools_objects_tables_datatypes_fkey, active, visible, "notnull", "default", foreign_key, "unique"
+SELECT tools_object_tables_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, fieldname, "length", "scale", (SELECT name FROM tools_objects_tables_datatypes WHERE tools_objects_tables_datatypes_pkey = tools_objects_tables_datatypes_fkey) as datatype, tools_objects_tables_datatypes_fkey, active, visible, "notnull", "default", foreign_key, "unique", "mandatory", "project"
 	FROM tools_object_tables;
 
 -- 1 down

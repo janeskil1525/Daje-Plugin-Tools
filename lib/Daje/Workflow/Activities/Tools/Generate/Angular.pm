@@ -4,22 +4,22 @@ use v5.42;
 
 use POSIX;
 use Mojo::Util qw { camelize };
-
+use String::Util 'trim';
 
 sub generate_angular($self) {
-    $self->model->insert_history(
-        "Generate Angular",
-        "Daje::Workflow::Activities::Tools::Generate::Angular::generate_angular",
-        1
-    );
+    # $self->model->insert_history(
+    #     "Generate Angular",
+    #     "Daje::Workflow::Activities::Tools::Generate::Angular::generate_angular",
+    #     1
+    # );
 
-    my @outputs = ('interface', 'component');
+    my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
+    my @outputs = split /,/,  $self->get_parameter('Angular', 'Outputs', $tools_projects_pkey);;
     try {
         my $documents;
-        my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
         my $source = $self->get_parameter('Angular', 'Template Source', $tools_projects_pkey);
         foreach my $output (@outputs) {
-            my $generate = "generate_$output";
+            my $generate = "generate_" . trim($output);
             my $doc = $self->$generate($tools_projects_pkey, $source);
             if (ref $doc eq 'ARRAY') {
                 my $length = scalar @{ $doc };

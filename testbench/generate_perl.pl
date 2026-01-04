@@ -16,7 +16,7 @@ use Daje::Workflow::Errors::Error;
 
 use namespace::clean -except => [qw/_options_data _options_config/];
 
-sub genereate_sql() {
+sub genereate_perl() {
 
     my $pg = Mojo::Pg->new()->dsn(
         "dbi:Pg:dbname=daje;host=192.168.1.124;port=5432;user=daje;password=PV58nova64"
@@ -41,4 +41,4 @@ sub genereate_sql() {
 
 }
 
-genereate_sql();
+genereate_perl();

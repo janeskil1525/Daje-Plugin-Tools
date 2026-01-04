@@ -112,6 +112,7 @@ sub load_generate_data($self, $tools_projects_pkey) {
         $versions->{data_sectioner} = "__DATA__";
         $versions->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
         $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
+        $versions->{section_name} = '@@ ' . $self->load_project_name($tools_projects_pkey);
         $versions->{name_space} = $self->get_parameter('Sql', 'Output Name Space', $tools_projects_pkey);
         $self->versions($versions);
     }

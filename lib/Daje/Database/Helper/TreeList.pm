@@ -19,7 +19,6 @@ async sub load_treelist($self, $tools_projects_pkey) {
 
     my $treelist;
     my $objects = $self->_load_objects_from_project($tools_projects_pkey);
-    say "Objects " . Dumper($objects);
     my $length = scalar @{$objects->{data}};
     for (my $i = 0; $i < $length; $i++) {
        my $node = $self->_add_objects(

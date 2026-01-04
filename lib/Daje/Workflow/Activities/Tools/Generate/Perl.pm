@@ -4,7 +4,7 @@ use v5.42;
 
 use POSIX;
 use Mojo::Util qw { camelize };
-
+use String::Util 'trim';
 
 sub generate_perl($self) {
     $self->model->insert_history(
@@ -14,13 +14,12 @@ sub generate_perl($self) {
     );
 
     my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
-    my $outputs = $self->get_parameter('Perl', 'Outputs', $tools_projects_pkey);
-    my @outputs = ($outputs);
+    my @outputs = split /,/,  $self->get_parameter('Perl', 'Outputs', $tools_projects_pkey);;
     try {
         my $documents;
         my $source = $self->get_parameter('Perl', 'Template Source', $tools_projects_pkey);
         foreach my $output (@outputs) {
-            my $generate = "generate_$output";
+            my $generate = "generate_" . trim($output);
             my $doc = $self->$generate($tools_projects_pkey, $source);
             if (ref $doc eq 'ARRAY') {
                 my $length = scalar @{ $doc };
@@ -59,11 +58,17 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{project_name} = $project_name;
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
             my $documents = $self->build_documents($source,'controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) .  $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 1;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'tests_controller');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Test file path', $tools_projects_pkey) . $table->{table}->{table_name} . '.controller.t';
+            @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
         }
     }
@@ -81,6 +86,7 @@ sub generate_super_controller($self, $tools_projects_pkey, $source) {
             $table->{project_name} = $project_name;
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
             my $documents = $self->build_documents($source,'super_controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
@@ -101,6 +107,7 @@ sub generate_helpers($self, $tools_projects_pkey, $source) {
     if($self->load_active_tables($tools_projects_pkey)) {
         $tables->{project_name} = $project_name;
         $tables->{class_name} = $class_name;
+        $tables->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
         my $length = scalar @{$self->tables};
         for (my $i = 0; $i < $length; $i++) {
             my $table = @{$self->tables}[$i];
@@ -125,6 +132,7 @@ sub generate_routes($self, $tools_projects_pkey, $source) {
     if($self->load_active_tables($tools_projects_pkey)) {
         $tables->{project_name} = $project_name;
         $tables->{class_name} = $class_name;
+        $tables->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
         my $length = scalar @{$self->tables};
         for (my $i = 0; $i < $length; $i++) {
             my $table = @{$self->tables}[$i];
@@ -149,10 +157,16 @@ sub generate_db_model($self, $tools_projects_pkey, $source) {
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{class_name} = camelize $project_name . "_" . $table->{table}->{table_name};
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
             my $documents = $self->build_documents($source,'db_model');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Model file path', $tools_projects_pkey) . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'tests_database_model');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Test file path', $tools_projects_pkey) . $table->{table}->{table_name} . '.model.t';
             @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
         }
@@ -170,6 +184,7 @@ sub generate_db_model_super($self, $tools_projects_pkey, $source) {
             $table->{project_name} = $project_name;
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
+            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
             my $documents = $self->build_documents($source,'db_model_super');
             @{ $documents }[0]->{class_name} = $table->{class_name};

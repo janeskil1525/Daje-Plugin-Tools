@@ -48,6 +48,7 @@
             "Mojo::Base" : "0",
             "Mojo::Util" : "0",
             "Scalar::Util" : "0",
+            "String::Util" : "1.35",
             "Template" : "3.102",
             "perl" : "v5.42.0"
          }
@@ -70,7 +71,7 @@
          "web" : "https://github.com/janeskil1525/Daje-Plugin-Tools"
       }
    },
-   "version" : "0.26",
+   "version" : "1.00",
    "x_contributors" : [
       "janeskil1525 <janeskil1525@gmail.com>"
    ],
