@@ -122,6 +122,21 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS
      [%- "," IF loop.last() == 0 %]
      [% END -%]
      FROM [% project_name %]_[% table.table_name %];
+[% END %]
+
+[% FOREACH table IN version.tables -%]
+CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS
+
+    SELECT [%- project_name %]_[% table.table_name -%]_pkey, editnum, insby, insdatetime, modby, moddatetime,
+     [%- FOREACH field IN table.fields -%]
+     [%- IF field.foreign_key && field.visible -%]
+     (SELECT [&- field.dropname -%] FROM [%- project_name %]_[% field.fieldname %] WHERE [%- project_name %]_[% field.fieldname %]_pkey = [%- project_name %]_[% field.fieldname %]_fkey) as [%- project_name -%]_[%- field.fieldname -%]_[%- field.dropname -%]
+     [%- ELSE -%]
+ [% field.fieldname %]
+     [%- END -%]
+     [%- "," IF loop.last() == 0 %]
+     [%- END -%]
+     FROM [% project_name %]_[% table.table_name %];
 
 [% END %]
 
