@@ -467,6 +467,7 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Routes file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Controller file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Helpers file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('View file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Model file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
     ('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),

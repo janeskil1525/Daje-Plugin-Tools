@@ -169,6 +169,16 @@ sub generate_db_model($self, $tools_projects_pkey, $source) {
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Test file path', $tools_projects_pkey) . $table->{table}->{table_name} . '.model.t';
             @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'db_view_list');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . '/v' . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'db_view');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . '/v' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
         }
     }
     return $docs;
@@ -191,6 +201,17 @@ sub generate_db_model_super($self, $tools_projects_pkey, $source) {
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Model file path', $tools_projects_pkey) . 'Super/' . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'db_view_super_list');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . 'Super/v' . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'db_view_super');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . 'Super/v' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+
         }
     }
 
