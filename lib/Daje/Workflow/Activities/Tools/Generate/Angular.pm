@@ -50,28 +50,6 @@ sub generate_angular($self) {
 
 }
 
-sub generate_interface($self, $tools_projects_pkey, $source) {
-    my $docs;
-    my $project_name = $self->load_project_name($tools_projects_pkey);
-    if($self->load_active_tables($tools_projects_pkey)) {
-        my $length = scalar @{$self->tables};
-        for (my $i = 0; $i < $length; $i++) {
-            my $table->{table} = @{$self->tables}[$i];
-            $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
-            $table->{project_name} = $project_name;
-            $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
-            $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
-            $self->versions($table);
-            my $documents = $self->build_documents($source,'interface');
-            @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Interface file path', $tools_projects_pkey) .  $table->{project_name} . "." . $table->{table}->{table_name}. '.interface.ts';
-            @{ $documents }[0]->{new_only} = 0;
-            push @{$docs}, @{ $documents }[0];
-        }
-    }
-    return $docs;
-}
-
 sub generate_component($self, $tools_projects_pkey, $source) {
     my $docs;
     my $project_name = $self->load_project_name($tools_projects_pkey);
@@ -92,6 +70,16 @@ sub generate_component($self, $tools_projects_pkey, $source) {
             $documents = $self->build_documents($source,'component_html');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table}->{table_name} . '/' . $table->{table}->{table_name} . '.component.html';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'interface');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $table->{table}->{table_name}  . '/' . $table->{table}->{table_name}. '.interface.ts';
+            @{ $documents }[0]->{new_only} = 0;
+            push @{$docs}, @{ $documents }[0];
+            $documents = $self->build_documents($source,'css');
+            @{ $documents }[0]->{class_name} = $table->{class_name};
+            @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $table->{table}->{table_name}  . '/' . $table->{table}->{table_name}. '.component.css';
             @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
         }
