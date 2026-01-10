@@ -36,24 +36,36 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-sub set_subs($self) {
-    $self->subs('set_datatype');
-}
-
-sub set_datatype($datatype) {
+my $set_datatype = sub {
+    my $datatype = $_[0];
     my $result = "string";
-    if(uc($datatype) eq 'BIGINT') {
+    if (uc($datatype) eq 'BIGINT') {
         $result = 'numeric';
-    } elsif(uc($datatype) eq 'NUMERIC') {
+    }
+    elsif (uc($datatype) eq 'NUMERIC') {
         $result = 'numeric';
-    } elsif(uc($datatype) eq 'BOOLEAN') {
+    }
+    elsif (uc($datatype) eq 'BOOLEAN') {
         $result = 'boolean';
-    } elsif(uc($datatype) eq 'MONEY') {
+    }
+    elsif (uc($datatype) eq 'MONEY') {
         $result = 'numeric';
     }
 
     return $result;
+};
+
+my $make_interface_name = sub {
+    my $project = $_[0];
+    my $table = $_[1];
+    return ucfirst($project) . ucfirst($table) . "Interface";
+};
+
+sub set_subs($self) {
+    $self->insert_sub('set_datatype', $set_datatype);
+    $self->insert_sub('make_interface_name', $make_interface_name);
 }
+
 1;
 
 __DATA__
@@ -83,7 +95,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
 import {RippleModule} from 'primeng/ripple';
-import {ToastModule} from 'primeng/toast';
+import {ToastModule} from[% project_name -%]_[%- field.fieldname -%]_list: 'primeng/toast';
 import {ToolbarModule} from 'primeng/toolbar';
 import {RatingModule} from 'primeng/rating';
 import {InputTextModule} from 'primeng/inputtext';
@@ -97,7 +109,13 @@ import {InputIconModule} from 'primeng/inputicon';
 import {IconFieldModule} from 'primeng/iconfield';
 import { WorkflowService } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
+import { CheckboxModule } from 'primeng/checkbox';
 import { [%- class_name -%]Interface } from './[%- table.table_name -%].interface'
+[%- FOREACH field IN fields -%]
+        [%- IF field.foreign_key && field.visible %]
+import { [%- make_interface_name(project_name, field.fieldname) -%] } from './[%- field.fieldname -%].interface';
+        [%- END -%]
+    [% END %]
 
 @Component({
   selector: 'p-[% project_name -%]-[%- table.table_name -%]',
@@ -118,7 +136,8 @@ import { [%- class_name -%]Interface } from './[%- table.table_name -%].interfac
         DialogModule,
         TagModule,
         InputIconModule,
-        IconFieldModule
+        IconFieldModule,
+        CheckboxModule
   ],
   templateUrl: './[%table.table_name%].component.html',
   styleUrl: './[%table.table_name%].component.css',
@@ -126,8 +145,18 @@ import { [%- class_name -%]Interface } from './[%- table.table_name -%].interfac
 })
 
 export class [%- class_name -%]Component {
+    detailDialog: boolean = false;
     payload:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     selectedProducts:string = "";
+    submitted:boolean = false;
+    [%- FOREACH field IN fields -%]
+        [%- IF field.foreign_key && field.visible %]
+    selected_[%- field.dropfield -%]: string = "";
+
+    [% project_name -%]_[%- field.fieldname -%]_list: [% make_interface_name(project_name, field.fieldname) %] ;
+        [%- END -%]
+    [% END %]
+
     constructor(
         private workflow: WorkflowService,
         private database: DatabaseService,
@@ -141,10 +170,13 @@ export class [%- class_name -%]Component {
 
     }
     openNew() {
-
+        this.payload = {}  as [%- class_name -%]Interface;
+        this.submitted = false;
+        this.detailDialog = true;
     }
     exportCSV() {}
     confirmDeleteSelected(){}
+    hideDialog(){this.detailDialog = false;}
 }
 
 @@ component_html
@@ -162,6 +194,32 @@ export class [%- class_name -%]Component {
             </ng-template>
         </p-toolbar>
     </div>
+        <p-dialog [(visible)]="detailDialog" [style]="{ width: '450px' }" header="Product Details" [modal]="true">
+        <ng-template #content>
+            <div class="flex flex-col gap-6">
+                [%- FOREACH field IN fields -%]
+                    [% IF field.datatype == 'BOOLEAN' %]
+                    <div>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                            <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload.[%- field.fieldname %]" [binary]="true"/>
+                        </div>
+                    [%- ELSIF field.foreign_key && field.visible %]
+                        <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.dropfield -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
+                    [%- ELSIF field.foreign_key == false -%]
+                        <div>
+                            <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                            <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload.[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] />
+                            <small class="text-red-500" if@ (submitted && !payload.[%- field.fieldname %]) >[%- field.fieldname -%] is required.</small>
+                        </div>
+                    [%- END %]
+                [%- END %]
+            </div>
+        </ng-template>
+        <ng-template #footer>
+            <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
+            <p-button label="Save" icon="pi pi-check" (onClick)="saveObject()" />
+        </ng-template>
+    </p-dialog>
 </div>
 @@ css
 

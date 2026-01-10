@@ -37,7 +37,7 @@ use v5.42;
 #
 
 sub set_subs($self) {
-    $self->subs('');
+    #$self->subs('');
 }
 
 1;
@@ -235,10 +235,10 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->[%- project_name -%]_[% table.table_name %]->load_all_[%- project_name -%]_[%- table.table_name -%]_pkey_p($pkey)->then(sub($result) {
+    $self->[%- project_name -%]_[% table.table_name %]->load_all_[%- project_name -%]_[%- table.table_name -%]_p()->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%]_pkey ' . $err);
+        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
         $self->render
     });
 }

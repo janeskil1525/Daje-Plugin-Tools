@@ -36,36 +36,60 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+my $length_default_calc = sub {
+    my $length = $_[0];
+    my $scale = $_[1];
+    my $notnull = $_[2];
+    my $default = $_[3];
+    my $unique = $_[4];
+    my $result = "";
+    if ($length > 0 and $scale > 0) {
+        $result = "($length, $scale)";
+    }
+    elsif ($length > 0 and $scale == 0) {
+        $result = "($length)";
+    }
+    if($unique == 1) {
+        $result .= " UNIQUE ";
+    }
+    if ($notnull == 1) {
+        $result .= " NOT NULL ";
+        $result .= "DEFAULT $default " if (defined $default and length($default) > 0);
+    }
+
+    return $result;
+};
+
 sub set_subs($self) {
-    $self->subs(('length_default_calc'));
+    $self->insert_sub('length_default_calc', $length_default_calc);
 }
 
 
-sub length_default_calc($self) {
-    return sub {
-        my $length = $_[0];
-        my $scale = $_[1];
-        my $notnull = $_[2];
-        my $default = $_[3];
-        my $unique = $_[4];
-        my $result = "";
-        if ($length > 0 and $scale > 0) {
-            $result = "($length, $scale)";
-        }
-        elsif ($length > 0 and $scale == 0) {
-            $result = "($length)";
-        }
-        if($unique == 1) {
-            $result .= " UNIQUE ";
-        }
-        if ($notnull == 1) {
-            $result .= " NOT NULL ";
-            $result .= "DEFAULT $default " if (defined $default and length($default) > 0);
-        }
-
-        return $result;
-    };
-}
+# sub length_default_calc($length, $scale, $notnull, $default, $unique) {
+#     my $length_default_calc = sub {
+#         my $length = $_[0];
+#         my $scale = $_[1];
+#         my $notnull = $_[2];
+#         my $default = $_[3];
+#         my $unique = $_[4];
+#         my $result = "";
+#         if ($length > 0 and $scale > 0) {
+#             $result = "($length, $scale)";
+#         }
+#         elsif ($length > 0 and $scale == 0) {
+#             $result = "($length)";
+#         }
+#         if($unique == 1) {
+#             $result .= " UNIQUE ";
+#         }
+#         if ($notnull == 1) {
+#             $result .= " NOT NULL ";
+#             $result .= "DEFAULT $default " if (defined $default and length($default) > 0);
+#         }
+#
+#         return $result;
+#     };
+# }
 1;
 
 __DATA__
