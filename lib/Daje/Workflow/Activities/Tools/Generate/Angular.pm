@@ -67,7 +67,7 @@ sub generate_endpoints($self, $tools_projects_pkey, $source) {
         }
         $self->versions($tables);
         my $documents = $self->build_documents($source,'endpoints');
-        @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $table->{table}->{table_name}  . '/' . $table->{table}->{table_name}. '.endpoints.css';
+        @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $tables->{project_name}  . '_endpoints/' . $tables->{project_name} . '.endpoints.ts';
         @{ $documents }[0]->{new_only} = 0;
         push @{$docs}, @{ $documents }[0];
     }
