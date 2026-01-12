@@ -143,7 +143,6 @@ import { [%- class_name -%]Interface } from './[%- table.table_name -%].interfac
 import { [%- make_interface_name(project_name, field.fieldname) -%] } from '../[%- field.fieldname -%]/[%- field.fieldname -%].interface';
         [%- END -%]
     [% END %]
-import { [% class_name %]Endpoints  } from './[%- table.table_name -%].endpoints'
 import { Endpoints } from '../[%- project_name -%]_endpoints/[%- project_name -%].endpoints';
 
 interface Column {
@@ -253,7 +252,12 @@ export class [%- class_name -%]Component {
     }
 
     saveObject() {
+        this.submitted = true;
+        this.workflow.callWorkflow(
+            '[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+        );
 
+        this.detailDialog = false;
     }
 
     cancelData() {

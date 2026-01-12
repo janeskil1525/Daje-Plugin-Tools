@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS tools_objects
     active boolean NOT NULL DEFAULT true,
     tools_object_types_fkey bigint NOT NULL DEFAULT 0,
     tools_projects_fkey bigint NOT NULL DEFAULT 0,
+    workflow character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
     CONSTRAINT tools_objects_name_key UNIQUE (name),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
@@ -373,7 +374,8 @@ CREATE OR REPLACE VIEW v_tools_objects_workflow_fkey
     tools_objects.active,
     tools_objects.tools_object_types_fkey,
     tools_objects.tools_projects_fkey,
-    workflow_connections.workflow_fkey
+    workflow_connections.workflow_fkey,
+    tools_objects.workflow
    FROM tools_objects
      JOIN tools_version
      ON tools_objects.tools_version_fkey = tools_version.tools_version_pkey
