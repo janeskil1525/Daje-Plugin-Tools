@@ -137,6 +137,7 @@ import {IconFieldModule} from 'primeng/iconfield';
 import { WorkflowService } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
 import { CheckboxModule } from 'primeng/checkbox';
+import { environment } from '../../../environments/environment';
 import { [%- class_name -%]Interface } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
         [%- IF field.foreign_key && field.visible %]
@@ -253,8 +254,13 @@ export class [%- class_name -%]Component {
 
     saveObject() {
         this.submitted = true;
+
         this.workflow.callWorkflow(
-            '[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+        [%- IF table.workflow %]
+            environment.apiUrl, '[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+        [%- ELSE -%]
+            environment.apiUrl, '[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+        [% END %]
         );
 
         this.detailDialog = false;

@@ -126,6 +126,9 @@ CREATE TABLE IF NOT EXISTS tools_objects
     tools_object_types_fkey bigint NOT NULL DEFAULT 0,
     tools_projects_fkey bigint NOT NULL DEFAULT 0,
     workflow character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
+    visible boolean NOT NULL DEFAULT true,
+    list boolean NOT NULL DEFAULT true,
+    detail boolean NOT NULL DEFAULT true,
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
     CONSTRAINT tools_objects_name_key UNIQUE (name),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
@@ -375,7 +378,10 @@ CREATE OR REPLACE VIEW v_tools_objects_workflow_fkey
     tools_objects.tools_object_types_fkey,
     tools_objects.tools_projects_fkey,
     workflow_connections.workflow_fkey,
-    tools_objects.workflow
+    tools_objects.workflow,
+    tools_objects.visible,
+    tools_objects.list,
+    tools_objects.detail
    FROM tools_objects
      JOIN tools_version
      ON tools_objects.tools_version_fkey = tools_version.tools_version_pkey
@@ -485,7 +491,7 @@ SELECT tools_object_sql_pkey, tools_version_fkey, tools_objects_fkey, "name", sq
 	FROM tools_object_sql;
 
 CREATE OR REPLACE VIEW v_tools_objects_active AS
-SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey
+SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey, workflow, visible, list, detail
 	FROM tools_objects WHERE tools_object_types_fkey = 1 and active = true;
 
 CREATE OR REPLACE VIEW v_tools_object_table_active AS
