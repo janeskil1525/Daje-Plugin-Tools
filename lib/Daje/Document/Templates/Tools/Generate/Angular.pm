@@ -247,6 +247,11 @@ export class [%- class_name -%]Component {
     loadData() {
         this.database.load_all_records('TableObjectDatatypes').subscribe((response: [%- class_name -%]Interface[]) => {
             this.payload_list = response;
+    [%- FOREACH field IN fields %]
+        [%- IF field.datatype == 'BOOLEAN'  %]
+            if(this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = true;
+        [%- END %]
+    [%- END %]
         });
 
 
@@ -254,11 +259,15 @@ export class [%- class_name -%]Component {
 
     saveObject() {
         this.submitted = true;
-
+[%- FOREACH field IN fields %]
+    [%- IF field.datatype == 'BOOLEAN'  %]
+        if(!this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = false;
+    [%- END %]
+[%- END %]
         this.workflow.callWorkflow(
         [%- IF table.workflow %]
             environment.apiUrl, '[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
-        [%- ELSE -%]
+        [%- ELSE %]
             environment.apiUrl, '[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
         [% END %]
         );
