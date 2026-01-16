@@ -90,10 +90,10 @@ export enum Endpoints {
     [%- END -%]
 [%- END %]
 [%- FOREACH table IN tables %]
-	[% ufirst(project_name) -%][%- table.table_name -%]ListAll = '/[%- table.class_name -%]/list/all/',
+	[% ufirst(project_name) -%][%- ufirst(table.table_name) -%]ListAll = '[%- table.table_name -%]_list_all/',
     [%- FOREACH field IN table.fields %]
         [%- IF field.foreign_key %]
-    [% ufirst(project_name) -%][%- table.table_name -%]List = '/[%- table.table_name -%]/[%- field.fieldname -%]/list/',
+    [% ufirst(project_name) -%][%- table.table_name -%]List = '[%- table.table_name -%]/[%- field.fieldname -%]_list/',
         [%- END -%]
     [%- END -%]
 [%- END %]
@@ -210,7 +210,7 @@ export class [%- class_name -%]Component {
     payload:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     payload_list = [] as [%- class_name -%]ListInterface[];
     payload_detail = {} as [%- class_name -%]ListInterface;
-    selectedProducts:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
+    selectedPayloads:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     submitted:boolean = false;
     [%- FOREACH field IN fields -%]
         [%- IF field.foreign_key && field.visible %]
@@ -226,10 +226,10 @@ export class [%- class_name -%]Component {
         private workflow: WorkflowService,
         private database: DatabaseService,
     ) {
-    this.database.set_endpoints(environment.apiUrl, Endpoints);
+    this.database.set_endpoints(environment.apiUrl, '[% project_name -%]', Endpoints);
 [%- FOREACH field IN fields -%]
     [%- IF field.foreign_key && field.visible %]
-        this.database.load_all_records('TableObjectDatatypes').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
+        this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
             this.[% project_name -%]_[%- field.fieldname -%]_list = response;
         });
     [%- END -%]
@@ -266,7 +266,7 @@ export class [%- class_name -%]Component {
     }
 
     loadData() {
-        this.database.load_all_records('TableObjectDatatypes').subscribe((response: [%- class_name -%]ListInterface[]) => {
+        this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(table.table_name) -%]ListAll').subscribe((response: [%- class_name -%]ListInterface[]) => {
             this.payload_list = response;
     [%- FOREACH field IN fields %]
         [%- IF field.datatype == 'BOOLEAN'  %]
@@ -275,6 +275,10 @@ export class [%- class_name -%]Component {
     [%- END %]
         });
 
+
+    }
+
+    loadObject() {
 
     }
 
@@ -309,7 +313,17 @@ export class [%- class_name -%]Component {
         this.submitted = false;
         this.detailDialog = true;
     }
-    confirmDeleteSelected(){}
+
+    editSelected(payload: [%- class_name -%]Interface) {
+         this.payload = { ...payload };
+        this.detailDialog = true;
+    }
+
+    confirmDeleteSelected(payload:[%- class_name -%]Interface){
+
+    }
+
+    confirmDeleteSelectedLines() {}
     hideDialog(){this.detailDialog = false;}
 }
 
@@ -320,7 +334,7 @@ export class [%- class_name -%]Component {
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
                 <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" (onClick)="confirmDeleteSelected()" [disabled]="!selectedProducts" />
+                <p-button severity="secondary" label="Delete" icon="pi pi-trash" (onClick)="confirmDeleteSelectedLines()" [disabled]="!selectedPayloads" />
             </ng-template>
 
             <ng-template #end>
@@ -337,7 +351,7 @@ export class [%- class_name -%]Component {
             [paginator]="true"
             [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
             [tableStyle]="{ 'min-width': '75rem' }"
-            [(selection)]="selectedProducts"
+            [(selection)]="selectedPayloads"
             [rowHover]="true"
             dataKey="id"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -346,7 +360,7 @@ export class [%- class_name -%]Component {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Products</h5>
+                    <h5 class="m-0">Manage [%- table.table_name -%]</h5>
                     <p-iconfield>
                         <p-inputicon class="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -374,10 +388,10 @@ export class [%- class_name -%]Component {
                     <th style="min-width: 12rem"></th>
                 </tr>
             </ng-template>
-            <ng-template #body let-product>
+            <ng-template #body let-payload_detail>
                 <tr>
                     <td style="width: 3rem">
-                        <p-tableCheckbox [value]="product" />
+                        <p-tableCheckbox [value]="payload_detail" />
                     </td>
                 [%- FOREACH field IN fields -%]
                     [%- IF field.foreign_key && field.visible && field.dropfield %]
@@ -385,6 +399,8 @@ export class [%- class_name -%]Component {
                     [%- ELSIF !field.foreign_key && field.visible %]
                         <td style="min-width: 12rem">{{ payload_detail.[%- field.fieldname -%] }}</td>
                     [%- END %]
+                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
+                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" />
                 [%- END %]
                 </tr>
             </ng-template>

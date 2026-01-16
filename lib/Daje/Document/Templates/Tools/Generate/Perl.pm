@@ -75,19 +75,19 @@ done_testing;
 
 @@ controller_list
 
-package Daje::Controller::v[%- class_name %]List;
-use Mojo::Base 'Daje::Controller::Super::[%- class_name -%]', -base, -signatures;
+package Daje::Controller::[%- class_name %]List;
+use Mojo::Base 'Daje::Controller::Super::[%- class_name -%]List', -base, -signatures;
 use v5.42;
 
 # NAME
 # ====
 #
-# Daje::Controller::v[%- class_name -%]List - Model class
+# Daje::Controller::[%- class_name -%]List - Model class
 #
 # SYNOPSIS
 # ========
 #
-#       use Daje::Controller::v[%- class_name %]List;
+#       use Daje::Controller::[%- class_name %]List;
 #
 #
 #
@@ -173,7 +173,7 @@ our $VERSION = '0.01';
 
 @@ super_controller_list
 
-package Daje::Controller::Super::v[%- class_name %]List;
+package Daje::Controller::Super::[%- class_name %]List;
 use Mojo::Base 'Mojolicious::Controller', -base, -signatures;
 use v5.42;
 
@@ -227,7 +227,7 @@ use v5.42;
 our $VERSION = '0.01';
 
 sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
-    $self->app->log->debug('Daje::Controller::Super::v[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ');
+    $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ');
     $self->render_later;
     my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
          $self->req->headers->header('X-Token-Check')
@@ -235,10 +235,10 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->[%- project_name -%]_[% table.table_name %]->load_all_[%- project_name -%]_[%- table.table_name -%]_p()->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p()->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
         $self->render
     });
 }
@@ -246,7 +246,7 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
 [%- FOREACH field IN fields -%]
 [%- IF field.foreign_key -%]
 sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
-    $self->app->log->debug('Daje::Controller::Super::v[%- class_name -%]List::load_list[%- project_name -%]_[%- field.fieldname -%]_fkey ');
+    $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]List::load_list[%- project_name -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
     my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
          $self->req->headers->header('X-Token-Check')
@@ -255,10 +255,10 @@ sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% tablename %]_list->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
         $self->render
     });
 }
@@ -269,7 +269,7 @@ sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
 
 @@ super_controller
 
-package Daje::Controller::Super::v[%- class_name %];
+package Daje::Controller::Super::[%- class_name %];
 use Mojo::Base 'Mojolicious::Controller', -base, -signatures;
 use v5.42;
 
@@ -323,7 +323,7 @@ use v5.42;
 our $VERSION = '0.01';
 
 sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self) {
-    $self->app->log->debug('Daje::Controller::Super::v[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ');
+    $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
     my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
          $self->req->headers->header('X-Token-Check')
@@ -332,10 +332,10 @@ sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->[%- project_name -%]_[% table.table_name %]->load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($pkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]->load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]::load_[%- project_name -%]_[%- table.table_name -%]_pkey ' . $err);
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- table.table_name -%]_pkey ' . $err);
         $self->render
     });
 }
@@ -352,10 +352,10 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::Super::v[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
         $self->render
     });
 }
@@ -421,6 +421,14 @@ use v5.42;
 # This file is generated automatically by Daje Tools [% date_time %].
 # It will be re-generated by Daje Tools again.
 # <!-- Autogenerated file [%- date_time %] -->
+
+    [%- FOREACH table IN tables %]
+use Daje::Database::View::v[%- table.class_name -%];
+    [%- END -%]
+# Lists
+    [%- FOREACH table IN tables %]
+use Daje::Database::View::v[%- table.class_name -%]List;
+    [%- END %]
 
 our $VERSION = '0.01';
 
@@ -505,19 +513,19 @@ our $VERSION = '0.01';
 sub routes($self, $app, $config) {
     my $r = $app->routes;
     [%- FOREACH table IN tables %]
-    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name -%]_pkey')->to('v[%- table.class_name -%]#[%- project_name -%]_[%- table.table_name -%]_pkey');
+    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]/:[%- project_name -%]_[%- table.table_name -%]_pkey')->to('[%- table.class_name -%]#[%- project_name -%]_[%- table.table_name -%]_pkey');
     [%- FOREACH field IN table.fields %]
     [%- IF field.foreign_key %]
-    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('v[%- table.class_name -%]#load_[%- project_name -%]_[%- field.fieldname -%]_fkey');
+    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_[%- project_name -%]_[%- field.fieldname -%]_fkey');
     [%- END -%]
     [%- END -%]
     [%- END %]
 
     [%- FOREACH table IN tables %]
-    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_list_all/')->to('v[%- table.class_name -%]List#load_all_[%- project_name -%]_[%- table.table_name -%]');
+    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_list_all/')->to('[%- table.class_name -%]List#load_all_[%- project_name -%]_[%- table.table_name -%]');
     [%- FOREACH field IN table.fields %]
     [%- IF field.foreign_key %]
-    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]_list/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('v[%- table.class_name -%]#load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey');
+    $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]_list/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey');
     [%- END -%]
     [%- END -%]
     [%- END %]
@@ -526,7 +534,7 @@ sub routes($self, $app, $config) {
 @@ db_view_list
 
 package Daje::Database::View::v[%- class_name -%]List;
-use Mojo::Base 'Daje::Database::List::Super::v[%- class_name -%]List', -base, -async_await, -signatures;
+use Mojo::Base 'Daje::Database::View::Super::v[%- class_name -%]List', -base, -async_await, -signatures;
 use v5.42;
 
 # NAME
@@ -693,7 +701,7 @@ our $VERSION = '0.01';
 
 @@ db_view_super
 
-package Daje::Database::Model::Super::v[%- class_name -%];
+package Daje::Database::View::Super::v[%- class_name -%];
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;
 use v5.42;
 
@@ -826,7 +834,7 @@ use v5.42;
 # DESCRIPTION
 # ===========
 #
-# Daje::Database::Model::Super::[%- class_name -%]List is a Model super class
+# Daje::Database::View::Super::[%- class_name -%]List is a Model super class
 #
 # METHODS
 # =======
@@ -893,13 +901,13 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_list($self, $key_value) {
 [%- END -%]
 [%- END -%]
 
-async sub load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($self, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
-    return $self->load_[%- project_name -%]_[%- table.table_name -%]_pkey($[%- project_name -%]_[%- table.table_name -%]_pkey);
+async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self) {
+    return $self->load_all_[%- project_name -%]_[%- table.table_name -%]();
 }
 
-sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
-    return $self->load_pk(
-        $self->table_name, $self->fields(), $self->primary_key_name(), $[%- project_name -%]_[%- table.table_name -%]_pkey
+sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
+    return $self->load_a_full_list(
+        $self->table_name, $self->fields()
     );
 }
 1;
