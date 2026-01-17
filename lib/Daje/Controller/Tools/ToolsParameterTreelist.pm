@@ -1,4 +1,4 @@
-package Daje::Controller::ToolsParameterTreelist;
+package Daje::Controller::Tools::ToolsParameterTreelist;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use v5.40;
 
@@ -39,7 +39,7 @@ use v5.40;
 
 sub load_treelist($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsParameterTreelist::load_treelist');
+    $self->app->log->debug('Daje::Controller::Tools::ToolsParameterTreelist::load_treelist');
     $self->render_later;
 
 

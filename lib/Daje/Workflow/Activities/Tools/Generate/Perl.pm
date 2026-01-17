@@ -57,13 +57,14 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{project_name} = $project_name;
+            $table->{project} = camelize $table->{project_name};
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
             my $documents = $self->build_documents($source,'controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) .  $table->{class_name} . '.pm';
-            @{ $documents }[0]->{new_only} = 1;
+            @{ $documents }[0]->{new_only} = 0;
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'tests_controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
@@ -89,6 +90,7 @@ sub generate_super_controller($self, $tools_projects_pkey, $source) {
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{project_name} = $project_name;
+            $table->{project} = camelize $table->{project_name};
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
@@ -232,7 +234,7 @@ sub generate_db_model_super($self, $tools_projects_pkey, $source) {
 sub generate_plugin($self, $tools_projects_pkey, $source) {
 
     my $versions->{project_name} = $self->load_project_name($tools_projects_pkey);
-
+    $versions->{section_name} = $self->load_project_name($tools_projects_pkey);
     $versions->{plugin_name} = camelize $versions->{project_name};
     $versions->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
     $self->versions($versions);

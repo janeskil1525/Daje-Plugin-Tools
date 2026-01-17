@@ -1,6 +1,6 @@
-package Daje::Controller::ToolsObjectViews;
+package Daje::Controller::Tools::ToolsObjectSQL;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
-use v5.42;
+use v5.40;
 
 # NAME
 # ====
@@ -38,39 +38,20 @@ use v5.42;
 
 use Data::Dumper;
 
-sub load_object_views ($self) {
-    $self->app->log->debug('Daje::Controller::ToolsObjectViews::load_object_views');
+sub load_object_sql ($self) {
+
+    $self->app->log->debug('Daje::Controller::Tools::ToolsObjectSQL::load_object_sql');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
     # );
-    my $tools_objects_fkey = $self->param('tools_objects_fkey');
+    my $tools_object_sql_pkey = $self->param('tools_object_sql_pkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_objects_views->load_tools_views_fkey_p($tools_objects_fkey)->then(sub($result) {
-        $self->render($result->{data});
-    })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::ToolsObjectViews::load_object_views ' . $err);
-        $self->render(json => { 'result' => 0, data => $err });
-    })->wait;
-}
-
-sub load_object_view ($self) {
-
-    $self->app->log->debug('Daje::Controller::ToolsObjectViews::load_object_view');
-    $self->render_later;
-    # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
-    #     $self->req->headers->header('X-Token-Check')
-    # );
-    my $tools_object_views_pkey = $self->param('tools_object_views_pkey');
-
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->tools_objects_views->load_tools_object_views_pkey_p($tools_object_views_pkey)->then(sub($result) {
+    $self->tools_objects_sql->load_tools_object_sql_pkey_p($tools_object_sql_pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
-        $self->app->log->error('Daje::Controller::ToolsObjectViews::load_object_view ' . $err);
+        $self->app->log->error('Daje::Controller::Tools::ToolsObjectSQL::load_object_sql ' . $err);
         $self->render(json => { 'result' => 0, data => $err });
     })->wait;
 }
@@ -107,7 +88,7 @@ Daje::Controller::Tools is a Mojolicious plugin.
 
 L<Data::Dumper> 
 
-L<v5.42> 
+L<v5.40> 
 
 L<Mojo::Base> 
 

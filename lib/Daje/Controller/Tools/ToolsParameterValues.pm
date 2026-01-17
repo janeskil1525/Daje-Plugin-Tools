@@ -1,4 +1,4 @@
-package Daje::Controller::ToolsObjectTypes;
+package Daje::Controller::Tools::ToolsParameterValues;
 use Mojo::Base 'Mojolicious::Controller', -signatures;
 use v5.40;
 
@@ -36,24 +36,27 @@ use v5.40;
 # janeskil1525 E<lt>janeskil1525@gmail.com
 #
 
-use Data::Dumper;
+sub load_parameter_value ($self) {
 
-sub load_object_types ($self) {
 
-    $self->app->log->debug('Daje::Controller::ToolsObjectTypes::load_objects');
     $self->render_later;
     # my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
     #     $self->req->headers->header('X-Token-Check')
     # );
+    my $tools_projects_fkey = $self->param('tools_projects_fkey');
+    my $tools_parameters_fkey = $self->param('tools_parameters_fkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_object_types->load_full_list_p()->then(sub($result) {
+    $self->tools_parameter_values->load_tools_parameters_values_project_parameter_fkey(
+        $tools_projects_fkey, $tools_parameters_fkey
+    )->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
+        $self->app->log->debug('Daje::Controller::Tools::ToolsParameterValues::load_parameter_value ' . $err);
         $self->render(json => { 'result' => 0, data => $err });
     })->wait;
 }
+
 
 
 

@@ -60,6 +60,7 @@ use v5.42;
 
 our $VERSION = '1.01';
 
+use Data::Dumper;
 use Daje::Database::Model::ToolsProjects;
 use Daje::Database::Helper::TreeList;
 use Daje::Database::View::VToolsProjects;
@@ -75,9 +76,26 @@ use Daje::Database::Model::Super::ToolsParameters;
 use Daje::Database::Model::ToolsParameterValues;
 use Daje::Database::Model::ToolsObjectViews;
 use Daje::Database::Helper::ParameterTreelist;
+use  Daje::Database::Migrator;
 
 sub register ($self, $app, $config) {
     $app->log->debug("Daje::Plugin::Tools::register start");
+
+    my $migration->{class} = 'Daje::Database::Tools';
+    $migration->{name} = 'tools';
+    $migration->{migration} = 1;
+    my $migrations;
+    push @{$migrations}, $migration;
+    try {
+        Daje::Database::Migrator->new(
+            pg         => $app->pg,
+            migrations => $migrations,
+        )->migrate();
+    } catch ($e) {
+        $app->log->error($e);
+    };
+
+    push @{$app->routes->namespaces}, 'Daje::Controller::Tools';
 
     $app->helper(
         tools_projects => sub {

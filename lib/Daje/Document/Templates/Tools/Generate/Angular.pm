@@ -155,7 +155,7 @@ import {DialogModule} from 'primeng/dialog';
 import {TagModule} from 'primeng/tag';
 import {InputIconModule} from 'primeng/inputicon';
 import {IconFieldModule} from 'primeng/iconfield';
-import { WorkflowService } from 'daje-workflow';
+import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
 import { CheckboxModule } from 'primeng/checkbox';
 import { environment } from '../../../environments/environment';
@@ -284,17 +284,24 @@ export class [%- class_name -%]Component {
 
     saveObject() {
         this.submitted = true;
+        if(!this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey) this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey = 0;
 [%- FOREACH field IN fields %]
     [%- IF field.datatype == 'BOOLEAN'  %]
         if(!this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = false;
     [%- END %]
 [%- END %]
+    [% IF table.connector -%]
+        this.workflow.setConnectorData('[%- table.connector -%]', this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey);
+    [%- ELSE -%]
+        this.workflow.setConnectorData('[%- table.table_name -%]', this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey);
+    [%- END -%]
+
         this.workflow.callWorkflow(
-        [%- IF table.workflow %]
-            environment.apiUrl, '[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
-        [%- ELSE %]
-            environment.apiUrl, '[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
-        [% END %]
+    [%- IF table.workflow %]
+            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+    [%- ELSE %]
+            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+    [% END %]
         );
 
         this.detailDialog = false;
