@@ -152,11 +152,15 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS
 ALTER TABLE [% project_name %]_[% table.table_name %]
     ADD CONSTRAINT [% project_name %]_[% table.table_name %]_[% project_name %]_[% field.fieldname %]_fkey
 FOREIGN KEY ([% project_name %]_[% field.fieldname -%]_fkey)
+[%- IF field.fieldname == 'workflow' %]
+    REFERENCES [% field.fieldname -%] ([% field.fieldname -%]_pkey);
+[%- ELSE %]
     REFERENCES [% project_name %]_[% field.fieldname -%] ([% project_name %]_[% field.fieldname -%]_pkey);
+[% END %]
 
 CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]_fkey
     ON [% project_name %]_[% table.table_name %]([%- project_name %]_[% field.fieldname %]_fkey);
-  [% END -%]
+  [% END %]
   [% END -%]
   [% END -%]
 

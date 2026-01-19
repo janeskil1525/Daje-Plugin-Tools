@@ -1,0 +1,136 @@
+package Daje::Document::Templates::Tools::Generate::Workflow;
+use Mojo::Base 'Daje::Document::Templates::Base', -base;
+use v5.42;
+
+# NAME
+# ====
+#
+# Daje::Templates::Tools::Generate::Workflow; - It creates Angular code
+#
+# SYNOPSIS
+# ========
+#
+#     use Daje::Templates::Tools::Generate::Workflow;
+#
+#     Provides a method for the template to be loaded into the data structure
+#
+#     sub length_default_calc($self) returns a sub for setting details in template.
+#
+#
+# DESCRIPTION
+# ===========
+#
+# Daje::Templates::Tools::Generate::Workflow; is a module that retrieves data from a View
+#
+# LICENSE
+# =======
+#
+# Copyright (C) janeskil1525.
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+#
+# AUTHOR
+# ======
+#
+# janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
+#
+
+sub set_subs($self) {
+
+}
+
+1;
+
+__DATA__
+
+@@ workflow
+
+{
+  "workflow": [
+    {
+      "name": "INITIAL",
+      "auto": 1,
+      "state": {
+        "pre_checks": [
+
+        ],
+        "activities": [
+          {
+            "name": "save_[%- project_name -%]_[%- table.table_name -%]",
+            "activity": "Daje::Workflow::Activities::Save",
+            "activity_data": {
+              "class": "Daje::Database::Model::[%- class_name -%]"
+            },
+            "method": "save",
+            "resulting_state": "OPEN",
+            "pre_checks": [
+              {
+                "name": "Mandatory fields",
+                "class": "Daje::Workflow::Checks::Mandatory",
+                "checks": "Daje::Database::Model::[%- class_name -%]"
+              }
+            ],
+            "post_checks":[],
+            "observers": []
+          }
+        ],
+        "post_checks": [
+          {
+            "check": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "OPEN",
+      "auto": 1,
+      "state": {
+        "pre_checks": [],
+        "activities": [
+          {
+            "name": "save_[%- project_name -%]_[%- table.table_name -%]",
+            "activity": "Daje::Workflow::Activities::Save",
+            "activity_data": {
+              "class": "Daje::Database::Model::[%- class_name -%]"
+            },
+            "method": "save",
+            "resulting_state": "OPEN",
+            "pre_checks": [
+              {
+                "name": "Mandatory fields",
+                "class": "Daje::Workflow::Checks::Mandatory",
+                "checks": "Daje::Database::Model::[%- class_name -%]"
+              }
+            ],
+            "post_checks":[],
+            "observers": []
+          },
+          {
+            "name": "delete_[%- project_name -%]_[%- table.table_name -%]",
+            "activity": "Daje::Workflow::Activities::Delete",
+            "activity_data": {
+              "class": "Daje::Database::Model::[%- class_name -%]"
+            },
+            "method": "delete",
+            "resulting_state": "OPEN",
+            "pre_checks": [
+              {
+                "name": "Mandatory fields",
+                "class": "Daje::Workflow::Checks::Mandatory",
+                "checks": "[%- project_name -%]_[%- table.table_name -%]_pkey,"
+              }
+            ],
+            "post_checks":[],
+            "observers": []
+          }
+        ],
+        "post_checks": [
+          {
+            "check": ""
+          }
+        ]
+      }
+    }
+  ]
+}

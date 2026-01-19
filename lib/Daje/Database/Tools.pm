@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS tools_objects
     visible boolean NOT NULL DEFAULT true,
     list boolean NOT NULL DEFAULT true,
     detail boolean NOT NULL DEFAULT true,
-    connector character varying NOT NULL DEFAULT ''
+    generate_file boolean NOT NULL DEFAULT True,
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
     CONSTRAINT tools_objects_name_key UNIQUE (name),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
@@ -383,7 +383,7 @@ CREATE OR REPLACE VIEW v_tools_objects_workflow_fkey
     tools_objects.visible,
     tools_objects.list,
     tools_objects.detail,
-    tools_objects.connector
+    tools_objects.generate_file
    FROM tools_objects
      JOIN tools_version
      ON tools_objects.tools_version_fkey = tools_version.tools_version_pkey
@@ -464,7 +464,8 @@ INSERT INTO tools_parameter_groups (parameter_group) VALUES
     ('Project'),
     ('Sql'),
     ('Perl'),
-    ('Angular');
+    ('Angular'),
+    ('Workflows');
 
 INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Database Connection', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Project')),
@@ -486,6 +487,9 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Test file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
 	('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+	('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Workflows')),
+	('Workflows file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Workflows')),
+	('Template Source', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Workflows')),
     ('Path to app', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular'));
 
 CREATE OR REPLACE VIEW v_tools_objects_sql AS
@@ -493,7 +497,7 @@ SELECT tools_object_sql_pkey, tools_version_fkey, tools_objects_fkey, "name", sq
 	FROM tools_object_sql;
 
 CREATE OR REPLACE VIEW v_tools_objects_active AS
-SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey, workflow, visible, list, detail, connector
+SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey, workflow, visible, list, detail, generate_file
 	FROM tools_objects WHERE tools_object_types_fkey = 1 and active = true;
 
 CREATE OR REPLACE VIEW v_tools_object_table_active AS

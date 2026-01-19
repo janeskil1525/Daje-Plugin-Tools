@@ -93,7 +93,7 @@ export enum Endpoints {
 	[% ufirst(project_name) -%][%- ufirst(table.table_name) -%]ListAll = '[%- table.table_name -%]_list_all/',
     [%- FOREACH field IN table.fields %]
         [%- IF field.foreign_key %]
-    [% ufirst(project_name) -%][%- table.table_name -%]List = '[%- table.table_name -%]/[%- field.fieldname -%]_list/',
+    [% ufirst(project_name) -%][%- table.table_name -%]_[%- field.fieldname -%]List = '[%- table.table_name -%]/[%- field.fieldname -%]_list/',
         [%- END -%]
     [%- END -%]
 [%- END %]
@@ -207,6 +207,7 @@ interface ExportColumn {
 
 export class [%- class_name -%]Component {
     detailDialog: boolean = false;
+    deleteDialog: boolean = false;
     payload:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     payload_list = [] as [%- class_name -%]ListInterface[];
     payload_detail = {} as [%- class_name -%]ListInterface;
@@ -286,23 +287,30 @@ export class [%- class_name -%]Component {
         this.submitted = true;
         if(!this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey) this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey = 0;
 [%- FOREACH field IN fields %]
-    [%- IF field.datatype == 'BOOLEAN'  %]
+    [%- IF field.datatype == 'BOOLEAN' %]
         if(!this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = false;
     [%- END %]
 [%- END %]
-    [% IF table.connector -%]
-        this.workflow.setConnectorData('[%- table.connector -%]', this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey);
-    [%- ELSE -%]
-        this.workflow.setConnectorData('[%- table.table_name -%]', this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey);
-    [%- END -%]
-
         this.workflow.callWorkflow(
     [%- IF table.workflow %]
-            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
     [%- ELSE %]
-            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
+            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
     [% END %]
         );
+
+        this.loadData();
+        let _payload = this.payload_list;
+        if (this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey > 0) {
+            this.selectedPayloads  = _payload[this.findIndexBypKey(this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey)];
+        } else {
+    [%- FOREACH field IN fields %]
+        [%- IF field.unique %]
+            this.selectedPayloads  = _payload[this.findIndexBy_[%- field.fieldname %](this.payload.[%- field.fieldname -%])];
+        [%- END %]
+    [%- END %]
+
+        }
 
         this.detailDialog = false;
     }
@@ -321,17 +329,65 @@ export class [%- class_name -%]Component {
         this.detailDialog = true;
     }
 
+    findIndexBypKey(pKey: number): number {
+        let index = -1;
+        for (let i = 0; i < this.payload_list.length; i++) {
+            if (this.payload_list[i].[%- project_name -%]_[%- table.table_name -%]_pkey === pKey) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+[%- FOREACH field IN fields %]
+    [%- IF field.unique %]
+    findIndexBy_[%- field.fieldname %]([%- field.fieldname %]: string): number {
+        let index = -1;
+        for (let i = 0; i < this.payload_list.length; i++) {
+            if (this.payload_list[i].[%- field.fieldname %] === [%- field.fieldname %]) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    [%- END %]
+[%- END %]
     editSelected(payload: [%- class_name -%]Interface) {
-         this.payload = { ...payload };
-        this.detailDialog = true;
+        this.database.load_record('[% ufirst(project_name) -%][%- table.table_name -%]', payload.[% project_name -%]_[%- table.table_name -%]_pkey).subscribe((response: ObjectInterface)=> {
+            this.payload = response
+     [%- FOREACH field IN fields %]
+        [%- IF field.datatype == 'BOOLEAN'  %]
+            if(this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = true;
+        [%- END %]
+    [%- END %]
+            this.detailDialog = true;
+        });
+    }
+
+    deleteSelected(payload: [%- class_name -%]Interface) {
+        this.payload = { ...payload };
+
+        this.workflow.callWorkflow(
+    [%- IF table.workflow %]
+            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+    [%- ELSE %]
+            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+    [% END %]
+        );
+        this.deleteDialog = false;
     }
 
     confirmDeleteSelected(payload:[%- class_name -%]Interface){
-
+        this.payload = { ...payload };
+        this.deleteDialog = true;
     }
 
     confirmDeleteSelectedLines() {}
-    hideDialog(){this.detailDialog = false;}
+
+    hideDialog() {
+        this.detailDialog = false;
+    }
 }
 
 @@ component_html
@@ -379,7 +435,7 @@ export class [%- class_name -%]Component {
                     <th style="width: 3rem">
                         <p-tableHeaderCheckbox />
                     </th>
-                    <th style="min-width: 16rem">Code</th>
+
                 [%- FOREACH field IN fields -%]
                     [%- IF field.foreign_key && field.visible && field.dropfield -%]
                         <th pSortableColumn="[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" style="min-width:16rem">
@@ -441,7 +497,25 @@ export class [%- class_name -%]Component {
             <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
             <p-button label="Save" icon="pi pi-check" (onClick)="saveObject()" />
         </ng-template>
-    </p-dialog>
+        </p-dialog>
+            <p-dialog [(visible)]="deleteDialog" [style]="{ width: '450px' }" header="Confirm" [modal]="true">
+            <div class="flex items-center gap-4">
+                <i class="pi pi-exclamation-triangle !text-3xl"></i>
+                 @if (payload) {
+                    <span> Are you sure you want to delete selected item
+[%- FOREACH field IN fields -%]
+    [%- IF field.unique -%]
+                        <b>{{ payload.[%- field.fieldname -%] }}</b>
+    [%- END -%]
+[%- END %]
+                    ?</span>
+                }
+            </div>
+            <ng-template #footer>
+                <p-button label="No" icon="pi pi-times" text (onClick)="deleteDialog = false" />
+                <p-button label="Yes" icon="pi pi-check" (onClick)="deleteSelected(payload)" />
+            </ng-template>
+        </p-dialog>
 </div>
 @@ css
 
