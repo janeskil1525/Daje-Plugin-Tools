@@ -126,7 +126,7 @@ export interface [%- class_name -%]ListInterface {
     [%- IF field.foreign_key && field.visible && field.dropfield %]
     [% project_name -%]_[%- field.fieldname -%]_[%- field.dropfield %]: string;
     [% project_name %]_[% field.fieldname %]_fkey: number;
-     [%- ELSIF field.foreign_key -%]
+     [%- ELSIF field.foreign_key %]
     [% project_name %]_[% field.fieldname %]_fkey: number;
      [%- ELSE %]
     [% field.fieldname %]: [% set_datatype(field.datatype) %];
@@ -290,7 +290,11 @@ export class [%- class_name -%]Component {
     [%- IF field.datatype == 'BOOLEAN' %]
         if(!this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = false;
     [%- END %]
+    [%- IF field.fieldname == 'workflow' && field.foreign_key %]
+        if(!this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey) this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey = 0;
+    [%- END %]
 [%- END %]
+
         this.workflow.callWorkflow(
     [%- IF table.workflow %]
             environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
@@ -354,7 +358,7 @@ export class [%- class_name -%]Component {
     [%- END %]
 [%- END %]
     editSelected(payload: [%- class_name -%]Interface) {
-        this.database.load_record('[% ufirst(project_name) -%][%- table.table_name -%]', payload.[% project_name -%]_[%- table.table_name -%]_pkey).subscribe((response: ObjectInterface)=> {
+        this.database.load_record('[% ufirst(project_name) -%][%- table.table_name -%]', payload.[% project_name -%]_[%- table.table_name -%]_pkey).subscribe((response: [%- class_name -%]Interface)=> {
             this.payload = response
      [%- FOREACH field IN fields %]
         [%- IF field.datatype == 'BOOLEAN'  %]
