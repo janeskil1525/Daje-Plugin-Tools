@@ -155,6 +155,7 @@ import {DialogModule} from 'primeng/dialog';
 import {TagModule} from 'primeng/tag';
 import {InputIconModule} from 'primeng/inputicon';
 import {IconFieldModule} from 'primeng/iconfield';
+import { DatePickerModule } from 'primeng/datepicker';
 import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -198,7 +199,8 @@ interface ExportColumn {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        CheckboxModule
+        CheckboxModule,
+        DatePickerModule
   ],
   templateUrl: './[%table.table_name%].component.html',
   styleUrl: './[%table.table_name%].component.css',
@@ -213,6 +215,11 @@ export class [%- class_name -%]Component {
     payload_detail = {} as [%- class_name -%]ListInterface;
     selectedPayloads:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     submitted:boolean = false;
+    [%- FOREACH field IN fields %]
+    [%- IF field.foreign_key && field.visible %]
+    selected_[%- project_name -%]_[%- field.fieldname -%]: any = {};
+    [%- END %]
+[%- END %]
     [%- FOREACH field IN fields -%]
         [%- IF field.foreign_key && field.visible %]
     selected_[%- field.dropfield -%]: string = "";
@@ -287,6 +294,11 @@ export class [%- class_name -%]Component {
         this.submitted = true;
         if(!this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey) this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey = 0;
 [%- FOREACH field IN fields %]
+    [%- IF field.foreign_key && field.visible %]
+        this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey = this.selected_[%- project_name -%]_[%- field.fieldname -%].[%- project_name -%]_[%- field.fieldname -%]_pkey;
+    [%- END %]
+[%- END %]
+[%- FOREACH field IN fields %]
     [%- IF field.datatype == 'BOOLEAN' %]
         if(!this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = false;
     [%- END %]
@@ -331,6 +343,11 @@ export class [%- class_name -%]Component {
         this.payload = {}  as [%- class_name -%]Interface;
         this.submitted = false;
         this.detailDialog = true;
+[%- FOREACH field IN fields %]
+    [%- IF field.foreign_key && field.visible %]
+        this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey = 0;
+    [%- END %]
+[%- END %]
     }
 
     findIndexBypKey(pKey: number): number {
@@ -357,6 +374,21 @@ export class [%- class_name -%]Component {
     }
     [%- END %]
 [%- END %]
+
+[%- FOREACH field IN fields %]
+    [%- IF field.foreign_key && field.visible %]
+    findIndexBy_[%- field.fieldname %]([% project_name -%]_[%- field.fieldname %]_fkey: number): number {
+        let index = -1;
+        for (let i = 0; i < this.payload_list.length; i++) {
+            if (this.[% project_name -%]_[%- field.fieldname -%]_list[i].[% project_name -%]_[%- field.fieldname %]_pkey === [% project_name -%]_[%- field.fieldname %]_fkey) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    [%- END %]
+[%- END %]
     editSelected(payload: [%- class_name -%]Interface) {
         this.database.load_record('[% ufirst(project_name) -%][%- table.table_name -%]', payload.[% project_name -%]_[%- table.table_name -%]_pkey).subscribe((response: [%- class_name -%]Interface)=> {
             this.payload = response
@@ -365,12 +397,22 @@ export class [%- class_name -%]Component {
             if(this.payload.[%- field.fieldname -%]) this.payload.[%- field.fieldname -%] = true;
         [%- END %]
     [%- END %]
+     [%- FOREACH field IN fields -%]
+        [%- IF field.foreign_key && field.visible %]
+            this.selected_[%- project_name -%]_[%- field.fieldname -%] = this.[% project_name -%]_[%- field.fieldname -%]_list[this.findIndexBy_[%- field.fieldname %](payload.[% project_name -%]_[%- field.fieldname %]_fkey)];
+        [%- END -%]
+    [% END %]
             this.detailDialog = true;
         });
     }
 
     deleteSelected(payload: [%- class_name -%]Interface) {
         this.payload = { ...payload };
+[%- FOREACH field IN fields %]
+    [%- IF field.fieldname == 'workflow' && field.foreign_key %]
+        this.workflow.setWorkflowpKey(this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey);
+    [%- END %]
+[%- END %]
 
         this.workflow.callWorkflow(
     [%- IF table.workflow %]
@@ -380,6 +422,7 @@ export class [%- class_name -%]Component {
     [% END %]
         );
         this.deleteDialog = false;
+        this.loadData();
     }
 
     confirmDeleteSelected(payload:[%- class_name -%]Interface){
@@ -466,9 +509,10 @@ export class [%- class_name -%]Component {
                     [%- ELSIF !field.foreign_key && field.visible %]
                         <td style="min-width: 12rem">{{ payload_detail.[%- field.fieldname -%] }}</td>
                     [%- END %]
-                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
-                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" />
+
                 [%- END %]
+                     <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
+                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" />
                 </tr>
             </ng-template>
         </p-table>
@@ -481,10 +525,20 @@ export class [%- class_name -%]Component {
                     [% IF field.datatype == 'BOOLEAN' %]
                     <div>
                         <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
-                            <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload.[%- field.fieldname %]" [binary]="true"/>
-                        </div>
+                        <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload.[%- field.fieldname %]" [binary]="true"/>
+                    </div>
+                    [% ELSIF (field.datatype == 'BIGINT' || field.datatype == 'NUMERIC' || field.datatype == 'MONEY') && field.foreign_key == 0 %]
+                    <div>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                        <p-inputnumber inputId="[%- field.fieldname %]" [(ngModel)]="payload.[%- field.fieldname %]" />
+                    </div>
+                    [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
+                    <div>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                        <p-datepicker [(ngModel)]="payload.[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
+                    </div>
                     [%- ELSIF field.foreign_key && field.visible %]
-                        <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.dropfield -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
+                        <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
                     [%- ELSIF field.foreign_key == 0 -%]
                         <div>
                             <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>

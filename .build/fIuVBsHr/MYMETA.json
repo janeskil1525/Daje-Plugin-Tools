@@ -1,0 +1,294 @@
+{
+   "abstract" : "Mojolicious Plugin",
+   "author" : [
+      "janeskil1525 <janeskil1525@gmail.com"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Minilla/v3.1.28, CPAN::Meta::Converter version 2.150010",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : 2
+   },
+   "name" : "Daje-Plugin-Tools",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "inc",
+         "share",
+         "eg",
+         "examples",
+         "author",
+         "builder"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0.035"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Test::CPAN::Meta" : "0",
+            "Test::MinimumVersion::Fast" : "0.04",
+            "Test::PAUSE::Permissions" : "0.07",
+            "Test::Pod" : "1.41",
+            "Test::Spellunker" : "v0.2.7"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Daje::Database::Model" : "0.09",
+            "Daje::Document::Builder" : "0.01",
+            "Future::AsyncAwait" : "0.52",
+            "Mojo::Base" : "0",
+            "Mojo::Util" : "0",
+            "Scalar::Util" : "0",
+            "String::Util" : "1.35",
+            "Template" : "3.102",
+            "perl" : "v5.42.0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test::More" : "0.98"
+         }
+      }
+   },
+   "provides" : {
+      "Daje::Controller::ToolsObjectIndex" : {
+         "file" : "lib/Daje/Controller/ToolsObjectIndex.pm"
+      },
+      "Daje::Controller::ToolsObjectSQL" : {
+         "file" : "lib/Daje/Controller/ToolsObjectSQL.pm"
+      },
+      "Daje::Controller::ToolsObjectTypes" : {
+         "file" : "lib/Daje/Controller/ToolsObjectTypes.pm"
+      },
+      "Daje::Controller::ToolsObjectViews" : {
+         "file" : "lib/Daje/Controller/ToolsObjectViews.pm"
+      },
+      "Daje::Controller::ToolsObjects" : {
+         "file" : "lib/Daje/Controller/ToolsObjects.pm"
+      },
+      "Daje::Controller::ToolsParameterTreelist" : {
+         "file" : "lib/Daje/Controller/ToolsParameterTreelist.pm"
+      },
+      "Daje::Controller::ToolsParameterValues" : {
+         "file" : "lib/Daje/Controller/ToolsParameterValues.pm"
+      },
+      "Daje::Controller::ToolsProjects" : {
+         "file" : "lib/Daje/Controller/ToolsProjects.pm"
+      },
+      "Daje::Controller::ToolsTableObjectDatatypes" : {
+         "file" : "lib/Daje/Controller/ToolsTableObjectDatatypes.pm"
+      },
+      "Daje::Controller::ToolsTableObjects" : {
+         "file" : "lib/Daje/Controller/ToolsTableObjects.pm"
+      },
+      "Daje::Controller::ToolsTreelist" : {
+         "file" : "lib/Daje/Controller/ToolsTreelist.pm"
+      },
+      "Daje::Controller::ToolsVersions" : {
+         "file" : "lib/Daje/Controller/ToolsVersions.pm"
+      },
+      "Daje::Database::Helper::LoadParameters" : {
+         "file" : "lib/Daje/Database/Helper/LoadParameters.pm"
+      },
+      "Daje::Database::Helper::ParameterTreelist" : {
+         "file" : "lib/Daje/Database/Helper/ParameterTreelist.pm"
+      },
+      "Daje::Database::Helper::TreeList" : {
+         "file" : "lib/Daje/Database/Helper/TreeList.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectIndex" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectIndex.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectSQL" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectSQL.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectTypes" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectTypes.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectViews" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectViews.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjects" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjects.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectsTables" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectsTables.pm"
+      },
+      "Daje::Database::Model::Super::ToolsObjectsTablesDatatypes" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsObjectsTablesDatatypes.pm"
+      },
+      "Daje::Database::Model::Super::ToolsParameterGroups" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsParameterGroups.pm"
+      },
+      "Daje::Database::Model::Super::ToolsParameterValues" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsParameterValues.pm"
+      },
+      "Daje::Database::Model::Super::ToolsParameters" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsParameters.pm"
+      },
+      "Daje::Database::Model::Super::ToolsProjects" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsProjects.pm"
+      },
+      "Daje::Database::Model::Super::ToolsTreelist" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsTreelist.pm"
+      },
+      "Daje::Database::Model::Super::ToolsVersion" : {
+         "file" : "lib/Daje/Database/Model/Super/ToolsVersion.pm"
+      },
+      "Daje::Database::Model::ToolsObjectIndex" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectIndex.pm"
+      },
+      "Daje::Database::Model::ToolsObjectSQL" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectSQL.pm"
+      },
+      "Daje::Database::Model::ToolsObjectTypes" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectTypes.pm"
+      },
+      "Daje::Database::Model::ToolsObjectViews" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectViews.pm"
+      },
+      "Daje::Database::Model::ToolsObjects" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjects.pm"
+      },
+      "Daje::Database::Model::ToolsObjectsTables" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectsTables.pm"
+      },
+      "Daje::Database::Model::ToolsObjectsTablesDatatypes" : {
+         "file" : "lib/Daje/Database/Model/ToolsObjectsTablesDatatypes.pm"
+      },
+      "Daje::Database::Model::ToolsParameterGroups" : {
+         "file" : "lib/Daje/Database/Model/ToolsParameterGroups.pm"
+      },
+      "Daje::Database::Model::ToolsParameterValues" : {
+         "file" : "lib/Daje/Database/Model/ToolsParameterValues.pm"
+      },
+      "Daje::Database::Model::ToolsParameters" : {
+         "file" : "lib/Daje/Database/Model/ToolsParameters.pm"
+      },
+      "Daje::Database::Model::ToolsProjects" : {
+         "file" : "lib/Daje/Database/Model/ToolsProjects.pm"
+      },
+      "Daje::Database::Model::ToolsVersion" : {
+         "file" : "lib/Daje/Database/Model/ToolsVersion.pm"
+      },
+      "Daje::Database::Tools" : {
+         "file" : "lib/Daje/Database/Tools.pm",
+         "version" : "1"
+      },
+      "Daje::Database::View::Super::VToolsObjects" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjects.pm"
+      },
+      "Daje::Database::View::Super::VToolsObjectsActive" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjectsActive.pm"
+      },
+      "Daje::Database::View::Super::VToolsObjectsSql" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjectsSql.pm"
+      },
+      "Daje::Database::View::Super::VToolsObjectsTables" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjectsTables.pm"
+      },
+      "Daje::Database::View::Super::VToolsObjectsTablesActive" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjectsTablesActive.pm"
+      },
+      "Daje::Database::View::Super::VToolsObjectsTypes" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsObjectsTypes.pm"
+      },
+      "Daje::Database::View::Super::VToolsParameterValues" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsParameterValues.pm"
+      },
+      "Daje::Database::View::Super::VToolsProjects" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsProjects.pm"
+      },
+      "Daje::Database::View::Super::VToolsVersion" : {
+         "file" : "lib/Daje/Database/View/Super/VToolsVersion.pm"
+      },
+      "Daje::Database::View::Super::VTreeList" : {
+         "file" : "lib/Daje/Database/View/Super/VTreeList.pm"
+      },
+      "Daje::Database::View::VToolsObjects" : {
+         "file" : "lib/Daje/Database/View/VToolsObjects.pm"
+      },
+      "Daje::Database::View::VToolsObjectsActive" : {
+         "file" : "lib/Daje/Database/View/VToolsObjectsActive.pm"
+      },
+      "Daje::Database::View::VToolsObjectsSql" : {
+         "file" : "lib/Daje/Database/View/VToolsObjectsSql.pm"
+      },
+      "Daje::Database::View::VToolsObjectsTables" : {
+         "file" : "lib/Daje/Database/View/VToolsObjectsTables.pm"
+      },
+      "Daje::Database::View::VToolsObjectsTablesActive" : {
+         "file" : "lib/Daje/Database/View/VToolsObjectsTablesActive.pm"
+      },
+      "Daje::Database::View::VToolsObjectsTypes" : {
+         "file" : "lib/Daje/Database/View/VToolsObjectsTypes.pm"
+      },
+      "Daje::Database::View::VToolsParameterValues" : {
+         "file" : "lib/Daje/Database/View/VToolsParameterValues.pm"
+      },
+      "Daje::Database::View::VToolsProjects" : {
+         "file" : "lib/Daje/Database/View/VToolsProjects.pm"
+      },
+      "Daje::Database::View::VToolsVersion" : {
+         "file" : "lib/Daje/Database/View/VToolsVersion.pm"
+      },
+      "Daje::Database::View::VTreeList" : {
+         "file" : "lib/Daje/Database/View/VTreeList.pm"
+      },
+      "Daje::Document::Templates::Tools::Generate::Angular" : {
+         "file" : "lib/Daje/Document/Templates/Tools/Generate/Angular.pm"
+      },
+      "Daje::Document::Templates::Tools::Generate::Perl" : {
+         "file" : "lib/Daje/Document/Templates/Tools/Generate/Perl.pm"
+      },
+      "Daje::Document::Templates::Tools::Generate::SQL" : {
+         "file" : "lib/Daje/Document/Templates/Tools/Generate/SQL.pm"
+      },
+      "Daje::Plugin::Tools" : {
+         "file" : "lib/Daje/Plugin/Tools.pm",
+         "version" : "1.01"
+      },
+      "Daje::Workflow::Activities::Tools::Generate::Angular" : {
+         "file" : "lib/Daje/Workflow/Activities/Tools/Generate/Angular.pm"
+      },
+      "Daje::Workflow::Activities::Tools::Generate::Base" : {
+         "file" : "lib/Daje/Workflow/Activities/Tools/Generate/Base.pm"
+      },
+      "Daje::Workflow::Activities::Tools::Generate::Perl" : {
+         "file" : "lib/Daje/Workflow/Activities/Tools/Generate/Perl.pm"
+      },
+      "Daje::Workflow::Activities::Tools::Generate::SQL" : {
+         "file" : "lib/Daje/Workflow/Activities/Tools/Generate/SQL.pm"
+      },
+      "Daje::Workflow::Activities::Tools::Project" : {
+         "file" : "lib/Daje/Workflow/Activities/Tools/Project.pm"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/janeskil1525/Daje-Plugin-Tools/issues"
+      },
+      "homepage" : "https://github.com/janeskil1525/Daje-Plugin-Tools",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/janeskil1525/Daje-Plugin-Tools.git",
+         "web" : "https://github.com/janeskil1525/Daje-Plugin-Tools"
+      }
+   },
+   "version" : "1.01",
+   "x_contributors" : [
+      "janeskil1525 <janeskil1525@gmail.com>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 4.16",
+   "x_static_install" : 1
+}
