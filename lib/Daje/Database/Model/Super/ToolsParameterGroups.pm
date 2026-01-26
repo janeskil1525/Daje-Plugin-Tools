@@ -4,6 +4,7 @@ use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures,
 has 'fields' => "tools_parameter_groups_pkey, editnum, insby, insdatetime, modby, moddatetime, parameter_group";
 has 'primary_key_name' => "tools_parameter_groups_pkey";
 has 'table_name' => "tools_parameter_groups";
+has 'workflow' => '';
 
 
 async sub load_tools_parameter_groups_pkey_p($self, $tools_parameter_groups_pkey) {

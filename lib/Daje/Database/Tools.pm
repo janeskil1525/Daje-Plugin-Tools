@@ -330,6 +330,24 @@ CREATE TABLE IF NOT EXISTS tools_object_views
         DEFERRABLE
 );
 
+CREATE TABLE IF NOT EXISTS tools_code (
+    tools_code_pkey  serial NOT NULL,
+    editnum bigint NOT NULL DEFAULT 1,
+    insby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
+    insdatetime timestamp without time zone NOT NULL DEFAULT now(),
+    modby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
+    moddatetime timestamp without time zone NOT NULL DEFAULT now(),
+    tools_objects_fkey bigint NOT NULL,
+    filename VARCHAR NOT NULL,
+    filetype VARCHAR NOT NULL,
+    content VARCHAR NOT NULL,
+        CONSTRAINT tools_code_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
+        REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+);
+
 CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
  AS
  SELECT tools_object_tables.tools_object_tables_pkey,

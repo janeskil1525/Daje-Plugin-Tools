@@ -4,6 +4,8 @@ use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures,
 has 'fields' => "tools_object_views_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, name, fields, conditions";
 has 'primary_key_name' => "tools_object_views_pkey";
 has 'table_name' => "tools_object_views";
+has 'workflow' => '';
+
 
 async sub load_tools_object_views_pkey_p($self, $tools_object_view_pkey) {
     return $self->load_tools_object_views_pkey($tools_object_view_pkey)

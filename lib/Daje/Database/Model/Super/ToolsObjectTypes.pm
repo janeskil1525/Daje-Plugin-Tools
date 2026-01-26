@@ -4,6 +4,7 @@ use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures,
 has 'fields' => "tools_object_types_pkey, editnum, insby, insdatetime, modby, moddatetime, type_name, type";
 has 'primary_key_name' => "tools_object_types_pkey";
 has 'table_name' => "tools_object_types";
+has 'workflow' => '';
 
 
 async sub load_full_list_p($self) {

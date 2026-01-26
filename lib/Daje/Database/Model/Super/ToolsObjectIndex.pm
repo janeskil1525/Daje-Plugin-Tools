@@ -5,6 +5,7 @@ use v5.42;
 has 'fields' => 'tools_object_index_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, table_name, fields, index_unique';
 has 'primary_key_name' => "tools_object_index_pkey";
 has 'table_name' => "tools_object_index";
+has 'workflow' => '';
 
 async sub load_tools_object_fkey_p($self, $tools_objects_fkey) {
     return $self->load_tools_objects_fkey($tools_objects_fkey);

@@ -4,6 +4,7 @@ use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures,
 has 'fields' => "tools_objects_tables_datatypes_pkey, editnum, insby, insdatetime, modby, moddatetime, name, length, scale";
 has 'primary_key_name' => "tools_objects_tables_datatypes_pkey";
 has 'table_name' => "tools_objects_tables_datatypes";
+has 'workflow' => '';
 
 
 

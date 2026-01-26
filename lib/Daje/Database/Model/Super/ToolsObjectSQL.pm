@@ -4,6 +4,7 @@ use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures,
 has 'fields' => "tools_object_sql_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, name, comment, sql_string";
 has 'primary_key_name' => "tools_object_sql_pkey";
 has 'table_name' => "tools_object_sql";
+has 'workflow' => '';
 
 
 
