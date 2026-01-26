@@ -11,6 +11,8 @@ Daje::Plugin::Tools is a Mojolicious plugin.
 
 # REQUIRES
 
+[Daje::Database::Migrator](https://metacpan.org/pod/Daje%3A%3ADatabase%3A%3AMigrator) 
+
 [Daje::Database::Helper::ParameterTreelist](https://metacpan.org/pod/Daje%3A%3ADatabase%3A%3AHelper%3A%3AParameterTreelist) 
 
 [Daje::Database::Model::ToolsObjectViews](https://metacpan.org/pod/Daje%3A%3ADatabase%3A%3AModel%3A%3AToolsObjectViews) 
@@ -41,6 +43,8 @@ Daje::Plugin::Tools is a Mojolicious plugin.
 
 [Daje::Database::Model::ToolsProjects](https://metacpan.org/pod/Daje%3A%3ADatabase%3A%3AModel%3A%3AToolsProjects) 
 
+[Data::Dumper](https://metacpan.org/pod/Data%3A%3ADumper) 
+
 [v5.42](https://metacpan.org/pod/v5.42) 
 
 [Mojo::Base](https://metacpan.org/pod/Mojo%3A%3ABase) 
@@ -50,19 +54,19 @@ Daje::Plugin::Tools is a Mojolicious plugin.
 Daje::Plugin::Tools inherits all methods from
 Mojolicious::Plugin and implements the following new ones.
 
-# Mojolicious
-
-     $self->plugin('Tools');
-
-# Mojolicious::Lite
-
-     plugin 'Tools';
-
 # register
 
     $plugin->register(Mojolicious->new);
 
 Register plugin in [Mojolicious](https://metacpan.org/pod/Mojolicious) application.
+
+# Mojolicious::Lite
+
+     plugin 'Tools';
+
+# Mojolicious
+
+     $self->plugin('Tools');
 
 # SEE ALSO
 
