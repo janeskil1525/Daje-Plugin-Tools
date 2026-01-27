@@ -76,6 +76,7 @@ use Daje::Database::Model::Super::ToolsParameters;
 use Daje::Database::Model::ToolsParameterValues;
 use Daje::Database::Model::ToolsObjectViews;
 use Daje::Database::Helper::ParameterTreelist;
+use Daje::Database::Model::VToolsCode;
 use  Daje::Database::Migrator;
 
 sub register ($self, $app, $config) {
@@ -168,7 +169,17 @@ sub register ($self, $app, $config) {
             state  $tools_objects_views = Daje::Database::Model::ToolsObjectViews->new(db => shift->pg->db)
         });
 
+    $app->helper(
+        tools_code_views => sub {
+            state  $tools_objects_views = Daje::Database::Model::VToolsCode->new(db => shift->pg->db)
+        });
+
     my $r = $app->routes;
+
+
+    $r->get('/tools/api/v1/codes/:tools_objects_pkey')->to('ToolsCode#load_code_objects_fkey');
+    $r->get('/tools/api/v1/code/:tools_code_pkey')->to('ToolsCode#load_code_pkey');
+
     $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
     $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
     $r->get('/tools/api/v1/version/:tools_projects_pkey')->to('ToolsVersions#load_current_version');

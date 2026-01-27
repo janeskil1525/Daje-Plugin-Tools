@@ -92,22 +92,26 @@ sub generate_component($self, $tools_projects_pkey, $source) {
             @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table}->{table_name} . '/' . $table->{table}->{table_name} . '.component.ts';
             @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{new_only} = 0 if( $table->{table}->{generate_file} == 1 );
+            @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'component_html');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) . $table->{table}->{table_name} . '/' . $table->{table}->{table_name} . '.component.html';
             @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{new_only} = 0 if( $table->{table}->{generate_file} == 1 );
+            @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'interface');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $table->{table}->{table_name}  . '/' . $table->{table}->{table_name}. '.interface.ts';
             @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'css');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Angular', 'Component file path', $tools_projects_pkey) .  $table->{table}->{table_name}  . '/' . $table->{table}->{table_name}. '.component.css';
             @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
 
         }

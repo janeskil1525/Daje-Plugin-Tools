@@ -1,24 +1,24 @@
-package Daje::Database::Model::Super::ToolsCode;
+package Daje::Database::Model::Super::ToolsCodeChecksum;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 use v5.42;
 
-has 'fields' => 'tools_code_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_objects_fkey, filename, filetype, content';
-has 'primary_key_name' => "tools_code_pkey";
-has 'table_name' => "tools_code";
+has 'fields' => 'tools_code_checksum_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_code_fkey, checksum';
+has 'primary_key_name' => "tools_code_checksum_pkey";
+has 'table_name' => "tools_code_checksum";
 has 'workflow' => '';
 
 
-sub load_tools_code_pkey($self, $tools_code_pkey) {
+sub load_tools_code_checksum_pkey($self, $tools_code_checksum_pkey_pkey) {
 
     return $self->load_pk(
         $self->table_name, $self->fields(), $self->primary_key_name(), $tools_objects_pkey
     );
 }
 
-sub load_tools_code_fkey($self, $tools_object_pkey) {
+sub load_tools_code_checksum_fkey($self, $tools_code_fkey) {
 
     return $self->load_fkey(
-        $self->table_name, $self->fields(), "tools_object_fkey", $tools_object_pkey
+        $self->table_name, $self->fields(), "tools_code_fkey", $tools_code_fkey
     );
 }
 

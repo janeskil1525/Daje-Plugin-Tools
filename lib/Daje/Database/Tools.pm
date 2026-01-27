@@ -343,16 +343,39 @@ CREATE TABLE IF NOT EXISTS tools_code (
     insdatetime timestamp without time zone NOT NULL DEFAULT now(),
     modby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
     moddatetime timestamp without time zone NOT NULL DEFAULT now(),
-    tools_objects_fkey bigint NOT NULL,
+    tools_objects_fkey bigint UNIQUE NOT NULL,
     filename VARCHAR NOT NULL,
     filetype VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
-        CONSTRAINT tools_code_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
+    CONSTRAINT tools_code_pkey PRIMARY KEY (tools_code_pkey),
+    CONSTRAINT tools_code_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         DEFERRABLE
 );
+
+CREATE TABLE IF NOT EXISTS tools_code_checksum (
+	tools_code_checksum_pkey SERIAL NOT NULL,
+	editnum bigint NOT NULL DEFAULT 1,
+    insby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
+    insdatetime timestamp without time zone NOT NULL DEFAULT now(),
+    modby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
+    moddatetime timestamp without time zone NOT NULL DEFAULT now(),
+    tools_code_fkey bigint UNIQUE NOT NULL,
+	checksum VARCHAR NOT NULL,
+	CONSTRAINT tools_code_checksum_pkey PRIMARY KEY (tools_code_checksum_pkey),
+	CONSTRAINT tools_code_checksum_code_fkey FOREIGN KEY (tools_code_fkey)
+        REFERENCES tools_code (tools_code_pkey) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        DEFERRABLE
+
+);
+
+CREATE OR REPLACE VIEW v_tools_code_object_fkey AS
+	SELECT tools_code_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_objects_fkey, filename, filetype, content
+	FROM tools_code;
 
 CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
  AS
