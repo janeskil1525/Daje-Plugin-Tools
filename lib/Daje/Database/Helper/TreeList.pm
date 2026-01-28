@@ -22,11 +22,9 @@ async sub load_treelist($self, $tools_projects_pkey) {
     my $objects = $self->_load_objects_from_project($tools_projects_pkey);
     my $length = scalar @{$objects->{data}};
     for (my $i = 0; $i < $length; $i++) {
-        say "1";
         my $node = $self->_add_objects(
             @{$objects->{data}}[$i], 'tools_objects'
         );
-
         if(@{$objects->{data}}[$i]->{tools_object_types_fkey} == 1) {
             $node = $self->_add_tools_object_tables(
                 $node, @{$objects->{data}}[$i]->{tools_objects_pkey}

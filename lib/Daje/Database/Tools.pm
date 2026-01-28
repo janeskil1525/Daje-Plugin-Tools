@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS tools_objects
     detail boolean NOT NULL DEFAULT true,
     generate_file boolean NOT NULL DEFAULT True,
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
-    CONSTRAINT tools_objects_name_key UNIQUE (name),
+    CONSTRAINT tools_objects_name_key UNIQUE (name, tools_projects_fkey),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
         REFERENCES tools_object_types (tools_object_types_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -343,8 +343,8 @@ CREATE TABLE IF NOT EXISTS tools_code (
     insdatetime timestamp without time zone NOT NULL DEFAULT now(),
     modby character varying COLLATE pg_catalog."default" NOT NULL DEFAULT 'System'::character varying,
     moddatetime timestamp without time zone NOT NULL DEFAULT now(),
-    tools_objects_fkey bigint UNIQUE NOT NULL,
-    filename VARCHAR NOT NULL,
+    tools_objects_fkey bigint  NOT NULL,
+    filename VARCHAR UNIQUE NOT NULL,
     filetype VARCHAR NOT NULL,
     content VARCHAR NOT NULL,
     CONSTRAINT tools_code_pkey PRIMARY KEY (tools_code_pkey),
@@ -370,7 +370,6 @@ CREATE TABLE IF NOT EXISTS tools_code_checksum (
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         DEFERRABLE
-
 );
 
 CREATE OR REPLACE VIEW v_tools_code_object_fkey AS
@@ -528,6 +527,7 @@ INSERT INTO tools_parameters (parameter, tools_parameter_groups_fkey) VALUES
     ('Component file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Angular')),
     ('Test file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
+    ('Activity file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
 	('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Perl')),
 	('Outputs', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Workflows')),
 	('Workflows file path', (select tools_parameter_groups_pkey from tools_parameter_groups WHERE parameter_group = 'Workflows')),

@@ -84,16 +84,20 @@ export enum Endpoints {
 [%- FOREACH table IN tables %]
 	[% ufirst(project_name) -%][%- table.table_name -%] = '[%- table.table_name %]/',
     [%- FOREACH field IN table.fields %]
-        [%- IF field.foreign_key %]
+        [%- IF field.foreign_key && field.project == '' %]
     [% ufirst(project_name) -%][%- ufirst(table.table_name) -%][%- ufirst(field.fieldname) -%] = '[%- table.table_name -%]/[%- field.fieldname %]/',
+        [%- ELSIF field.foreign_key && field.project != '' %]
+    [% ufirst(field.project) -%][%- ufirst(table.table_name) -%][%- ufirst(field.fieldname) -%] = '[%- table.table_name -%]/[%- field.fieldname %]/',
         [%- END -%]
     [%- END -%]
 [%- END %]
 [%- FOREACH table IN tables %]
 	[% ufirst(project_name) -%][%- ufirst(table.table_name) -%]ListAll = '[%- table.table_name -%]_list_all/',
     [%- FOREACH field IN table.fields %]
-        [%- IF field.foreign_key %]
+        [%- IF field.foreign_key && field.project == '' %]
     [% ufirst(project_name) -%][%- table.table_name -%]_[%- field.fieldname -%]List = '[%- table.table_name -%]/[%- field.fieldname -%]_list/',
+        [%- ELSIF field.foreign_key && field.project != '' %]
+    [% ufirst(field.project) -%][%- table.table_name -%]_[%- field.fieldname -%]List = '[%- table.table_name -%]/[%- field.fieldname -%]_list/',
         [%- END -%]
     [%- END -%]
 [%- END %]
@@ -107,8 +111,10 @@ import{ ResponseBase } from 'daje-database';
 export interface [%- class_name -%]Interface extends ResponseBase {
     [% project_name -%]_[%- table.table_name -%]_pkey:number;
     [%- FOREACH field IN fields -%]
-    [%- IF field.foreign_key %]
+    [%- IF field.foreign_key && field.project == '' %]
     [% project_name -%]_[%- field.fieldname %]_fkey:number;
+    [%- ELSIF field.foreign_key && field.project != '' %]
+    [% field.project -%]_[%- field.fieldname %]_fkey:number;
     [%- ELSE %]
     [% field.fieldname %]:[% set_datatype(field.datatype) %];
     [%- END -%]
@@ -123,9 +129,12 @@ export interface [%- class_name -%]ListInterface {
     modby: string;
     moddatetime: string;
 [%- FOREACH field IN fields -%]
-    [%- IF field.foreign_key && field.visible && field.dropfield %]
+    [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' %]
     [% project_name -%]_[%- field.fieldname -%]_[%- field.dropfield %]: string;
     [% project_name %]_[% field.fieldname %]_fkey: number;
+    [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' %]
+    [% field.project -%]_[%- field.fieldname -%]_[%- field.dropfield %]: string;
+    [% field.project %]_[% field.fieldname %]_fkey: number;
      [%- ELSIF field.foreign_key %]
     [% project_name %]_[% field.fieldname %]_fkey: number;
      [%- ELSE %]
@@ -162,8 +171,10 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { environment } from '../../../environments/environment';
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
-        [%- IF field.foreign_key && field.visible %]
+        [%- IF field.foreign_key && field.visible && field.project == '' %]
 import { [%- make_interface_name(project_name, field.fieldname, 1) -%] } from '../[%- field.fieldname -%]/[%- field.fieldname -%].interface';
+        [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+import { [%- make_interface_name(field.project, field.fieldname, 1) -%] } from '../[%- field.fieldname -%]/[%- field.fieldname -%].interface';
         [%- END -%]
     [% END %]
 import { Endpoints } from '../[%- project_name -%]_endpoints/[%- project_name -%].endpoints';
@@ -216,14 +227,19 @@ export class [%- class_name -%]Component {
     selectedPayloads:[%- class_name -%]Interface = {} as [%- class_name -%]Interface;
     submitted:boolean = false;
     [%- FOREACH field IN fields %]
-    [%- IF field.foreign_key && field.visible %]
+    [%- IF field.foreign_key && field.visible && field.project == '' %]
     selected_[%- project_name -%]_[%- field.fieldname -%]: any = {};
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+    selected_[%- field.project -%]_[%- field.fieldname -%]: any = {};
     [%- END %]
 [%- END %]
     [%- FOREACH field IN fields -%]
-        [%- IF field.foreign_key && field.visible %]
+        [%- IF field.foreign_key && field.visible && field.project == '' %]
     selected_[%- field.dropfield -%]: string = "";
     [% project_name -%]_[%- field.fieldname -%]_list = [] as [% make_interface_name(project_name, field.fieldname, 1) %][];
+        [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+    selected_[%- field.dropfield -%]: string = "";
+    [% field.project -%]_[%- field.fieldname -%]_list = [] as [% make_interface_name(field.project, field.fieldname, 1) %][];
         [%- END -%]
     [% END %]
     @ViewChild('dt') dt!: Table;
@@ -236,19 +252,27 @@ export class [%- class_name -%]Component {
     ) {
     this.database.set_endpoints(environment.apiUrl, '[% project_name -%]', Endpoints);
 [%- FOREACH field IN fields -%]
-    [%- IF field.foreign_key && field.visible %]
+    [%- IF field.foreign_key && field.visible && field.project == '' %]
         this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
             this.[% project_name -%]_[%- field.fieldname -%]_list = response;
         });
-    [%- END -%]
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+        this.database.load_all_records('[% ufirst(field.project) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(field.project, field.fieldname, 1) %][]) => {
+            this.[% field.project -%]_[%- field.fieldname -%]_list = response;
+        });
 [% END %]
 
         this.cols = [
     [%- FOREACH field IN fields %]
-        [%- IF field.foreign_key && field.visible && field.dropfield  %]
+        [%- IF field.foreign_key && field.visible && field.dropfield && field.project == ''  %]
             {
                 field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
                 header: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'
+            }[% "," IF loop.last() == 0 -%]
+        [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
+             {
+                field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
+                header: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'
             }[% "," IF loop.last() == 0 -%]
         [% ELSIF field.foreign_key == 0 %]
             {
@@ -294,8 +318,10 @@ export class [%- class_name -%]Component {
         this.submitted = true;
         if(!this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey) this.payload.[%- project_name -%]_[%- table.table_name -%]_pkey = 0;
 [%- FOREACH field IN fields %]
-    [%- IF field.foreign_key && field.visible %]
+    [%- IF field.foreign_key && field.visible && field.project == '' %]
         this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey = this.selected_[%- project_name -%]_[%- field.fieldname -%].[%- project_name -%]_[%- field.fieldname -%]_pkey;
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+        this.payload.[%- field.project -%]_[%- field.fieldname -%]_fkey = this.selected_[%- field.project -%]_[%- field.fieldname -%].[%- field.project -%]_[%- field.fieldname -%]_pkey;
     [%- END %]
 [%- END %]
 [%- FOREACH field IN fields %]
@@ -344,8 +370,10 @@ export class [%- class_name -%]Component {
         this.submitted = false;
         this.detailDialog = true;
 [%- FOREACH field IN fields %]
-    [%- IF field.foreign_key && field.visible %]
+    [%- IF field.foreign_key && field.visible && field.project == '' %]
         this.payload.[%- project_name -%]_[%- field.fieldname -%]_fkey = 0;
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+        this.payload.[%- field.project -%]_[%- field.fieldname -%]_fkey = 0;
     [%- END %]
 [%- END %]
     }
@@ -376,11 +404,22 @@ export class [%- class_name -%]Component {
 [%- END %]
 
 [%- FOREACH field IN fields %]
-    [%- IF field.foreign_key && field.visible %]
+    [%- IF field.foreign_key && field.visible && field.project == '' %]
     findIndexBy_[%- field.fieldname %]([% project_name -%]_[%- field.fieldname %]_fkey: number): number {
         let index = -1;
         for (let i = 0; i < this.payload_list.length; i++) {
             if (this.[% project_name -%]_[%- field.fieldname -%]_list[i].[% project_name -%]_[%- field.fieldname %]_pkey === [% project_name -%]_[%- field.fieldname %]_fkey) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+    findIndexBy_[%- field.fieldname %]([% field.project -%]_[%- field.fieldname %]_fkey: number): number {
+        let index = -1;
+        for (let i = 0; i < this.payload_list.length; i++) {
+            if (this.[% field.project -%]_[%- field.fieldname -%]_list[i].[% field.project -%]_[%- field.fieldname %]_pkey === [% field.project -%]_[%- field.fieldname %]_fkey) {
                 index = i;
                 break;
             }
@@ -398,8 +437,10 @@ export class [%- class_name -%]Component {
         [%- END %]
     [%- END %]
      [%- FOREACH field IN fields -%]
-        [%- IF field.foreign_key && field.visible %]
+        [%- IF field.foreign_key && field.visible && field.project == '' %]
             this.selected_[%- project_name -%]_[%- field.fieldname -%] = this.[% project_name -%]_[%- field.fieldname -%]_list[this.findIndexBy_[%- field.fieldname %](payload.[% project_name -%]_[%- field.fieldname %]_fkey)];
+        [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+            this.selected_[%- field.project -%]_[%- field.fieldname -%] = this.[% field.project -%]_[%- field.fieldname -%]_list[this.findIndexBy_[%- field.fieldname %](payload.[% field.project -%]_[%- field.fieldname %]_fkey)];
         [%- END -%]
     [% END %]
             this.detailDialog = true;
@@ -484,10 +525,14 @@ export class [%- class_name -%]Component {
                     </th>
 
                 [%- FOREACH field IN fields -%]
-                    [%- IF field.foreign_key && field.visible && field.dropfield -%]
+                    [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' -%]
                         <th pSortableColumn="[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" style="min-width:16rem">
                         [%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]
                         <p-sortIcon field="payload_list.[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" />
+                    [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' -%]
+                        <th pSortableColumn="[%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" style="min-width:16rem">
+                        [%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%]
+                        <p-sortIcon field="payload_list.[%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" />
                     [%- ELSIF !field.foreign_key && field.visible -%]
                        <th pSortableColumn="[%- field.fieldname -%]" style="min-width:16rem">
                         [%- field.fieldname -%]
@@ -504,8 +549,10 @@ export class [%- class_name -%]Component {
                         <p-tableCheckbox [value]="payload_detail" />
                     </td>
                 [%- FOREACH field IN fields -%]
-                    [%- IF field.foreign_key && field.visible && field.dropfield %]
+                    [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' %]
                         <td style="min-width: 12rem">{{ payload_detail.[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%] }}</td>
+                    [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' %]
+                        <td style="min-width: 12rem">{{ payload_detail.[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%] }}</td>
                     [%- ELSIF !field.foreign_key && field.visible %]
                         <td style="min-width: 12rem">{{ payload_detail.[%- field.fieldname -%] }}</td>
                     [%- END %]
@@ -537,8 +584,10 @@ export class [%- class_name -%]Component {
                         <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
                         <p-datepicker [(ngModel)]="payload.[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
                     </div>
-                    [%- ELSIF field.foreign_key && field.visible %]
+                    [%- ELSIF field.foreign_key && field.visible && field.project == '' %]
                         <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
+                    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+                        <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
                     [%- ELSIF field.foreign_key == 0 -%]
                         <div>
                             <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
@@ -578,6 +627,9 @@ export class [%- class_name -%]Component {
 @@ css
 
 /* [%- table.table_name -%].component.css */
+
+@@ the_end
+
 #################### pod generated by Pod::Autopod - keep this line to make pod updates possible ####################
 
 =head1 NAME

@@ -1,4 +1,4 @@
-package Daje::Database::View::Super::VToolsObjects;
+package Daje::Database::View::Super::VToolsCode;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;
 use v5.40;
 
@@ -42,7 +42,7 @@ async sub load_tools_code_pkey_p($self, $tools_code_pkey) {
 
 sub load_tools_code_pkey($self, $tools_code_pkey) {
     return $self->load_pk(
-        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_objects_pkey
+        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_code_pkey
     );
 }
 

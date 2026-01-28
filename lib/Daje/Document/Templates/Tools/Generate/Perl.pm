@@ -244,7 +244,7 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
 }
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key -%]
+[%- IF field.foreign_key && field.project == '' -%]
 sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
     $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]List::load_list[%- project_name -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
@@ -259,6 +259,24 @@ sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
+        $self->render
+    });
+}
+[%- ELSIF field.foreign_key && field.project != '' -%]
+sub load_list_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
+    $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]List::load_list[%- field.project  -%]_[%- field.fieldname -%]_fkey ');
+    $self->render_later;
+    my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
+         $self->req->headers->header('X-Token-Check')
+    );
+    my $fkey = $self->param('[%- field.project  -%]_[%- field.fieldname -%]_fkey');
+
+    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
+    # my $setting = $self->param('setting');
+    $self->v_[%- field.project  -%]_[% tablename %]_list->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+        $self->render(json => $result->{data});
+    })->catch(sub($err) {
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
         $self->render
     });
 }
@@ -341,7 +359,7 @@ sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self) {
 }
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key -%]
+[%- IF field.foreign_key && field.project == '' -%]
 sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
     $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
@@ -356,6 +374,24 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
+        $self->render
+    });
+}
+[%- ELSIF field.foreign_key && field.project != '' -%]
+sub load_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
+    $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ');
+    $self->render_later;
+    my ($companies_pkey, $users_pkey) = $self->jwt->companies_users_pkey(
+         $self->req->headers->header('X-Token-Check')
+    );
+    my $fkey = $self->param('[%- field.project  -%]_[%- field.fieldname -%]_fkey');
+
+    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
+    # my $setting = $self->param('setting');
+    $self->v_[%- field.project  -%]_[% tablename %]->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+        $self->render(json => $result->{data});
+    })->catch(sub($err) {
+        $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
         $self->render
     });
 }
@@ -516,8 +552,10 @@ sub routes($self, $app, $config) {
     [%- FOREACH table IN tables %]
     $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_list_all/')->to('[%- table.class_name -%]List#load_all_[%- project_name -%]_[%- table.table_name -%]');
     [%- FOREACH field IN table.fields %]
-    [%- IF field.foreign_key %]
+    [%- IF field.foreign_key && field.project == '' %]
     $r->get('/[%- project_name -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]_list/:[%- project_name -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey');
+    [%- ELSIF field.foreign_key && field.project != '' %]
+    $r->get('/[%- field.project -%]/api/v1/[%- table.table_name -%]_[%- field.fieldname -%]_list/:[%- field.project -%]_[%- field.fieldname -%]_fkey')->to('[%- table.class_name -%]#load_list_[%- field.project -%]_[%- field.fieldname -%]_fkey');
     [%- END -%]
     [%- END -%]
     [%- END %]
@@ -763,8 +801,10 @@ our $VERSION = '0.01';
 
 has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum", "insby", "insdatetime", "modby", "moddatetime",
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key %]
+[%- IF field.foreign_key && field.project == '' %]
 "[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project != '' %]
+"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]
 [%- END -%]
@@ -774,7 +814,7 @@ has 'table_name' => "v_[%- project_name -%]_[%- table.table_name -%]";
 
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key %]
+[%- IF field.foreign_key && field.project == '' %]
 async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_[%- project_name -%]_[%- field.fieldname -%]_fkey($[%- project_name -%]_[%- field.fieldname -%]_fkey);
 }
@@ -782,6 +822,16 @@ async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- p
 sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_fkey(
         $self->table_name, $self->fields(), "[%- project_name -%]_[%- field.fieldname -%]_fkey", $[%- project_name -%]_[%- field.fieldname -%]_fkey
+    );
+}
+[%- ELSIF field.foreign_key && field.project != '' %]
+async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_[%- field.project -%]_[%- field.fieldname -%]_fkey($[%- field.project -%]_[%- field.fieldname -%]_fkey);
+}
+
+sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_fkey(
+        $self->table_name, $self->fields(), "[%- field.project -%]_[%- field.fieldname -%]_fkey", $[%- field.project -%]_[%- field.fieldname -%]_fkey
     );
 }
 [%- END -%]
@@ -865,11 +915,16 @@ our $VERSION = '0.01';
 
 has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum", "insby", "insdatetime", "modby", "moddatetime",
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key && field.visible && field.dropfield -%]
+[%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' -%]
 [%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield %],
 "[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
-[%- ELSIF field.foreign_key %]
+[%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' -%]
+[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield %],
+"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project == '' %]
 "[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project != '' %]
+"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]
 [%- END -%]
@@ -878,7 +933,7 @@ has 'primary_key_name' => "[%- project_name -%]_[%- table.table_name -%]_pkey";
 has 'table_name' => "v_[%- project_name -%]_[%- table.table_name -%]_list";
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key %]
+[%- IF field.foreign_key && field.project == '' %]
 async sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list_p($self) {
     return $self->load_all_[%- project_name -%]_[%- field.fieldname -%]_list();
 }
@@ -898,7 +953,26 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_list($self, $key_value) {
         $self->table_name, $self->fields(), $key_value
     );
 }
+[%- ELSIF field.foreign_key && field.project != '' %]
+async sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list_p($self) {
+    return $self->load_all_[%- field.project -%]_[%- field.fieldname -%]_list();
+}
 
+sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list($self) {
+    return $self->load_a_full_list(
+        $self->table_name, $self->fields()
+    );
+}
+
+async sub load_[%- field.project -%]_[%- field.fieldname -%]_list_p($self, $key_value) {
+    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_list($key_value);
+}
+
+sub load_[%- field.project -%]_[%- field.fieldname -%]_list($self, $key_value) {
+    return $self->load_a_list(
+        $self->table_name, $self->fields(), $key_value
+    );
+}
 [%- END -%]
 [%- END -%]
 
@@ -980,8 +1054,10 @@ our $VERSION = '0.01';
 
 has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum", "insby", "insdatetime", "modby", "moddatetime",
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key %]
+[%- IF field.foreign_key && field.project == '' %]
 "[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project != '' %]
+"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]
 [%- END -%]
@@ -989,8 +1065,10 @@ has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum"
 has 'primary_key_name' => "[%- project_name -%]_[%- table.table_name -%]_pkey";
 has 'table_name' => "[%- project_name -%]_[%- table.table_name -%]";
 has 'mandatory' => '[%- FOREACH field IN fields -%]
-[%- IF field.foreign_key && field.mandatory -%]
+[%- IF field.foreign_key && field.mandatory && field.project == '' -%]
 [%- project_name -%]_[%- field.fieldname -%]_fkey,
+[%- ELSIF field.foreign_key && field.mandatory && field.project != '' -%]
+[%- field.project -%]_[%- field.fieldname -%]_fkey,
 [%- ELSIF field.mandatory -%]
 [%- field.fieldname -%],
 [%- END -%]
@@ -1002,12 +1080,22 @@ has 'workflow' => '[%- FOREACH field IN fields -%]
 [%- END -%]';
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key %]
+[%- IF field.foreign_key && field.project == '' %]
 async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_[%- project_name -%]_[%- field.fieldname -%]_fkey($[%- project_name -%]_[%- field.fieldname -%]_fkey);
 }
 
 sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_fkey(
+        $self->table_name, $self->fields(), "[%- project_name -%]_[%- field.fieldname -%]_fkey", $[%- project_name -%]_[%- field.fieldname -%]_fkey
+    );
+}
+[%- ELSIF field.foreign_key && field.project != '' %]
+async sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey_p($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_[%- field.project -%]_[%- field.fieldname -%]_fkey($[%- field.project -%]_[%- field.fieldname -%]_fkey);
+}
+
+sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_fkey(
         $self->table_name, $self->fields(), "[%- project_name -%]_[%- field.fieldname -%]_fkey", $[%- project_name -%]_[%- field.fieldname -%]_fkey
     );
@@ -1144,7 +1232,66 @@ sub register ($self, $app, $config) {
 
 1;
 
+@@ activity
 
+package Daje::Workflow::Activities::[%- plugin_name -%]::Activity;
+use Mojo::Base 'Daje::Workflow::Activities::Tools::Generate::Base', -base, -signatures;
+use v5.42;
+
+# NAME
+# ====
+#
+# Daje::Workflow::Activities::[% plugin_name %]::Activity - A workflow activity
+#
+# SYNOPSIS
+# ========
+#;
+#
+# DESCRIPTION
+# ===========
+#
+# Daje::Workflow::Activities::[% plugin_name %]::Activity is a Daje workflow activity.
+#
+# METHODS
+# =======
+#
+# Daje::Workflow::Activities::[% plugin_name %]::Activity inherits all methods from
+# Daje::Workflow::Activities::Tools::Generate::Base and implements the following new ones.
+#
+# activity
+#
+# SEE ALSO
+# ========
+#
+# Mojolicious, Mojolicious::Guides, https://mojolicious.org.
+#
+# LICENSE
+# =======
+#
+# Copyright (C) janeskil1525.
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+#
+# AUTHOR
+# ======
+#
+# janeskil1525 E<lt>janeskil1525@gmail.com
+#
+
+# This file is generated once automatically by Daje Tools [% date_time %].
+# It will not be touched by Daje Tools again.
+
+# <!-- Autogenerated file [%- date_time %] -->
+
+sub activity($self) {
+
+
+}
+
+1;
+
+@@ the_end
 
 #################### pod generated by Pod::Autopod - keep this line to make pod updates possible ####################
 

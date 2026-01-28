@@ -7,6 +7,8 @@ requires 'Daje::Document::Builder', '0.01';
 requires 'Daje::Database::Model','0.09';
 requires 'Mojo::Util', '0';
 requires 'String::Util', '1.35';
+requires 'Crypt::Checksum::CRC32', '0';
+
 
 on 'test' => sub {
     requires 'Test::More', '0.98';

@@ -76,7 +76,7 @@ use Daje::Database::Model::Super::ToolsParameters;
 use Daje::Database::Model::ToolsParameterValues;
 use Daje::Database::Model::ToolsObjectViews;
 use Daje::Database::Helper::ParameterTreelist;
-use Daje::Database::Model::VToolsCode;
+use Daje::Database::View::VToolsCode;
 use  Daje::Database::Migrator;
 
 sub register ($self, $app, $config) {
@@ -171,7 +171,7 @@ sub register ($self, $app, $config) {
 
     $app->helper(
         tools_code_views => sub {
-            state  $tools_objects_views = Daje::Database::Model::VToolsCode->new(db => shift->pg->db)
+            state  $tools_objects_views = Daje::Database::View::VToolsCode->new(db => shift->pg->db)
         });
 
     my $r = $app->routes;

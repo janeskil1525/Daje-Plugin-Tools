@@ -11,7 +11,7 @@ has 'workflow' => '';
 sub load_tools_code_checksum_pkey($self, $tools_code_checksum_pkey_pkey) {
 
     return $self->load_pk(
-        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_objects_pkey
+        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_code_checksum_pkey_pkey
     );
 }
 

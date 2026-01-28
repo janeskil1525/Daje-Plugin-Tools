@@ -38,6 +38,8 @@ sub generate_workflow($self) {
             $data->{file} = @{ $documents }[$i]->{file};
             $data->{new_only} = @{ $documents }[$i]->{new_only}
                 if exists @{ $documents }[$i]->{new_only};
+            $data->{tools_objects_pkey} = @{ $documents }[$i]->{tools_objects_pkey}
+                if(exists @{ $documents }[$i]->{tools_objects_pkey});
             $data->{path} = 1;
             push(@data, $data);
         }

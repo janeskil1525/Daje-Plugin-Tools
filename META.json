@@ -42,6 +42,7 @@
       },
       "runtime" : {
          "requires" : {
+            "Crypt::Checksum::CRC32" : "0",
             "Daje::Database::Model" : "0.09",
             "Daje::Document::Builder" : "0.01",
             "Future::AsyncAwait" : "0.52",

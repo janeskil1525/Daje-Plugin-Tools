@@ -7,11 +7,11 @@ use Mojo::Util qw { camelize };
 use String::Util 'trim';
 
 sub generate_angular($self) {
-    # $self->model->insert_history(
-    #     "Generate Angular",
-    #     "Daje::Workflow::Activities::Tools::Generate::Angular::generate_angular",
-    #     1
-    # );
+    $self->model->insert_history(
+        "Generate Angular",
+        "Daje::Workflow::Activities::Tools::Generate::Angular::generate_angular",
+        1
+    );
 
     my $tools_projects_pkey = $self->context->{context}->{payload}->{tools_projects_fkey};
     my @outputs = split /,/,  $self->get_parameter('Angular', 'Outputs', $tools_projects_pkey);;
@@ -38,6 +38,8 @@ sub generate_angular($self) {
             $data->{file} = @{ $documents }[$i]->{file};
             $data->{new_only} = @{ $documents }[$i]->{new_only}
                 if exists @{ $documents }[$i]->{new_only};
+            $data->{tools_objects_pkey} = @{ $documents }[$i]->{tools_objects_pkey}
+                if(exists @{ $documents }[$i]->{tools_objects_pkey});
             $data->{path} = 1;
             push(@data, $data);
         }

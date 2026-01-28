@@ -11,7 +11,7 @@ has 'workflow' => '';
 sub load_tools_code_pkey($self, $tools_code_pkey) {
 
     return $self->load_pk(
-        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_objects_pkey
+        $self->table_name, $self->fields(), $self->primary_key_name(), $tools_code_pkey
     );
 }
 
@@ -20,6 +20,16 @@ sub load_tools_code_fkey($self, $tools_object_pkey) {
     return $self->load_fkey(
         $self->table_name, $self->fields(), "tools_object_fkey", $tools_object_pkey
     );
+}
+
+sub load_tools_code_pkey_from_filename($self, $filename) {
+    return $self->load_from_index(
+        $self->table_name,
+        $self->fields, {
+            filename => $filename
+        }
+    );
+
 }
 
 sub insert($self, $data) {
