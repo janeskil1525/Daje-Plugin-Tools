@@ -137,8 +137,10 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS
       [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' -%]
       (SELECT [%- field.dropfield -%] FROM [%- field.project  %]_[% field.fieldname %] WHERE [%- field.project  -%]_[%- field.fieldname -%]_pkey = [%- field.project  -%]_[%- field.fieldname -%]_fkey) as [%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%],
       [%- field.project  %]_[% field.fieldname %]_fkey
-     [%- ELSIF field.foreign_key -%]
+     [%- ELSIF field.foreign_key && field.project == '' -%]
       [%- project_name %]_[% field.fieldname %]_fkey
+      [%- ELSIF field.foreign_key && field.project != '' -%]
+      [%- field.project  %]_[% field.fieldname %]_fkey
      [%- ELSE -%]
  [% field.fieldname %]
      [%- END -%]
@@ -169,9 +171,10 @@ CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]
     ON [% project_name %]_[% table.table_name %]([%- project_name %]_[% field.fieldname %]_fkey);
 
 [%- ELSIF field.foreign_key && field.project  != '' -%]
-ALTER TABLE [% field.project %]_[% table.table_name %]
+ALTER TABLE [% project_name %]_[% table.table_name %]
     ADD CONSTRAINT [% field.project %]_[% table.table_name %]_[% field.project %]_[% field.fieldname %]_fkey
 FOREIGN KEY ([% field.project %]_[% field.fieldname -%]_fkey)
+
 [%- IF field.fieldname == 'workflow' %]
     REFERENCES [% field.fieldname -%] ([% field.fieldname -%]_pkey);
 [%- ELSE %]
@@ -179,7 +182,7 @@ FOREIGN KEY ([% field.project %]_[% field.fieldname -%]_fkey)
 [% END %]
 
 CREATE INDEX ind_[% field.project %]_[% table.table_name %]_[% field.fieldname %]_fkey
-    ON [% field.project %]_[% table.table_name %]([%- field.project %]_[% field.fieldname %]_fkey);
+    ON [% project_name %]_[% table.table_name %]([%- field.project %]_[% field.fieldname %]_fkey);
 
   [% END %]
   [% END -%]

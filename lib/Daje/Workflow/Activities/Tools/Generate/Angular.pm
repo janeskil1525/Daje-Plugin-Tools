@@ -5,6 +5,7 @@ use v5.42;
 use POSIX;
 use Mojo::Util qw { camelize };
 use String::Util 'trim';
+use Data::Dumper;
 
 sub generate_angular($self) {
     $self->model->insert_history(
@@ -20,6 +21,7 @@ sub generate_angular($self) {
         my $source = $self->get_parameter('Angular', 'Template Source', $tools_projects_pkey);
         foreach my $output (@outputs) {
             my $generate = "generate_" . trim($output);
+            say Dumper($generate);
             my $doc = $self->$generate($tools_projects_pkey, $source);
             if (ref $doc eq 'ARRAY') {
                 my $length = scalar @{ $doc };
@@ -32,6 +34,7 @@ sub generate_angular($self) {
 
         }
         my @data;
+
         my $length = scalar @{$documents};
         for (my $i = 0; $i < $length; $i++) {
             my $data->{data} = @{$documents}[$i]->{document};

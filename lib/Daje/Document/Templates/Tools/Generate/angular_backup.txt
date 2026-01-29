@@ -261,7 +261,6 @@ export class [%- class_name -%]Component {
         this.database.load_all_records('[% ufirst(field.project) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(field.project, field.fieldname, 1) %][]) => {
             this.[% field.project -%]_[%- field.fieldname -%]_list = response;
         });
-    [% END %]
 [% END %]
 
         this.cols = [
@@ -467,11 +466,13 @@ export class [%- class_name -%]Component {
         this.loadData();
     }
 
+
+
     confirmDeleteSelected(payload: [%- class_name -%]Interface){
         this.payload = { ...payload };
         this.deleteDialog = true;
     }
-
+[%   %
     confirmDeleteSelectedLines() {}
 
     hideDialog() {
@@ -661,9 +662,9 @@ Daje::Templates::Tools::Generate::Angular; is a module that retrieves data from 
 
 =head1 REQUIRES
 
-L<v5.42> 
+L<v5.42>
 
-L<Mojo::Base> 
+L<Mojo::Base>
 
 
 =head1 METHODS
