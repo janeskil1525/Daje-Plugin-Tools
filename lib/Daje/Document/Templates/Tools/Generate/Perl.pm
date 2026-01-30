@@ -802,9 +802,9 @@ our $VERSION = '0.01';
 has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum", "insby", "insdatetime", "modby", "moddatetime",
 [%- FOREACH field IN fields -%]
 [%- IF field.foreign_key && field.project == '' %]
-"[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+"[%- project_name -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSIF field.foreign_key && field.project != '' %]
-"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+"[%- field.project -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]
 [%- END -%]
@@ -825,7 +825,7 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_n
     );
 }
 [%- ELSIF field.foreign_key && field.project != '' %]
-async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
+async sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey_p($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_[%- field.project -%]_[%- field.fieldname -%]_fkey($[%- field.project -%]_[%- field.fieldname -%]_fkey);
 }
 
@@ -1097,7 +1097,7 @@ async sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey_p($self, $[%- 
 
 sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_fkey(
-        $self->table_name, $self->fields(), "[%- project_name -%]_[%- field.fieldname -%]_fkey", $[%- project_name -%]_[%- field.fieldname -%]_fkey
+        $self->table_name, $self->fields(), "[%- field.project  -%]_[%- field.fieldname -%]_fkey", $[%- field.project  -%]_[%- field.fieldname -%]_fkey
     );
 }
 [%- END -%]

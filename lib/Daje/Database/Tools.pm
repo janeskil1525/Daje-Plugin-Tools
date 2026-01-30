@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS tools_objects
     detail boolean NOT NULL DEFAULT true,
     generate_file boolean NOT NULL DEFAULT True,
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
-    CONSTRAINT tools_objects_name_key UNIQUE (name, tools_projects_fkey),
+    CONSTRAINT tools_objects_name_key UNIQUE (name, tools_objects_pkey),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
         REFERENCES tools_object_types (tools_object_types_pkey) MATCH SIMPLE
         ON UPDATE NO ACTION
