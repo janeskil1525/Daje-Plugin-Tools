@@ -67,7 +67,7 @@ sub generate_workflows($self, $tools_projects_pkey, $source) {
                 my $documents = $self->build_documents($source, 'workflow');
                 @{$documents}[0]->{class_name} = $table->{class_name};
                 @{$documents}[0]->{file} = $self->get_parameter('Workflows', 'Workflows file path', $tools_projects_pkey) . $project_name . '_' . $table->{table}->{workflow} . '.json';
-                @{$documents}[0]->{new_only} = $table->{table}->{generate_file};
+                @{$documents}[0]->{new_only} = 1;
                 @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
                 push @{$docs}, @{$documents}[0];
             }

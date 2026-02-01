@@ -183,7 +183,7 @@ sub generate_db_model($self, $tools_projects_pkey, $source) {
             my $documents = $self->build_documents($source,'db_model');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Model file path', $tools_projects_pkey) . $table->{class_name} . '.pm';
-            @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'tests_database_model');
