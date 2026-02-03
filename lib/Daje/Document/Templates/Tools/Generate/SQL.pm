@@ -99,9 +99,9 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
     moddatetime timestamp without time zone NOT NULL DEFAULT now(),
     [% FOREACH field IN table.fields -%]
         [% IF field.foreign_key && field.project == '' -%]
-        [%- project_name %]_[% field.fieldname %]_fkey BIGINT NOT NULL,
+        [%- project_name %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] NOT NULL,
         [% ELSIF field.foreign_key && field.project != '' -%]
-        [%- field.project %]_[% field.fieldname %]_fkey BIGINT NOT NULL,
+        [%- field.project %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] NOT NULL,
         [% ELSE -%]
     [% field.fieldname %]  [% field.datatype %] [% length_default_calc(field.length, field.scale, field.notnull, field.default, field.unique) %],
         [% END -%]

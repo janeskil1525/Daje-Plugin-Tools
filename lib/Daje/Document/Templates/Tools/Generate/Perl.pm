@@ -1235,7 +1235,7 @@ sub register ($self, $app, $config) {
 @@ activity
 
 package Daje::Workflow::Activities::[%- plugin_name -%]::Activity;
-use Mojo::Base 'Daje::Workflow::Activities::Tools::Generate::Base', -base, -signatures;
+use Mojo::Base 'Daje::Workflow::Common::Activity::Base', -base, -signatures;
 use v5.42;
 
 # NAME
