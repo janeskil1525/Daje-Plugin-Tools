@@ -174,34 +174,34 @@ sub register ($self, $app, $config) {
             state  $tools_objects_views = Daje::Database::View::VToolsCode->new(db => shift->pg->db)
         });
 
-    my $r = $app->routes;
+    my $r = $app->auth;
 
 
-    $r->get('/tools/api/v1/codes/:tools_objects_pkey')->to('ToolsCode#load_code_objects_fkey');
-    $r->get('/tools/api/v1/code/:tools_code_pkey')->to('ToolsCode#load_code_pkey');
+    $r->get('/v1/codes/:tools_objects_pkey')->to('ToolsCode#load_code_objects_fkey');
+    $r->get('/v1/code/:tools_code_pkey')->to('ToolsCode#load_code_pkey');
 
-    $r->get('/tools/api/v1/projects')->to('ToolsProjects#load_projects');
-    $r->get('/tools/api/v1/versions/')->to('ToolsVersions#load_versions_list');
-    $r->get('/tools/api/v1/version/:tools_projects_pkey')->to('ToolsVersions#load_current_version');
-    $r->get('/tools/api/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
+    $r->get('/v1/projects')->to('ToolsProjects#load_projects');
+    $r->get('/v1/versions/')->to('ToolsVersions#load_versions_list');
+    $r->get('/v1/version/:tools_projects_pkey')->to('ToolsVersions#load_current_version');
+    $r->get('/v1/versions/:tools_version_pkey')->to('ToolsVersions#load_versions');
 
-    $r->get('/tools/api/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
-    $r->get('/tools/api/v1/parameters/treelist/')->to('ToolsParameterTreelist#load_treelist');
+    $r->get('/v1/treelist/:tools_projects_pkey')->to('ToolsTreelist#load_treelist');
+    $r->get('/v1/parameters/treelist/')->to('ToolsParameterTreelist#load_treelist');
     $r->get(
-        '/tools/api/v1/parameters/value/:tools_projects_fkey/:tools_parameters_fkey'
+        '/v1/parameters/value/:tools_projects_fkey/:tools_parameters_fkey'
     )->to(
         'ToolsParameterValues#load_parameter_value'
     );
-    $r->get('/tools/api/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
-    $r->get('/tools/api/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
-    $r->get('/tools/api/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
-    $r->get('/tools/api/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
-    $r->get('/tools/api/v1/objects/types/')->to('ToolsObjectTypes#load_object_types');
-    $r->get('/tools/api/v1/objects/index/:tools_object_index_pkey')->to('ToolsObjectIndex#load_object_index');
-    $r->get('/tools/api/v1/objects/sql/:tools_object_sql_pkey')->to('ToolsObjectSQL#load_object_sql');
-    $r->get('/tools/api/v1/objects/view/:tools_object_views_pkey')->to('ToolsObjectViews#load_object_view');
-    $r->get('/tools/api/v1/objects/parameters/:tools_parameters_pkey')->to('ToolsParameters#load_parameter');
-    $r->get('/tools/api/v1/objects/parameter/values/:tools_parameter_values_pkey')->to('ToolsParameterValues#load_parameter_value');
+    $r->get('/v1/table/objects/:tools_objects_fkey')->to('ToolsTableObjects#load_table_objects');
+    $r->get('/v1/table/object/:tools_object_tables_pkey')->to('ToolsTableObjects#load_table_object');
+    $r->get('/v1/table/obj/datatypes/')->to('ToolsTableObjectDatatypes#load_table_object_datatypes');
+    $r->get('/v1/object/:tools_objects_pkey')->to('ToolsObjects#load_object');
+    $r->get('/v1/objects/types/')->to('ToolsObjectTypes#load_object_types');
+    $r->get('/v1/objects/index/:tools_object_index_pkey')->to('ToolsObjectIndex#load_object_index');
+    $r->get('/v1/objects/sql/:tools_object_sql_pkey')->to('ToolsObjectSQL#load_object_sql');
+    $r->get('/v1/objects/view/:tools_object_views_pkey')->to('ToolsObjectViews#load_object_view');
+    $r->get('/v1/objects/parameters/:tools_parameters_pkey')->to('ToolsParameters#load_parameter');
+    $r->get('/v1/objects/parameter/values/:tools_parameter_values_pkey')->to('ToolsParameterValues#load_parameter_value');
 
     $app->log->debug("route loading done");
 
