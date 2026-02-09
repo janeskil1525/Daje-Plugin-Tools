@@ -5,6 +5,7 @@ use v5.42;
 use POSIX;
 use Mojo::Util qw { camelize };
 use String::Util 'trim';
+use Data::Dumper;
 
 sub generate_workflow($self) {
     # $self->model->insert_history(
@@ -33,6 +34,7 @@ sub generate_workflow($self) {
         }
         my @data;
         my $length = scalar @{$documents};
+
         for (my $i = 0; $i < $length; $i++) {
             my $data->{data} = @{$documents}[$i]->{document};
             $data->{file} = @{ $documents }[$i]->{file};
@@ -65,6 +67,7 @@ sub generate_workflows($self, $tools_projects_pkey, $source) {
                 $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
                 $self->versions($table);
                 my $documents = $self->build_documents($source, 'workflow');
+                say $self->error->error if $self->error->has_error();
                 @{$documents}[0]->{class_name} = $table->{class_name};
                 @{$documents}[0]->{file} = $self->get_parameter('Workflows', 'Workflows file path', $tools_projects_pkey) . $project_name . '_' . $table->{table}->{workflow} . '.json';
                 @{$documents}[0]->{new_only} = 1;

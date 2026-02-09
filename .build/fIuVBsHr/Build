@@ -1,4 +1,0 @@
-#!/home/jan/perl5/perlbrew/perls/perl-5.42.0/bin/perl
-
-use Module::Build::Tiny;
-Build();

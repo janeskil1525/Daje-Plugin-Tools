@@ -66,19 +66,19 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
             $self->versions($table);
             my $documents = $self->build_documents($source,'controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) .  $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) .  "lib/Daje/Controller/" . $table->{project} . "/" . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'tests_controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Test file path', $tools_projects_pkey) . $table->{table}->{table_name} . '.controller.t';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "t/" . $table->{table}->{table_name} . '.controller.t';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'controller_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Controller/" . $table->{project} . "/" . $table->{class_name} . 'List.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
@@ -103,13 +103,13 @@ sub generate_super_controller($self, $tools_projects_pkey, $source) {
             $self->versions($table);
             my $documents = $self->build_documents($source,'super_controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) . 'Super/' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Controller/" . $table->{project} . '/Super/' . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'super_controller_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Controller file path', $tools_projects_pkey) . 'Super/' . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Controller/" . $table->{project} . '/Super/' . $table->{class_name} . 'List.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
@@ -138,7 +138,7 @@ sub generate_helpers($self, $tools_projects_pkey, $source) {
         }
         $self->versions($tables);
         my $documents = $self->build_documents($source,'helpers');
-        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Helpers file path', $tools_projects_pkey) . "Helpers.pm";
+        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Plugin/" . $class_name . "/Helpers.pm";
         @{ $documents }[0]->{new_only} = 0;
         push @{$docs}, @{ $documents }[0];
     }
@@ -163,9 +163,15 @@ sub generate_routes($self, $tools_projects_pkey, $source) {
         }
         $self->versions($tables);
         my $documents = $self->build_documents($source,'routes');
-        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Routes file path', $tools_projects_pkey) . "Routes.pm";
+        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Plugin/" . $class_name ."/Routes.pm";
         @{ $documents }[0]->{new_only} = 0;
         push @{$docs}, @{ $documents }[0];
+        $documents = $self->build_documents($source,'authorities');
+        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Plugin/" . $class_name ."/Authorities.pm";
+        @{ $documents }[0]->{new_only} = 0;
+        push @{$docs}, @{ $documents }[0];
+
+
     }
     return $docs;
 }
@@ -180,27 +186,28 @@ sub generate_db_model($self, $tools_projects_pkey, $source) {
             $table->{class_name} = camelize $project_name . "_" . $table->{table}->{table_name};
             $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);
+
             my $documents = $self->build_documents($source,'db_model');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Model file path', $tools_projects_pkey) . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/Model/" . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'tests_database_model');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Test file path', $tools_projects_pkey) . $table->{table}->{table_name} . '.model.t';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "t/" . $table->{table}->{table_name} . '.model.t';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'db_view_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . '/v' . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/" . '/v' . $table->{class_name} . 'List.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{new_only} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'db_view');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . '/v' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/" . '/v' . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
@@ -223,19 +230,19 @@ sub generate_db_model_super($self, $tools_projects_pkey, $source) {
             $self->versions($table);
             my $documents = $self->build_documents($source,'db_model_super');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Model file path', $tools_projects_pkey) . 'Super/' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/Model/Super/" . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'db_view_super_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . 'Super/v' . $table->{class_name} . 'List.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/Super/v" . $table->{class_name} . 'List.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'db_view_super');
             @{ $documents }[0]->{class_name} = $table->{class_name};
-            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'View file path', $tools_projects_pkey) . 'Super/v' . $table->{class_name} . '.pm';
+            @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/Super/Super/v" . $table->{class_name} . '.pm';
             @{ $documents }[0]->{new_only} = 0;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
@@ -254,11 +261,11 @@ sub generate_plugin($self, $tools_projects_pkey, $source) {
     $versions->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
     $self->versions($versions);
     my $documents = $self->build_documents($source,'plugin');
-    @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Plugin file path', $tools_projects_pkey) .  $versions->{plugin_name} . '.pm';
+    @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) .  "lib/Daje/Plugin/" . $versions->{plugin_name} . '.pm';
     @{ $documents }[0]->{new_only} = 1;
     push @{$docs}, @{ $documents }[0];
     $documents = $self->build_documents($source,'activity');
-    @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Activity file path', $tools_projects_pkey) .  $versions->{plugin_name} . '/Activity.pm';
+    @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) .  "lib/Daje/Workflow/Activities/" . $versions->{plugin_name} . '/Activity.pm';
     @{ $documents }[0]->{new_only} = 1;
     push @{$docs}, @{ $documents }[0];
 
