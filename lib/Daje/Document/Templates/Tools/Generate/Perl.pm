@@ -620,12 +620,12 @@ sub authorize($self, $app) {
 
     my @functions = (
 [%- FOREACH table IN tables %]
-    [%- table.class_name -%]-[%- table.table_name -%][% "," IF loop.last() == 0 %]
-[%- END -%]
+        "[%- project_name -%]_[%- table.table_name %]"[% "," IF loop.last() == 0 %]
+[%- END %]
     );
 
     Daje::Helper::Authorities::InsertPluginFunction->new(
-        )->process($app, [%- project_name -%], \@functions);
+        )->process($app, "[%- project_name -%]", \@functions);
 
 }
 
@@ -862,9 +862,9 @@ our $VERSION = '0.01';
 
 has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum", "insby", "insdatetime", "modby", "moddatetime",
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key && field.project == '' %]
+[%- IF field.foreign_key && field.project == '' -%]
 "[%- project_name -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
-[%- ELSIF field.foreign_key && field.project != '' %]
+[%- ELSIF field.foreign_key && field.project != '' -%]
 "[%- field.project -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]

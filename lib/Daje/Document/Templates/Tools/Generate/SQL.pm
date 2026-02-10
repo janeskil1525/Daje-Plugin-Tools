@@ -150,22 +150,19 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS
 
 [% END %]
 
-[% FOREACH sql IN version.sql -%]
--- [% sql.comment %]
-[% sql.sql_string %]
-[% END %]
+
 
 [%- FOREACH table IN version.tables -%]
 [%- FOREACH field IN table.fields -%]
 [%- IF field.foreign_key && field.project  == '' -%]
 ALTER TABLE [% project_name %]_[% table.table_name %]
     ADD CONSTRAINT [% project_name %]_[% table.table_name %]_[% project_name %]_[% field.fieldname %]_fkey
-FOREIGN KEY ([% project_name %]_[% field.fieldname -%]_fkey)
+        FOREIGN KEY ([% project_name %]_[% field.fieldname -%]_fkey)
 [%- IF field.fieldname == 'workflow' %]
     REFERENCES [% field.fieldname -%] ([% field.fieldname -%]_pkey);
-[%- ELSE %]
+[%- ELSE -%]
     REFERENCES [% project_name %]_[% field.fieldname -%] ([% project_name %]_[% field.fieldname -%]_pkey);
-[% END %]
+[% END -%]
 
 CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]_fkey
     ON [% project_name %]_[% table.table_name %]([%- project_name %]_[% field.fieldname %]_fkey);
@@ -173,11 +170,10 @@ CREATE INDEX ind_[% project_name %]_[% table.table_name %]_[% field.fieldname %]
 [%- ELSIF field.foreign_key && field.project  != '' -%]
 ALTER TABLE [% project_name %]_[% table.table_name %]
     ADD CONSTRAINT [% field.project %]_[% table.table_name %]_[% field.project %]_[% field.fieldname %]_fkey
-FOREIGN KEY ([% field.project %]_[% field.fieldname -%]_fkey)
-
+        FOREIGN KEY ([% field.project %]_[% field.fieldname -%]_fkey)
 [%- IF field.fieldname == 'workflow' %]
     REFERENCES [% field.fieldname -%] ([% field.fieldname -%]_pkey);
-[%- ELSE %]
+[%- ELSE -%]
     REFERENCES [% field.project %]_[% field.fieldname -%] ([% field.project %]_[% field.fieldname -%]_pkey);
 [% END %]
 
@@ -187,6 +183,12 @@ CREATE INDEX ind_[% field.project %]_[% table.table_name %]_[% field.fieldname %
   [% END %]
   [% END -%]
   [% END -%]
+
+[% FOREACH sql IN version.sql -%]
+-- [% sql.comment %]
+[% sql.sql_string %]
+
+[% END %]
 
 -- [% version.version %] down
 
