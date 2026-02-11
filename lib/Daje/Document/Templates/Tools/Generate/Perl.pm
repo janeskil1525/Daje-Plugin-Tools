@@ -1286,6 +1286,7 @@ sub register ($self, $app, $config) {
 
     Daje::Plugin::[% plugin_name %]::Routes->new()->routes($app, $config);
     Daje::Plugin::[% plugin_name %]::Helpers->new()->helpers($app, $config);
+    Daje::Plugin::[% plugin_name %]::Authorities->new()->authorize($app);
 
 
     $app->log->debug("Daje::Plugin::[% plugin_name %]::register ends");
