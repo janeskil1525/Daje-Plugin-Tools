@@ -67,7 +67,7 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
             my $documents = $self->build_documents($source,'controller');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) .  "lib/Daje/Controller/" . $table->{project} . "/" . $table->{class_name} . '.pm';
-            @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'tests_controller');
@@ -79,7 +79,7 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
             $documents = $self->build_documents($source,'controller_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Controller/" . $table->{project} . "/" . $table->{class_name} . 'List.pm';
-            @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
         }
