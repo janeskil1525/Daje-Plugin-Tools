@@ -616,17 +616,27 @@ use v5.42;
 
 use Daje::Helper::Authorities::InsertPluginFunction;
 
-sub authorize($self, $app) {
+has 'db';
 
-    my @functions = (
-[%- FOREACH table IN tables %]
-        "[%- project_name -%]_[%- table.table_name %]"[% "," IF loop.last() == 0 %]
-[%- END %]
-    );
+sub authorize($self) {
 
-    Daje::Helper::Authorities::InsertPluginFunction->new(
-        )->process($app, "[%- project_name -%]", \@functions);
+    try {
+        my $tx = $self->db->begin;
+        my @functions = (
+    [%- FOREACH table IN tables %]
+            "[%- project_name -%]_[%- table.table_name %]"[% "," IF loop.last() == 0 %]
+    [%- END %]
+        );
 
+        Daje::Helper::Authorities::InsertPluginFunction->new(
+            db => $self->db
+        )->process(
+            "[%- project_name -%]", \@functions
+        );
+        $tx->commit();
+    } catch($e) {
+        say $e;
+    }
 }
 
 1;
@@ -1263,6 +1273,7 @@ use v5.42;
 
 use Daje::Plugin::[% plugin_name %]::Routes;
 use Daje::Plugin::[% plugin_name %]::Helpers;
+use Daje::Plugin::[% plugin_name %]::Authorities;
 use  Daje::Database::Migrator;
 
 our $VERSION = '0.01';
@@ -1286,7 +1297,7 @@ sub register ($self, $app, $config) {
 
     Daje::Plugin::[% plugin_name %]::Routes->new()->routes($app, $config);
     Daje::Plugin::[% plugin_name %]::Helpers->new()->helpers($app, $config);
-    Daje::Plugin::[% plugin_name %]::Authorities->new()->authorize($app);
+    Daje::Plugin::[% plugin_name %]::Authorities->new(db => $app->pg->db)->authorize();
 
 
     $app->log->debug("Daje::Plugin::[% plugin_name %]::register ends");
