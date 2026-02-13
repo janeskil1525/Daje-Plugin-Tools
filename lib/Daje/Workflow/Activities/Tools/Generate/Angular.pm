@@ -21,7 +21,6 @@ sub generate_angular($self) {
         my $source = $self->get_parameter('Angular', 'Template Source', $tools_projects_pkey);
         foreach my $output (@outputs) {
             my $generate = "generate_" . trim($output);
-            say Dumper($generate);
             my $doc = $self->$generate($tools_projects_pkey, $source);
             if (ref $doc eq 'ARRAY') {
                 my $length = scalar @{ $doc };
