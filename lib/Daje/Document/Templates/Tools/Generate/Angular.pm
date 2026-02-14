@@ -169,7 +169,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
 import { CheckboxModule } from 'primeng/checkbox';
-import { environment } from '../../../environments/environment';
+import { UserLoginService } from 'daje-login';
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
         [%- IF field.foreign_key && field.visible && field.project == '' %]
@@ -251,7 +251,7 @@ export class [%- class_name -%]Component {
         private workflow: WorkflowService,
         private database: DatabaseService,
     ) {
-    this.database.set_endpoints(environment.apiUrl, '[% project_name -%]', Endpoints);
+    this.database.set_endpoints(Endpoints);
 [%- FOREACH field IN fields -%]
     [%- IF field.foreign_key && field.visible && field.project == '' %]
         this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
@@ -336,9 +336,9 @@ export class [%- class_name -%]Component {
 
         this.workflow.callWorkflow(
     [%- IF table.workflow %]
-            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+           '[% project_name -%]_[%- table.workflow -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
     [%- ELSE %]
-            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+           '[% project_name -%]_[%- project_name -%]', 'save_[%- project_name -%]_[%- table.table_name -%]', this.payload
     [% END %]
         );
 
@@ -458,9 +458,9 @@ export class [%- class_name -%]Component {
 [%- END %]
         this.workflow.callWorkflow(
     [%- IF table.workflow %]
-            environment.apiUrl, '[% project_name -%]_[%- table.workflow -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+            '[% project_name -%]_[%- table.workflow -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload
     [%- ELSE %]
-            environment.apiUrl, '[% project_name -%]_[%- project_name -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload, '[% project_name -%]'
+            '[% project_name -%]_[%- project_name -%]', 'delete_[%- project_name -%]_[%- table.table_name -%]', this.payload
     [% END %]
         );
         this.deleteDialog = false;

@@ -35,7 +35,6 @@ sub generate_perl($self) {
         my @data;
         my $length = scalar @{$documents};
         for (my $i = 0; $i < $length; $i++) {
-            say @{ $documents }[$i]->{file};
             my $data->{data} = @{$documents}[$i]->{document};
             $data->{file} = @{ $documents }[$i]->{file};
             $data->{new_only} = @{ $documents }[$i]->{new_only}
