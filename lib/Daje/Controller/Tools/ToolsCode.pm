@@ -49,7 +49,7 @@ sub load_code_pkey ($self) {
 
     # $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_objects->load_tools_code_pkey_p($tools_code_pkey)->then(sub($result) {
+    $self->tools_code_views->load_tools_code_pkey_p($tools_code_pkey)->then(sub($result) {
         $self->app->log->debug('Daje::Controller::Tools::ToolsObjects::load_object ' . Dumper($result->{data}));
         $self->render(json =>  $result->{data});
     })->catch(sub($err) {
@@ -69,14 +69,12 @@ sub load_code_objects_fkey ($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->tools_objects->load_full_list_p($tools_objects_fkey)->then(sub($result) {
-        $self->render(json => { data => $result->{data}, result => => 1 });
+    $self->tools_code_views->load_code_objects_list_p($tools_objects_fkey)->then(sub($result) {
+        $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->render(json => { 'result' => 0, data => $err });
     })->wait;
 }
-
-
 
 1;
 

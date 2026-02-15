@@ -373,8 +373,17 @@ CREATE TABLE IF NOT EXISTS tools_code_checksum (
 );
 
 CREATE OR REPLACE VIEW v_tools_code_object_fkey AS
-	SELECT tools_code_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_objects_fkey, filename, filetype, content
-	FROM tools_code;
+ SELECT tools_code_pkey,
+    editnum,
+    insby,
+    insdatetime,
+    modby,
+    moddatetime,
+    tools_objects_fkey,
+    filename,
+    filetype,
+    content
+   FROM tools_code ORDER BY tools_code_pkey DESC;
 
 CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
  AS

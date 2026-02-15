@@ -177,7 +177,7 @@ sub register ($self, $app, $config) {
     my $r = $app->auth;
 
 
-    $r->get('/v1/codes/:tools_objects_pkey')->to('ToolsCode#load_code_objects_fkey');
+    $r->get('/v1/codes/:tools_objects_fkey')->to('ToolsCode#load_code_objects_fkey');
     $r->get('/v1/code/:tools_code_pkey')->to('ToolsCode#load_code_pkey');
 
     $r->get('/v1/projects')->to('ToolsProjects#load_projects');

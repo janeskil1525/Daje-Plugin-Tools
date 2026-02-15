@@ -31,6 +31,20 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
+sub load_code_objects_list($self, $tools_objects_fkey) {
+
+    return $self->load_tools_objects_fkey(
+        'tools_objects_fkey',
+        $tools_objects_fkey
+    );
+}
+
+async sub load_code_objects_list_p($self, $tools_objects_fkey) {
+    return $self->load_code_objects_list(
+        $tools_objects_fkey
+    );
+}
+
 
 1;
 
