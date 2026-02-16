@@ -17,6 +17,9 @@ async sub load_full_list_p($self) {
     return $result;
 }
 
+sub delete($self, $primary_key) {
+    return $self->SUPER::delete($self->table_name, { $self->primary_key_name() => $primary_key});
+}
 
 1;
 
