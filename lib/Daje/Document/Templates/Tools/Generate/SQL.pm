@@ -60,8 +60,22 @@ my $length_default_calc = sub {
     return $result;
 };
 
+my $index_name = sub ($project, $table_name, $fields, $unique) {
+
+    my $index_name = "idx_";
+    if($unique == 1) {
+        $index_name .= "unique_";
+    }
+    $fields =~ tr/\,/_/;
+    $fields =~ tr/ //ds;
+    $index_name .= $project . "_" . $table_name . "_" . $fields;
+
+    return $index_name;
+};
+
 sub set_subs($self) {
     $self->insert_sub('length_default_calc', $length_default_calc);
+    $self->insert_sub('index_name', $index_name);
 }
 
 
@@ -89,7 +103,7 @@ our $VERSION = '1';
 -- Last generated [% date_time %]
 
     [% FOREACH table IN version.tables %]
-CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
+CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %] -- [% table.comment %]
 (
     [% project_name %]_[% table.table_name %]_pkey  SERIAL NOT NULL,
     editnum bigint NOT NULL DEFAULT 1,
@@ -99,11 +113,11 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
     moddatetime timestamp without time zone NOT NULL DEFAULT now(),
     [% FOREACH field IN table.fields -%]
         [% IF field.foreign_key && field.project == '' -%]
-        [%- project_name %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] [% "NOT NULL" IF field.notnull -%],
+        [%- project_name %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] [% "NOT NULL" IF field.notnull -%], -- [% field.comment %]
         [% ELSIF field.foreign_key && field.project != '' -%]
-        [%- field.project %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] [% "NOT NULL" IF field.notnull -%],
+        [%- field.project %]_[% field.fieldname %]_fkey BIGINT [%- "UNIQUE" IF field.unique -%] [% "NOT NULL" IF field.notnull -%], -- [% field.comment %]
         [% ELSE -%]
-    [% field.fieldname %]  [% field.datatype %] [% length_default_calc(field.length, field.scale, field.notnull, field.default, field.unique) %],
+    [% field.fieldname %]  [% field.datatype %] [% length_default_calc(field.length, field.scale, field.notnull, field.default, field.unique) %], -- [% field.comment %]
         [% END -%]
     [% END -%]
     CONSTRAINT [% project_name %]_[% table.table_name %]_pkey PRIMARY KEY ([% project_name %]_[% table.table_name %]_pkey)
@@ -112,7 +126,7 @@ CREATE TABLE IF NOT EXISTS [% project_name %]_[% table.table_name %]
 
 
 [% FOREACH table IN version.tables -%]
-CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS
+CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS  -- [% table.comment %]
     SELECT [%- project_name %]_[% table.table_name -%]_pkey, editnum, insby, insdatetime, modby, moddatetime,
      [%- FOREACH field IN table.fields -%]
      [%- IF field.foreign_key && field.project == '' -%]
@@ -128,7 +142,7 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %] AS
 [% END %]
 
 [% FOREACH table IN version.tables -%]
-CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS
+CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS -- [% table.comment %]
     SELECT [%- project_name %]_[% table.table_name -%]_pkey, editnum, insby, insdatetime, modby, moddatetime,
      [%- FOREACH field IN table.fields -%]
      [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' -%]
@@ -184,11 +198,19 @@ CREATE INDEX ind_[% field.project %]_[% table.table_name %]_[% field.fieldname %
   [% END -%]
   [% END -%]
 
+[% FOREACH index IN version.indexes -%]
+CREATE [%- "UNIQUE" IF index.index_unique -%] INDEX IF NOT EXISTS [% index_name(project_name, index.table_name, index.fields, index.index_unique) %]
+      ON [% index.table_name %]([% index.fields -%]);
+
+[% END %]
+
 [% FOREACH sql IN version.sql -%]
 -- [% sql.comment %]
 [% sql.sql_string %]
 
 [% END %]
+
+
 
 -- [% version.version %] down
 

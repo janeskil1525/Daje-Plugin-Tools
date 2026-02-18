@@ -136,6 +136,8 @@ CREATE TABLE IF NOT EXISTS tools_objects
     list boolean NOT NULL DEFAULT true,
     detail boolean NOT NULL DEFAULT true,
     generate_file boolean NOT NULL DEFAULT True,
+    label character varying COLLATE pg_catalog."default" NOT NULL DEFAULT '',
+    comment character varying COLLATE pg_catalog."default" NOT NULL DEFAULT '',
     CONSTRAINT tools_objects_pkey PRIMARY KEY (tools_objects_pkey),
     CONSTRAINT tools_objects_name_key UNIQUE (name, tools_objects_pkey),
     CONSTRAINT tools_objects_tools_object_types_fkey FOREIGN KEY (tools_object_types_fkey)
@@ -176,6 +178,9 @@ CREATE TABLE IF NOT EXISTS tools_object_tables
     "mandatory" boolean NOT NULL DEFAULT false,
     "project" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     "dropfield" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    "label" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    "tooltip" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    "comment" character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     CONSTRAINT tools_object_tables_pkey PRIMARY KEY (tools_object_tables_pkey),
     CONSTRAINT tools_object_tables_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
@@ -403,7 +408,10 @@ CREATE OR REPLACE VIEW v_tools_objects_tables_datatypes
     tools_object_tables."unique",
     tools_object_tables."mandatory",
     tools_object_tables."project",
-    tools_object_tables."dropfield"
+    tools_object_tables."dropfield",
+    tools_object_tables."label",
+    tools_object_tables."tooltip",
+    tools_object_tables."comment"
    FROM tools_object_tables
      JOIN tools_objects_tables_datatypes
      ON tools_object_tables.tools_objects_tables_datatypes_fkey = tools_objects_tables_datatypes.tools_objects_tables_datatypes_pkey;
@@ -438,7 +446,9 @@ CREATE OR REPLACE VIEW v_tools_objects_workflow_fkey
     tools_objects.visible,
     tools_objects.list,
     tools_objects.detail,
-    tools_objects.generate_file
+    tools_objects.generate_file,
+    tools_objects.label,
+    tools_objects.comment
    FROM tools_objects
      JOIN tools_projects
      ON tools_objects.tools_projects_fkey = tools_projects.tools_projects_pkey
@@ -547,12 +557,16 @@ CREATE OR REPLACE VIEW v_tools_objects_sql AS
 SELECT tools_object_sql_pkey, tools_version_fkey, tools_objects_fkey, "name", sql_string, "comment"
 	FROM tools_object_sql;
 
+CREATE OR REPLACE VIEW v_tools_objects_index AS
+SELECT tools_object_index_pkey, tools_version_fkey, tools_objects_fkey, "table_name", fields, "index_unique"
+	FROM tools_object_index;
+
 CREATE OR REPLACE VIEW v_tools_objects_active AS
-SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey, workflow, visible, list, detail, generate_file
+SELECT tools_objects_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, "name", active, tools_object_types_fkey, tools_projects_fkey, workflow, visible, list, detail, generate_file, label, comment
 	FROM tools_objects WHERE tools_object_types_fkey = 1 and active = true;
 
 CREATE OR REPLACE VIEW v_tools_object_table_active AS
-SELECT tools_object_tables_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, fieldname, "length", "scale", (SELECT name FROM tools_objects_tables_datatypes WHERE tools_objects_tables_datatypes_pkey = tools_objects_tables_datatypes_fkey) as datatype, tools_objects_tables_datatypes_fkey, active, visible, "notnull", "default", foreign_key, "unique", "mandatory", "project", "dropfield"
+SELECT tools_object_tables_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, fieldname, "length", "scale", (SELECT name FROM tools_objects_tables_datatypes WHERE tools_objects_tables_datatypes_pkey = tools_objects_tables_datatypes_fkey) as datatype, tools_objects_tables_datatypes_fkey, active, visible, "notnull", "default", foreign_key, "unique", "mandatory", "project", "dropfield", "label", "tooltip", "comment"
 	FROM tools_object_tables;
 
 -- 1 down
