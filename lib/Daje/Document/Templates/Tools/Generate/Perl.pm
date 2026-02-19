@@ -572,14 +572,14 @@ sub routes($self, $app, $config) {
 
 @@ languages
 
-package Daje::Plugin::[%- class_name -%]::Language;
+package Daje::Plugin::[%- class_name -%]::Languages;
 use Mojo::Base -base, -signatures;
 use v5.42;
 
 # NAME
 # ====
 #
-# Daje::Plugin::[%- class_name -%]::Language - Model class
+# Daje::Plugin::[%- class_name -%]::Languages - Model class
 #
 # SYNOPSIS
 # ========
@@ -590,7 +590,7 @@ use v5.42;
 # DESCRIPTION
 # ===========
 #
-# Daje::Plugin::[%- class_name -%]::Language is the standard routes
+# Daje::Plugin::[%- class_name -%]::Languages is the standard routes
 #
 # METHODS
 # =======
@@ -618,7 +618,7 @@ use Daje::Helper::Languages::InsertKeys;
 
 has 'db';
 
-sub authorize($self) {
+sub language($self) {
 
     try {
         my $tx = $self->db->begin;
@@ -654,7 +654,7 @@ sub authorize($self) {
         Daje::Helper::Authorities::InsertPluginFunction->new(
             db => $self->db
         )->process(
-            "[%- project_name -%]", \@keys
+             \@keys
         );
         $tx->commit();
     } catch($e) {

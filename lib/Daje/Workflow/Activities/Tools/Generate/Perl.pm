@@ -170,6 +170,10 @@ sub generate_routes($self, $tools_projects_pkey, $source) {
         @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Plugin/" . $class_name ."/Authorities.pm";
         @{ $documents }[0]->{new_only} = 0;
         push @{$docs}, @{ $documents }[0];
+        $documents = $self->build_documents($source,'languages');
+        @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Plugin/" . $class_name ."/Languages.pm";
+        @{ $documents }[0]->{new_only} = 0;
+        push @{$docs}, @{ $documents }[0];
 
 
     }
