@@ -623,30 +623,35 @@ sub language($self) {
     try {
         my $tx = $self->db->begin;
         my @keys = [
-[%- FOREACH table IN tables -%]
-        {
-            plugin => "[%- project_name -%]",
-            key => "[% table.table_name %]",
-            field => "table",
-            type => "Label",
-            translation => [% table.label %]
-        },
-    [% FOREACH field IN table.fields -%]
-        {
-            plugin => "[%- project_name -%]",
-            key => "[% table.table_name %]",
-            field => "[% field.fieldname %]",
-            type => "Label",
-            translation => [% field.label %]
-        },
-        {
-            plugin => "[%- project_name -%]",
-            key => "[% table.table_name %]",
-            field => "[% field.fieldname %]",
-            type => "Tool tips",
-            translation => [% field.tooltip %]
-        }[% "," IF loop.last() == 0 %]
-     [%- END %]
+[%- FOREACH table IN tables %]
+            [% table.table_name %] => [
+                {
+                    plugin => "[%- project_name -%]",
+                    key => "[% table.table_name %]",
+                    field => "table",
+                    type => "Label",
+                    translation => "[% table.label %]",
+                    comment => "[% table.comment %]",
+                },
+            [%- FOREACH field IN table.fields %]
+                {
+                    plugin => "[%- project_name -%]",
+                    key => "[% table.table_name %]",
+                    field => "[% field.fieldname %]",
+                    type => "Label",
+                    translation => "[% field.label %]",
+                    comment => "[% field.comment %]"
+                },
+                {
+                    plugin => "[%- project_name -%]",
+                    key => "[% table.table_name %]",
+                    field => "[% field.fieldname %]",
+                    type => "Tool tips",
+                    translation => "[% field.tooltip %]",
+                    comment => "[% field.comment %]"
+                }[%- "," IF loop.last() == 0 %]
+             [% END -%]
+      ][% "," IF loop.last() == 0 %]
  [%- END %]
         ];
 
