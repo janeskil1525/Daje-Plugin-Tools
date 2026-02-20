@@ -622,41 +622,37 @@ sub language($self) {
 
     try {
         my $tx = $self->db->begin;
-        my @keys = [
+        my @keys;
 [%- FOREACH table IN tables %]
-            [% table.table_name %] => [
-                {
-                    plugin => "[%- project_name -%]",
-                    key => "[% table.table_name %]",
-                    field => "table",
-                    type => "Label",
-                    translation => "[% table.label %]",
-                    comment => "[% table.comment %]",
-                },
-            [%- FOREACH field IN table.fields %]
-                {
-                    plugin => "[%- project_name -%]",
-                    key => "[% table.table_name %]",
-                    field => "[% field.fieldname %]",
-                    type => "Label",
-                    translation => "[% field.label %]",
-                    comment => "[% field.comment %]"
-                },
-                {
-                    plugin => "[%- project_name -%]",
-                    key => "[% table.table_name %]",
-                    field => "[% field.fieldname %]",
-                    type => "Tool tips",
-                    translation => "[% field.tooltip %]",
-                    comment => "[% field.comment %]"
-                }[%- "," IF loop.last() == 0 %]
-             [% END -%]
-      ][% "," IF loop.last() == 0 %]
+        push @keys, {
+                plugin => "[%- project_name -%]",
+                key => "[% table.table_name %]",
+                field => "table",
+                type => "Label",
+                translation => "[% table.label %]",
+                comment => "[% table.comment %]",
+            };
+        [%- FOREACH field IN table.fields %]
+          push @keys,  {
+                plugin => "[%- project_name -%]",
+                key => "[% table.table_name %]",
+                field => "[% field.fieldname %]",
+                type => "Label",
+                translation => "[% field.label %]",
+                comment => "[% field.comment %]"
+            };
+           push @keys, {
+                plugin => "[%- project_name -%]",
+                key => "[% table.table_name %]",
+                field => "[% field.fieldname %]",
+                type => "Tool tips",
+                translation => "[% field.tooltip %]",
+                comment => "[% field.comment %]"
+            };
+         [% END -%]
  [%- END %]
-        ];
 
-
-        Daje::Helper::Authorities::InsertPluginFunction->new(
+        Daje::Helper::Languages::InsertKeys->new(
             db => $self->db
         )->process(
              \@keys

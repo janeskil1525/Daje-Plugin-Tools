@@ -200,7 +200,7 @@ CREATE INDEX ind_[% field.project %]_[% table.table_name %]_[% field.fieldname %
 
 [% FOREACH index IN version.indexes -%]
 CREATE [%- "UNIQUE" IF index.index_unique -%] INDEX IF NOT EXISTS [% index_name(project_name, index.table_name, index.fields, index.index_unique) %]
-      ON [% index.table_name %]([% index.fields -%]);
+      ON [%- project_name %]_[% index.table_name %]([% index.fields -%]);
 
 [% END %]
 
