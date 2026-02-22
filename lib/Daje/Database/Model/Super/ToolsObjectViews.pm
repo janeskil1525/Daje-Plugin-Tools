@@ -1,7 +1,7 @@
 package Daje::Database::Model::Super::ToolsObjectViews;
 use Mojo::Base 'Daje::Database::Model::Super::Common::Base', -base, -signatures, -async_await;;
 
-has 'fields' => "tools_object_views_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, name, fields, conditions";
+has 'fields' => "tools_object_views_pkey, editnum, insby, insdatetime, modby, moddatetime, tools_version_fkey, tools_objects_fkey, name, fields, conditions, tables, comment";
 has 'primary_key_name' => "tools_object_views_pkey";
 has 'table_name' => "tools_object_views";
 has 'workflow' => '';

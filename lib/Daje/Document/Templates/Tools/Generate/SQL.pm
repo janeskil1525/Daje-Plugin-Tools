@@ -164,7 +164,13 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS -- [%
 
 [% END %]
 
-
+[% FOREACH view IN version.views -%]
+-- [% view.comment %]
+CREATE OR REPLACE VIEW [% view.name %] AS
+    SELECT [% view.fields %]
+        FROM [% view.tables %]
+    WHERE [% view.conditions -%]
+[% END %]
 
 [%- FOREACH table IN version.tables -%]
 [%- FOREACH field IN table.fields -%]
@@ -197,6 +203,7 @@ CREATE INDEX ind_[% field.project %]_[% table.table_name %]_[% field.fieldname %
   [% END %]
   [% END -%]
   [% END -%]
+
 
 [% FOREACH index IN version.indexes -%]
 CREATE [%- "UNIQUE" IF index.index_unique -%] INDEX IF NOT EXISTS [% index_name(project_name, index.table_name, index.fields, index.index_unique) %]

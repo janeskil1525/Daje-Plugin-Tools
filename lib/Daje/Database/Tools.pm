@@ -328,6 +328,8 @@ CREATE TABLE IF NOT EXISTS tools_object_views
     name character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     fields character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     conditions character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    tables character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
+    comment character varying COLLATE pg_catalog."default" NOT NULL DEFAULT ''::character varying,
     CONSTRAINT tools_object_views_pkey PRIMARY KEY (tools_object_views_pkey),
     CONSTRAINT tools_object_views_tools_objects_fkey FOREIGN KEY (tools_objects_fkey)
         REFERENCES tools_objects (tools_objects_pkey) MATCH SIMPLE
@@ -499,6 +501,9 @@ CREATE OR REPLACE VIEW v_tools_version_workflow_fkey
      JOIN tools_projects
      ON tools_version.tools_projects_fkey = tools_projects.tools_projects_pkey
 
+CREATE OR REPLACE VIEW v_tools_objects_view AS
+    SELECT tools_object_views_pkey, tools_version_fkey, tools_objects_fkey, "name", fields, "conditions", tables, comment
+	    FROM tools_object_views;
 
 INSERT INTO tools_objects_tables_datatypes (name, length, scale) VALUES
     ('VARCHAR', 1, 0),

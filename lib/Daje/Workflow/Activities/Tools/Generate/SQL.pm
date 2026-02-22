@@ -40,6 +40,7 @@ use Daje::Database::View::VToolsObjectsTables;
 use Daje::Database::Helper::LoadParameters;
 use Daje::Database::View::VToolsObjectsSql;
 use Daje::Database::View::VToolsObjectsIndex;
+use Daje::Database::View::VToolsObjectsView;
 
 use POSIX;
 use Mojo::Util qw { camelize };
@@ -48,6 +49,7 @@ use Data::Dumper;
 
 has 'sqls';
 has 'index';
+has 'view';
 
 sub generate_sql($self) {
     my @data;
@@ -122,6 +124,20 @@ sub load_generate_data($self, $tools_projects_pkey) {
                 $data->{indexes} = $indexs;
             }
 
+            if ($self->load_view($tools_projects_pkey, @{$self->versions}[$i]->{tools_version_pkey})) {
+                my $views;
+                my $len = scalar @{$self->view};
+
+                for (my $k = 0; $k < $len; $k++) {
+                    my $view = $self->process_view(@{$self->view}[$k], @{$self->versions}[$i]);
+                    my $lent = scalar @{$view};
+                    for(my $l = 0; $l < $lent; $l++) {
+                        push @{$views}, @{$view}[$l];
+                    }
+                }
+                $data->{views} = $views;
+            }
+
             push @{$version}, $data;
         }
         $versions->{versions} = $version;
@@ -134,6 +150,22 @@ sub load_generate_data($self, $tools_projects_pkey) {
         $self->versions($versions);
     }
     return 1;
+}
+
+sub process_view($self, $view, $tools_version) {
+    my $view_rec = Daje::Database::View::VToolsObjectsView->new(
+        db => $self->db
+    )->load_objects_view(
+        $view->{tools_objects_pkey}, $tools_version->{tools_version_pkey}
+    );
+    return $view_rec->{data};
+}
+
+sub load_view($self, $tools_projects_pkey, $tools_version_pkey) {
+    my $views = $self->load_objects_from_type(4, $tools_projects_pkey, $tools_version_pkey);
+    my $view = $views->{data};
+    $self->view($view);
+    return $views->{result};
 }
 
 sub process_index($self, $index, $tools_version) {

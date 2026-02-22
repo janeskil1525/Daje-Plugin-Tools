@@ -1370,6 +1370,8 @@ use v5.42;
 use Daje::Plugin::[% plugin_name %]::Routes;
 use Daje::Plugin::[% plugin_name %]::Helpers;
 use Daje::Plugin::[% plugin_name %]::Authorities;
+use Daje::Plugin::[% plugin_name %]::Languages;
+
 use  Daje::Database::Migrator;
 
 our $VERSION = '0.01';
@@ -1393,7 +1395,12 @@ sub register ($self, $app, $config) {
 
     Daje::Plugin::[% plugin_name %]::Routes->new()->routes($app, $config);
     Daje::Plugin::[% plugin_name %]::Helpers->new()->helpers($app, $config);
-    Daje::Plugin::[% plugin_name %]::Authorities->new(db => $app->pg->db)->authorize();
+    Daje::Plugin::[% plugin_name %]::Authorities->new(
+        db => $app->pg->db
+    )->authorize();
+    Daje::Plugin::[% plugin_name %]::Languages->new(
+        db => $app->pg->db
+    )->language();
 
 
     $app->log->debug("Daje::Plugin::[% plugin_name %]::register ends");
