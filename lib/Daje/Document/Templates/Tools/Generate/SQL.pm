@@ -169,7 +169,7 @@ CREATE OR REPLACE VIEW v_[% project_name %]_[% table.table_name %]_list AS -- [%
 CREATE OR REPLACE VIEW [% view.name %] AS
     SELECT [% view.fields %]
         FROM [% view.tables %]
-    WHERE [% view.conditions -%]
+    WHERE [% view.conditions -%];
 [% END %]
 
 [%- FOREACH table IN version.tables -%]

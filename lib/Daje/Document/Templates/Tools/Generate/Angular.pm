@@ -213,6 +213,8 @@ import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
 import { CheckboxModule } from 'primeng/checkbox';
 import { UserLoginService } from 'daje-login';
+import { TranslationsService } from 'daje-languages';
+
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface, [%- class_name -%]Defaults } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
         [%- IF field.foreign_key && field.visible && field.project == '' %]
@@ -294,41 +296,24 @@ export class [%- class_name -%]Component {
     constructor(
         private workflow: WorkflowService,
         private database: DatabaseService,
+        public translations: TranslationsService,
     ) {
     this.database.set_endpoints(Endpoints);
+    this.translations.load_language('[% project_name -%]');
+
 [%- FOREACH field IN fields -%]
-    [%- IF field.foreign_key && field.visible && field.project == '' %]
+    [%- IF field.foreign_key && field.visible && field.project == '' -%]
         this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
             this.[% project_name -%]_[%- field.fieldname -%]_list = response;
         });
-    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+    [%- ELSIF field.foreign_key && field.visible && field.project != '' -%]
         this.database.load_all_records('[% ufirst(field.project) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(field.project, field.fieldname, 1) %][]) => {
             this.[% field.project -%]_[%- field.fieldname -%]_list = response;
         });
-    [% END %]
-[% END %]
+    [% END -%]
+[% END -%]
 
-        this.cols = [
-    [%- FOREACH field IN fields %]
-        [%- IF field.foreign_key && field.visible && field.dropfield && field.project == ''  %]
-            {
-                field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
-                header: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'
-            }[% "," IF loop.last() == 0 -%]
-        [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
-             {
-                field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
-                header: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'
-            }[% "," IF loop.last() == 0 -%]
-        [% ELSIF field.foreign_key == 0 %]
-            {
-                field: '[%- field.fieldname -%]',
-                header: '[%- field.fieldname -%]'
-            }[% "," IF loop.last() == 0 -%]
-        [%- END %]
-    [%- END %]
-        ];
-
+        this.cols = this.buildCols();
         this.exportColumns = this.cols.map((col) => ({
             title: col.header,
             dataKey: col.field
@@ -525,6 +510,30 @@ export class [%- class_name -%]Component {
     hideDialog() {
         this.detailDialog.set(false);
     }
+
+    buildCols() {
+        return [
+        [%- FOREACH field IN fields %]
+            [%- IF field.foreign_key && field.visible && field.dropfield && field.project == ''  %]
+                {
+                    field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]')
+                }[% "," IF loop.last() == 0 -%]
+            [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
+                 {
+                    field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]')
+                }[% "," IF loop.last() == 0 -%]
+            [% ELSIF field.foreign_key == 0 %]
+                {
+                    field: '[%- field.fieldname -%]',
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]')
+                }[% "," IF loop.last() == 0 -%]
+            [%- END %]
+        [%- END %]
+        ];
+
+    }
 }
 
 @@ component_html
@@ -549,6 +558,7 @@ export class [%- class_name -%]Component {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
+            stripedRows
             [globalFilterFields]="[
                 [%- FOREACH field IN fields -%]
                     [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' -%]
@@ -564,59 +574,43 @@ export class [%- class_name -%]Component {
             [(selection)]="selectedPayloads"
             [rowHover]="true"
             dataKey="[%- project_name -%]_[% table.table_name %]_pkey"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} {{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- table.table_name -%]') }}"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage [%- table.table_name -%]</h5>
+                    <h5 class="m-0">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- table.table_name -%]') }}</h5>
                     <p-iconfield>
                         <p-inputicon class="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
                     </p-iconfield>
                 </div>
             </ng-template>
-            <ng-template #header>
+            <ng-template #header let-columns>>
                 <tr>
                     <th style="width: 3rem">
                         <p-tableHeaderCheckbox />
                     </th>
-
-                [%- FOREACH field IN fields -%]
-                    [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' -%]
-                        <th pSortableColumn="[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" style="min-width:16rem">
-                        [%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield %]
-                        <p-sortIcon field="payload_list.[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" />
-                    [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' -%]
-                        <th pSortableColumn="[%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" style="min-width:16rem">
-                        [%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield %]
-                        <p-sortIcon field="payload_list.[%- field.project  -%]_[%- field.fieldname -%]_[%- field.dropfield -%]" />
-                    [%- ELSIF !field.foreign_key && field.visible -%]
-                       <th pSortableColumn="[%- field.fieldname -%]" style="min-width:16rem">
-                        [%- field.fieldname %]
-                        <p-sortIcon field="payload_list.[%- field.fieldname -%]" />
-                    </th>
-                    [%- END %]
-                [%- END %]
+                    @for (col of columns; track col) {
+                        <th pSortableColumn="{{ col.field }}" style="width:20%">
+                            {{ col.header }}
+                            <p-sortIcon field="{{ col.field }}" />
+                        </th>
+                    }
                     <th style="min-width: 12rem"></th>
-                </tr>
+                  </tr>
             </ng-template>
-            <ng-template #body let-payload_detail>
+            <ng-template #body let-payload_detail let-columns="columns">
                 <tr>
                     <td style="width: 3rem">
                         <p-tableCheckbox [value]="payload_detail" />
                     </td>
-                [%- FOREACH field IN fields -%]
-                    [%- IF field.foreign_key && field.visible && field.dropfield && field.project == '' %]
-                        <td style="min-width: 12rem">{{ payload_detail.[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%] }}</td>
-                    [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' %]
-                        <td style="min-width: 12rem">{{ payload_detail.[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%] }}</td>
-                    [%- ELSIF !field.foreign_key && field.visible %]
-                        <td style="min-width: 12rem">{{ payload_detail.[%- field.fieldname -%] }}</td>
-                    [%- END %]
-
-                [%- END %]
+                        @for (col of columns; track col) {
+                            <td>
+                                {{ payload_detail[col.field] }}
+                            </td>
+                        }
                      <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
                      <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" />
                 </tr>
