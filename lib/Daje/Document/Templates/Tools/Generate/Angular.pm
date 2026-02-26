@@ -299,7 +299,7 @@ export class [%- class_name -%]Component {
         public translations: TranslationsService,
     ) {
     this.database.set_endpoints(Endpoints);
-    this.translations.load_language('[% project_name -%]');
+
 
 [%- FOREACH field IN fields -%]
     [%- IF field.foreign_key && field.visible && field.project == '' -%]
@@ -322,6 +322,10 @@ export class [%- class_name -%]Component {
 
    exportCSV() {
         this.dt.exportCSV();
+    }
+
+    importData() {
+
     }
 
     ngOnInit() {
@@ -542,12 +546,13 @@ export class [%- class_name -%]Component {
     <div class="card">
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" (onClick)="confirmDeleteSelectedLines()" [disabled]="!selectedPayloads" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'New') }}" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+                <p-button severity="secondary" label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Delete') }}" icon="pi pi-trash" (onClick)="confirmDeleteSelectedLines()" [disabled]="!selectedPayloads" />
             </ng-template>
 
             <ng-template #end>
-                <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" (onClick)="importData()" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
             </ng-template>
         </p-toolbar>
 
