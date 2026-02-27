@@ -444,8 +444,8 @@ export class [%- class_name -%]Component {
     [%- IF field.foreign_key && field.visible && field.project == '' %]
     findIndexBy_[%- field.fieldname %]([% project_name -%]_[%- field.fieldname %]_fkey: number = 0): number {
         let index = -1;
-        for (let i = 0; i < this.payload_list.length; i++) {
-            if (this.[% project_name -%]_[%- field.fieldname -%]_list,length > 0) {
+        if (this.[% project_name -%]_[%- field.fieldname -%]_list,length > 0) {
+            for (let i = 0; i < this.[% project_name -%]_[%- field.fieldname -%]_list.length; i++) {
                 if (this.[% project_name -%]_[%- field.fieldname -%]_list[i].[% project_name -%]_[%- field.fieldname %]_pkey === [% project_name -%]_[%- field.fieldname %]_fkey) {
                     index = i;
                     break;
@@ -458,8 +458,8 @@ export class [%- class_name -%]Component {
     [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
     findIndexBy_[%- field.fieldname %]([% field.project -%]_[%- field.fieldname %]_fkey: number = 0): number {
         let index = -1;
-        for (let i = 0; i < this.payload_list.length; i++) {
-            if (this.[% field.project -%]_[%- field.fieldname -%]_list.length > 0) {
+        if (this.[% field.project -%]_[%- field.fieldname -%]_list.length > 0) {
+            for (let i = 0; i < this.[% field.project -%]_[%- field.fieldname -%]_list.length; i++) {
                 if (this.[% field.project -%]_[%- field.fieldname -%]_list[i].[% field.project -%]_[%- field.fieldname %]_pkey === [% field.project -%]_[%- field.fieldname %]_fkey) {
                     index = i;
                     break;
