@@ -303,11 +303,11 @@ export class [%- class_name -%]Component {
 
 [%- FOREACH field IN fields -%]
     [%- IF field.foreign_key && field.visible && field.project == '' -%]
-        this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
+        this.database.load_all_records('[%- field.fieldname -%]_list_all', false).subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
             this.[% project_name -%]_[%- field.fieldname -%]_list = response;
         });
     [%- ELSIF field.foreign_key && field.visible && field.project != '' -%]
-        this.database.load_all_records('[% ufirst(field.project) -%][%- ufirst(field.fieldname) -%]ListAll').subscribe((response: [% make_interface_name(field.project, field.fieldname, 1) %][]) => {
+        this.database.load_all_records('[%- field.fieldname -%]_list_all', false).subscribe((response: [% make_interface_name(field.project, field.fieldname, 1) %][]) => {
             this.[% field.project -%]_[%- field.fieldname -%]_list = response;
         });
     [% END -%]
@@ -592,7 +592,7 @@ export class [%- class_name -%]Component {
                     </p-iconfield>
                 </div>
             </ng-template>
-            <ng-template #header let-columns>>
+            <ng-template #header let-columns >
                 <tr>
                     <th style="width: 3rem">
                         <p-tableHeaderCheckbox />
@@ -628,18 +628,19 @@ export class [%- class_name -%]Component {
             <div class="flex flex-col gap-6">
                 [%- FOREACH field IN fields -%]
                     [% IF field.datatype == 'BOOLEAN' %]
+
                     <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload().[%- field.fieldname %]" [binary]="true"/>
                     </div>
                     [% ELSIF (field.datatype == 'BIGINT' || field.datatype == 'NUMERIC' || field.datatype == 'MONEY') && field.foreign_key == 0 %]
                     <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         <p-inputnumber inputId="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" />
                     </div>
                     [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
                     <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         <p-datepicker [(ngModel)]="payload().[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
                     </div>
                     [%- ELSIF field.foreign_key && field.visible && field.project == '' %]
@@ -648,7 +649,7 @@ export class [%- class_name -%]Component {
                         <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
                     [%- ELSIF field.foreign_key == 0 -%]
                         <div>
-                            <label for="[%- field.fieldname %]" class="block font-bold mb-3">[%- field.fieldname %]</label>
+                            <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                             <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] />
                             @if (submitted && !payload().[%- field.fieldname -%] && [% field.mandatory %] ) {
                                 <small class="text-red-500"  >[%- field.fieldname -%] is required.</small>
