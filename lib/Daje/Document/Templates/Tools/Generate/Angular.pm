@@ -208,6 +208,7 @@ import {DialogModule} from 'primeng/dialog';
 import {TagModule} from 'primeng/tag';
 import {InputIconModule} from 'primeng/inputicon';
 import {IconFieldModule} from 'primeng/iconfield';
+import { FloatLabel } from 'primeng/floatlabel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
@@ -258,6 +259,7 @@ interface ExportColumn {
         InputIconModule,
         IconFieldModule,
         CheckboxModule,
+        FloatLabel,
         DatePickerModule
   ],
   templateUrl: './[%table.table_name%].component.html',
@@ -554,7 +556,7 @@ export class [%- class_name -%]Component {
             </ng-template>
 
             <ng-template #end>
-                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" (onClick)="importData()" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" class="mr-2" (onClick)="importData()" />
                 <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
             </ng-template>
         </p-toolbar>
@@ -631,7 +633,6 @@ export class [%- class_name -%]Component {
             <div class="flex flex-col gap-6">
                 [%- FOREACH field IN fields -%]
                     [% IF field.datatype == 'BOOLEAN' %]
-
                     <div>
                         <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload().[%- field.fieldname %]" [binary]="true"/>
@@ -651,12 +652,11 @@ export class [%- class_name -%]Component {
                     [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
                         <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
                     [%- ELSIF field.foreign_key == 0 -%]
-                        <div>
-                            <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                            <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] />
-                            @if (submitted && !payload().[%- field.fieldname -%] && [% field.mandatory %] ) {
-                                <small class="text-red-500"  >[%- field.fieldname -%] is required.</small>
-                            }
+                        <div class="w-full">
+                            <p-floatlabel variant="on">
+                                <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                                <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] />
+                            </p-floatlabel>
                         </div>
                     [%- END %]
                 [%- END %]
