@@ -212,6 +212,7 @@ import { FloatLabel } from 'primeng/floatlabel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
+import { CommonComponent } from 'daje-common;
 import { CheckboxModule } from 'primeng/checkbox';
 import { UserLoginService } from 'daje-login';
 import { TranslationsService } from 'daje-languages';
@@ -271,7 +272,7 @@ interface ExportColumn {
   standalone: true,
 })
 
-export class [%- class_name -%]Component {
+export class [%- class_name -%]Component extends CommonComponent {
     [% class_name -%]def: [%- class_name -%]Defaults = new [%- class_name -%]Defaults();
     detailDialog: WritableSignal<boolean> = signal<boolean>(false);
     deleteDialog: WritableSignal<boolean> = signal<boolean>(false);
@@ -523,25 +524,16 @@ export class [%- class_name -%]Component {
     hideDialog() {
         this.detailDialog.set(false);
     }
-    userConfig(project: string, table: string, type: string) {}
+    userConfig(project: string, table: string, type: string) {
+
+    }
     reorderColumns(event: any) {
         event = event;
     }
     resizeColumns(event: any) {
         event = event;
     }
-   getToggle(bool: number) {
-        if (bool === 0) {
-            return 'danger';
-        }
-        return 'success';
-    }
-    getToggleText(bool: number) {
-        if(bool === 0) {
-            return 'false';
-        }
-        return 'true';
-    }
+
     buildCols() {
         return [
         [%- FOREACH field IN fields %]
@@ -564,11 +556,11 @@ export class [%- class_name -%]Component {
                     field: '[%- field.fieldname -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]'),
                     order: [% loop.count %],
-                [% IF field.datatype == 'BOOLEAN' -%]
+                [% IF field.datatype == 'BOOLEAN' %]
                     bool: true
-                [%- ELSE -%]
+                [%- ELSE %]
                     bool: false
-                [%- END -%]
+                [%- END %]
                 }[% "," IF loop.last() == 0 -%]
             [%- END %]
         [%- END %]
