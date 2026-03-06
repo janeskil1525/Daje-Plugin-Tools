@@ -216,6 +216,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { UserLoginService } from 'daje-login';
 import { TranslationsService } from 'daje-languages';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface, [%- class_name -%]Defaults } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
@@ -231,6 +232,8 @@ interface Column {
     field: string;
     header: string;
     customExportHeader?: string;
+    order: number;
+    bool: boolean;
 }
 
 interface ExportColumn {
@@ -260,7 +263,8 @@ interface ExportColumn {
         IconFieldModule,
         CheckboxModule,
         FloatLabel,
-        DatePickerModule
+        DatePickerModule,
+        TooltipModule
   ],
   templateUrl: './[%table.table_name%].component.html',
   styleUrl: './[%table.table_name%].component.css',
@@ -318,7 +322,7 @@ export class [%- class_name -%]Component {
     [% END -%]
 [% END -%]
 
-        this.cols = this.buildCols();
+        this.cols = this.buildCols().sort((a,b) => a.order - b.order);
         this.exportColumns = this.cols.map((col) => ({
             title: col.header,
             dataKey: col.field
@@ -519,24 +523,52 @@ export class [%- class_name -%]Component {
     hideDialog() {
         this.detailDialog.set(false);
     }
-
+    userConfig(project: string, table: string, type: string) {}
+    reorderColumns(event: any) {
+        event = event;
+    }
+    resizeColumns(event: any) {
+        event = event;
+    }
+   getToggle(bool: number) {
+        if (bool === 0) {
+            return 'danger';
+        }
+        return 'success';
+    }
+    getToggleText(bool: number) {
+        if(bool === 0) {
+            return 'false';
+        }
+        return 'true';
+    }
     buildCols() {
         return [
         [%- FOREACH field IN fields %]
             [%- IF field.foreign_key && field.visible && field.dropfield && field.project == ''  %]
                 {
                     field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
-                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]')
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
+                    order: [% loop.count %],
+                    bool: false
                 }[% "," IF loop.last() == 0 -%]
             [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
                  {
                     field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
-                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]')
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
+                    order: [% loop.count %],
+                    bool: false
                 }[% "," IF loop.last() == 0 -%]
             [% ELSIF field.foreign_key == 0 %]
                 {
                     field: '[%- field.fieldname -%]',
-                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]')
+                    header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]'),
+                    order: [% loop.count %],
+                [% IF field.datatype == 'BOOLEAN' -%]
+                    bool: true
+                [%- ELSE -%]
+                    bool: false
+                [%- END -%]
                 }[% "," IF loop.last() == 0 -%]
             [%- END %]
         [%- END %]
@@ -557,7 +589,8 @@ export class [%- class_name -%]Component {
 
             <ng-template #end>
                 <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" class="mr-2" (onClick)="importData()" />
-                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" class="mr-2" (onClick)="exportCSV()" />
+                <p-button icon="pi pi-cog" severity="secondary" (onClick)="userConfig('[%- project_name -%]', '[%- table.table_name -%]','Table')" />
             </ng-template>
         </p-toolbar>
 
@@ -587,6 +620,12 @@ export class [%- class_name -%]Component {
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} {{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- table.table_name -%]') }}"
             [showCurrentPageReport]="true"
             [rowsPerPageOptions]="[10, 20, 30]"
+            columnResizeMode="expand"
+            [showGridlines]="true"
+            [resizableColumns]="true"
+            [reorderableColumns]="true"
+            (onColReorder)="reorderColumns($event)"
+            (onColResize)="resizeColumns($event)"
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
@@ -603,9 +642,10 @@ export class [%- class_name -%]Component {
                         <p-tableHeaderCheckbox />
                     </th>
                     @for (col of columns; track col) {
-                        <th pSortableColumn="{{ col.field }}" style="width:20%">
+                        <th pSortableColumn="{{ col.field }}"  pResizableColumn pReorderableColumn >
                             {{ col.header }}
                             <p-sortIcon field="{{ col.field }}" />
+
                         </th>
                     }
                     <th style="min-width: 12rem"></th>
@@ -618,7 +658,11 @@ export class [%- class_name -%]Component {
                     </td>
                         @for (col of columns; track col) {
                             <td>
-                                {{ payload_detail[col.field] }}
+                                @if(col.bool) {
+                                    <p-tag [value]="getToggleText(payload_detail[col.field] )" [severity]="getToggle(payload_detail[col.field])" />
+                                } @else {
+                                    {{ payload_detail[col.field] }}
+                                }
                             </td>
                         }
                      <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
@@ -628,40 +672,43 @@ export class [%- class_name -%]Component {
         </p-table>
     </div>
 
-        <p-dialog [(visible)]="detailDialog" [style]="{ width: '450px' }" header="[%- table.table_name %] Details" [modal]="true">
+        <p-dialog [(visible)]="detailDialog" [style]="{ width: '450px' }" header="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- table.table_name -%]') }} Details" [modal]="true">
         <ng-template #content>
-            <div class="flex flex-col gap-6">
-                [%- FOREACH field IN fields -%]
-                    [% IF field.datatype == 'BOOLEAN' %]
-                    <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                        <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload().[%- field.fieldname %]" [binary]="true"/>
-                    </div>
-                    [% ELSIF (field.datatype == 'BIGINT' || field.datatype == 'NUMERIC' || field.datatype == 'MONEY') && field.foreign_key == 0 %]
-                    <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                        <p-inputnumber inputId="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" />
-                    </div>
-                    [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
-                    <div>
-                        <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                        <p-datepicker [(ngModel)]="payload().[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
-                    </div>
-                    [%- ELSIF field.foreign_key && field.visible && field.project == '' %]
-                        <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
-                    [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
-                        <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
-                    [%- ELSIF field.foreign_key == 0 -%]
-                        <div class="w-full">
-                            <p-floatlabel variant="on">
-                                <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                                <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] />
-                            </p-floatlabel>
+            <div class="mt-6">
+                <div class="flex flex-col gap-6">
+                    [%- FOREACH field IN fields -%]
+                        [% IF field.datatype == 'BOOLEAN' %]
+                        <div class="flex gap-4 mt-1 p-3">
+                            <p-checkbox inputId="[%- field.fieldname %]" name="[%- field.fieldname %]" value="true" [(ngModel)]="payload().[%- field.fieldname %]" [binary]="true" pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}" />
+                            <label for="[%- field.fieldname %]" class="block ml-2">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         </div>
+                        [% ELSIF (field.datatype == 'BIGINT' || field.datatype == 'NUMERIC' || field.datatype == 'MONEY') && field.foreign_key == 0 %]
+                        <div>
+                            <label for="[%- field.fieldname %]" class="block  mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                            <p-inputnumber inputId="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}" />
+                        </div>
+                        [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
+                        <div>
+                            <label for="[%- field.fieldname %]" class="block  mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                            <p-datepicker [(ngModel)]="payload().[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
+                        </div>
+                        [%- ELSIF field.foreign_key && field.visible && field.project == '' %]
+                            <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
+                        [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
+                            <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full md:w-56" />
+                        [%- ELSIF field.foreign_key == 0 -%]
+                            <div class="w-full">
+                                <p-floatlabel variant="on">
+                                    <label for="[%- field.fieldname %]" class="block mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                                    <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}"  />
+                                </p-floatlabel>
+                            </div>
+                        [%- END %]
                     [%- END %]
-                [%- END %]
+                </div>
             </div>
         </ng-template>
+
         <ng-template #footer>
             <p-button label="Cancel" icon="pi pi-times" text (onClick)="hideDialog()" />
             <p-button label="Save" icon="pi pi-check" (onClick)="saveObject()" />
