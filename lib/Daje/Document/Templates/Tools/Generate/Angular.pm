@@ -74,6 +74,27 @@ my $set_datatype = sub {
     return $result;
 };
 
+my $set_filter_type = sub {
+    my $datatype = $_[0];
+    my $result = "text";
+    if (uc($datatype) eq 'BIGINT') {
+        $result = 'numeric';
+    }
+    elsif (uc($datatype) eq 'NUMERIC') {
+        $result = 'numeric';
+    }
+    elsif (uc($datatype) eq 'BOOLEAN') {
+        $result = 'numeric';
+    }
+    elsif (uc($datatype) eq 'MONEY') {
+        $result = 'numeric';
+    }
+    elsif (uc($datatype) eq 'DATE') {
+        $result = 'date';
+    }
+    return $result;
+};
+
 my $make_interface_name = sub {
     my $project = $_[0];
     my $table = $_[1];
@@ -92,6 +113,8 @@ sub set_subs($self) {
     $self->insert_sub('make_interface_name', $make_interface_name);
     $self->insert_sub('ufirst', $ufirst);
     $self->insert_sub('set_default', $set_default);
+    $self->insert_sub('set_filter_type', $set_filter_type);
+
 }
 
 1;
@@ -212,12 +235,13 @@ import { FloatLabel } from 'primeng/floatlabel';
 import { DatePickerModule } from 'primeng/datepicker';
 import { WorkflowService,  } from 'daje-workflow';
 import { DatabaseService } from 'daje-database';
-import { CommonComponent } from 'daje-common;
+import { CommonComponent } from 'daje-common';
 import { CheckboxModule } from 'primeng/checkbox';
 import { UserLoginService } from 'daje-login';
 import { TranslationsService } from 'daje-languages';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface, [%- class_name -%]Defaults } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
@@ -235,6 +259,7 @@ interface Column {
     customExportHeader?: string;
     order: number;
     bool: boolean;
+    datatype: string;
 }
 
 interface ExportColumn {
@@ -265,7 +290,8 @@ interface ExportColumn {
         CheckboxModule,
         FloatLabel,
         DatePickerModule,
-        TooltipModule
+        TooltipModule,
+        MultiSelectModule
   ],
   templateUrl: './[%table.table_name%].component.html',
   styleUrl: './[%table.table_name%].component.css',
@@ -302,13 +328,15 @@ export class [%- class_name -%]Component extends CommonComponent {
     @ViewChild('dt') dt!: Table;
     exportColumns!: ExportColumn[];
     cols!: Column[];
+    selectedColumns!: Column[];
 
     constructor(
         private workflow: WorkflowService,
         private database: DatabaseService,
         public translations: TranslationsService,
     ) {
-    this.database.set_endpoints(Endpoints);
+        super();
+        this.database.set_endpoints(Endpoints);
 
 
 [%- FOREACH field IN fields -%]
@@ -324,6 +352,7 @@ export class [%- class_name -%]Component extends CommonComponent {
 [% END -%]
 
         this.cols = this.buildCols().sort((a,b) => a.order - b.order);
+        this.selectedColumns = this.cols;
         this.exportColumns = this.cols.map((col) => ({
             title: col.header,
             dataKey: col.field
@@ -542,14 +571,16 @@ export class [%- class_name -%]Component extends CommonComponent {
                     field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
                     order: [% loop.count %],
-                    bool: false
+                    bool: false,
+                    datatype: 'text'
                 }[% "," IF loop.last() == 0 -%]
             [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
                  {
                     field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
                     order: [% loop.count %],
-                    bool: false
+                    bool: false,
+                    datatype: 'text'
                 }[% "," IF loop.last() == 0 -%]
             [% ELSIF field.foreign_key == 0 %]
                 {
@@ -560,7 +591,8 @@ export class [%- class_name -%]Component extends CommonComponent {
                     bool: true
                 [%- ELSE %]
                     bool: false
-                [%- END %]
+                [%- END %],
+                    datatype: '[% set_filter_type(col.datatype) %]'
                 }[% "," IF loop.last() == 0 -%]
             [%- END %]
         [%- END %]
@@ -580,6 +612,7 @@ export class [%- class_name -%]Component extends CommonComponent {
             </ng-template>
 
             <ng-template #end>
+                <p-multiselect (onChange)="visibleColsChange($event)" (onSelectAllChange)="visibleColsAllChange($event)" display="chip" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" selectedItemsLabel="{0} columns selected" [style]="{ 'min-width': '200px' }" class="mr-2" placeholder="Choose Columns" />
                 <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" class="mr-2" (onClick)="importData()" />
                 <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" class="mr-2" (onClick)="exportCSV()" />
                 <p-button icon="pi pi-cog" severity="secondary" (onClick)="userConfig('[%- project_name -%]', '[%- table.table_name -%]','Table')" />
@@ -591,7 +624,7 @@ export class [%- class_name -%]Component extends CommonComponent {
             #dt
             [value]="payload_list"
             [rows]="10"
-            [columns]="cols"
+            [columns]="selectedColumns"
             [paginator]="true"
             stripedRows
             [globalFilterFields]="[
@@ -605,6 +638,7 @@ export class [%- class_name -%]Component extends CommonComponent {
                     [%- END -%]
                 [%- END -%]
 ]"
+            [filterDelay]="0"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedPayloads"
             [rowHover]="true"
@@ -618,6 +652,8 @@ export class [%- class_name -%]Component extends CommonComponent {
             [reorderableColumns]="true"
             (onColReorder)="reorderColumns($event)"
             (onColResize)="resizeColumns($event)"
+            stateStorage="local"
+            stateKey="[%- project_name -%]-[% table.table_name %]"
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
@@ -637,7 +673,7 @@ export class [%- class_name -%]Component extends CommonComponent {
                         <th pSortableColumn="{{ col.field }}"  pResizableColumn pReorderableColumn >
                             {{ col.header }}
                             <p-sortIcon field="{{ col.field }}" />
-
+                            <p-columnFilter type="{{ col.datatype }}" field="{{ col.field }}" display="menu" class="ml-auto" />
                         </th>
                     }
                     <th style="min-width: 12rem"></th>
