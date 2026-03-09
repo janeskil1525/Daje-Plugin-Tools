@@ -242,6 +242,7 @@ import { TranslationsService } from 'daje-languages';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { Router } from '@angular/router';
 
 import { [%- class_name -%]Interface, [%- class_name -%]ListInterface, [%- class_name -%]Defaults } from './[%- table.table_name -%].interface'
 [%- FOREACH field IN fields -%]
@@ -325,7 +326,7 @@ export class [%- class_name -%]Component extends CommonComponent {
     [% END %]
     tableLoading: WritableSignal<boolean> = signal<boolean>(false);
     userSettingsDialog: WritableSignal<boolean> = signal<boolean>(false);
-    importDataDialog: WritableSignal<boolean> = signal<boolean>(false);
+
 
     private destroyRef = inject(DestroyRef);
 
@@ -339,6 +340,7 @@ export class [%- class_name -%]Component extends CommonComponent {
         private workflow: WorkflowService,
         private database: DatabaseService,
         public translations: TranslationsService,
+        private router: Router,
     ) {
         super();
         this.database.set_endpoints(Endpoints);
@@ -369,11 +371,11 @@ export class [%- class_name -%]Component extends CommonComponent {
     }
 
     showImportData() {
-        this.importDataDialog.set(true)
+        this.router.navigate(['/home/[% project_name -%]/import/csv']);
     }
 
     hideImportData() {
-        this.importDataDialog.set(true)
+        this.router.navigate(['/home/[% project_name -%]/list']);
     }
 
     importData() {
@@ -820,24 +822,7 @@ export class [%- class_name -%]Component extends CommonComponent {
                 <p-button label="Save" icon="pi pi-check" (onClick)="saveUserSettingsObject()" />
             </ng-template>
         </p-dialog>
-        <p-dialog [(visible)]="importDataDialog" [style]="{ width: '650px' }" header="{{ translations.get_translation('companies', 'companies', 'Label', 'companies') }} Import" [modal]="true">
 
-               <div class="w-full md:w-[296px] flex items-center gap-4">
-                <div class="w-[46px] h-[46px] bg-surface-0 dark:bg-surface-900 rounded-full border-[1.5px] border-surface-200 dark:border-surface-700 flex items-center justify-center overflow-hidden shrink-0">
-                    <i class="pi pi-user text-surface-500 dark:text-surface-400 text-sm"></i>
-                </div>
-                <div class="self-stretch p-4 sm:p-6 xl:p-8 flex flex-col items-end gap-6">
-                    <div class="self-stretch flex flex-col md:flex-row items-start gap-4 md:gap-8">
-                        <div class="flex-1 flex flex-col justify-center gap-2">
-                            <div class="self-stretch text-surface-500 dark:text-surface-400 text-base font-normal leading-normal">Drop or select an import file</div>
-                            <button (click)="triggerFileUpload()" class="text-primary-600 dark:text-primary-400 text-sm font-medium underline leading-4 text-left cursor-pointer bg-transparent border-0 p-0">Upload Import</button>
-                            <input #fileInput type="file" (change)="handleFileUpload($event)" accept="image/*" class="hidden" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </p-dialog>
 @@ css
 
 /* [%- table.table_name -%].component.css */
