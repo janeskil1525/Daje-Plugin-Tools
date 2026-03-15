@@ -253,14 +253,16 @@ import { [%- make_interface_name(field.project, field.fieldname, 1) -%] } from '
         [%- END -%]
     [% END %]
 import { Endpoints } from '../[%- project_name -%]_endpoints/[%- project_name -%].endpoints';
+import { ImportWizardService } from 'daje-import';
 
 interface Column {
     field: string;
     header: string;
     customExportHeader?: string;
     order: number;
-    bool: boolean;
     datatype: string;
+    datatype_org: string;
+    import_field: string;
 }
 
 interface ExportColumn {
@@ -340,6 +342,7 @@ export class [%- class_name -%]Component extends CommonComponent {
         private workflow: WorkflowService,
         private database: DatabaseService,
         public translations: TranslationsService,
+        private importer: ImportWizardService,
         private router: Router,
     ) {
         super();
@@ -371,6 +374,7 @@ export class [%- class_name -%]Component extends CommonComponent {
     }
 
     showImportData() {
+        this.importer.setup('[%- project_name -%]', '[%- table.table_name -%]', this.cols);
         this.router.navigate(['/home/[% project_name -%]/import/csv']);
     }
 
@@ -605,28 +609,27 @@ export class [%- class_name -%]Component extends CommonComponent {
                     field: '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
                     order: [% loop.count %],
-                    bool: false,
-                    datatype: 'text'
+                    datatype: 'text',
+                    datatype_org: '[% field.datatype %]',
+                    import_field: '[%- field.fieldname -%]'
                 }[% "," IF loop.last() == 0 -%]
             [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != ''  %]
                  {
                     field: '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%]'),
                     order: [% loop.count %],
-                    bool: false,
-                    datatype: 'text'
+                    datatype: 'text',
+                    datatype_org: '[% field.datatype %]',
+                    import_field: '[%- field.fieldname -%]'
                 }[% "," IF loop.last() == 0 -%]
             [% ELSIF field.foreign_key == 0 %]
                 {
                     field: '[%- field.fieldname -%]',
                     header: this.translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]'),
                     order: [% loop.count %],
-                [% IF field.datatype == 'BOOLEAN' %]
-                    bool: true
-                [%- ELSE %]
-                    bool: false
-                [%- END %],
-                    datatype: '[% set_filter_type(col.datatype) %]'
+                    datatype: '[% set_filter_type(col.datatype) %]',
+                    datatype_org: '[% field.datatype %]',
+                    import_field: '[%- field.fieldname -%]'
                 }[% "," IF loop.last() == 0 -%]
             [%- END %]
         [%- END %]
@@ -720,7 +723,7 @@ export class [%- class_name -%]Component extends CommonComponent {
                     </td>
                         @for (col of columns; track col) {
                             <td>
-                                @if(col.bool) {
+                                @if(col.datatype_org == 'BOOLEAN') {
                                     <p-tag [value]="getToggleText(payload_detail[col.field] )" [severity]="getToggle(payload_detail[col.field])" />
                                 } @else {
                                     {{ payload_detail[col.field] }}

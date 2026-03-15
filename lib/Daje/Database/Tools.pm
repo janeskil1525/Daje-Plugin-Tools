@@ -515,7 +515,7 @@ INSERT INTO tools_objects_tables_datatypes (name, length, scale) VALUES
     ('TIMESTAMP', 0, 0),
     ('BOOLEAN', 0, 0),
     ('UUID', 0, 0),
-    ('JSON', 0, 0),
+    ('JSONB', 0, 0),
     ('XML', 0, 0);
 
 

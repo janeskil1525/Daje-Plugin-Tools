@@ -47,8 +47,8 @@ sub generate_perl($self) {
         $self->context->{context}->{payload}->{perl} = \@data;
 
     } catch($e) {
-        say $e
-            $self->error->add_error($e);
+        say $e;
+        $self->error->add_error($e);
     };
 }
 
