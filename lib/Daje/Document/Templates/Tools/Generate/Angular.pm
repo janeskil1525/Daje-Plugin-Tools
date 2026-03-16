@@ -748,9 +748,9 @@ export class [%- class_name -%]Component extends CommonComponent {
                             <label for="[%- field.fieldname %]" class="block font-bold ml-2">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                         </div>
                         [% ELSIF (field.datatype == 'BIGINT' || field.datatype == 'NUMERIC' || field.datatype == 'MONEY') && field.foreign_key == 0 %]
-                        <div>
+                        <div class="w-full">
                             <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                            <p-inputnumber inputId="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}" />
+                            <p-inputnumber fluid inputId="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}" />
                         </div>
                         [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
                         <div>
@@ -761,9 +761,9 @@ export class [%- class_name -%]Component extends CommonComponent {
                             <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full font-bold md:w-56" />
                         [%- ELSIF field.foreign_key && field.visible && field.project != '' %]
                             <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full font-bold md:w-56" />
-                        [%- ELSIF field.foreign_key == 0 -%]
+                        [%- ELSIF field.foreign_key == 0 %]
                             <div class="w-full">
-                                    <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                                    <label for="[%- field.fieldname %]" fluid class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
                                     <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}"  />
                             </div>
                         [%- END %]
