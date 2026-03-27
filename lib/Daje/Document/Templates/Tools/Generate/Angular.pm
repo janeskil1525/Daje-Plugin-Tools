@@ -755,7 +755,7 @@ export class [%- class_name -%]Component extends CommonComponent {
                         [% ELSIF field.datatype == 'DATE' || field.datatype == 'TIMESTAMP' %]
                         <div>
                             <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                            <p-datepicker [(ngModel)]="payload().[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
+                            <p-datepicker fluid [(ngModel)]="payload().[%- field.fieldname %]" inputId="[%- field.fieldname %]" [showIcon]="true" dateFormat="yy-mm-dd"[showOnFocus]="false"/>
                         </div>
                         [%- ELSIF field.foreign_key && field.visible && field.project == '' %]
                             <p-select [options]="[%- project_name -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- project_name -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full font-bold md:w-56" />
@@ -763,8 +763,8 @@ export class [%- class_name -%]Component extends CommonComponent {
                             <p-select [options]="[%- field.project -%]_[%- field.fieldname -%]_list" [(ngModel)]="selected_[%- field.project -%]_[%- field.fieldname -%]" [checkmark]="true" optionLabel="[%- field.dropfield -%]" [showClear]="true" placeholder="Select [%- field.dropfield -%]" class="w-full font-bold md:w-56" />
                         [%- ELSIF field.foreign_key == 0 %]
                             <div class="w-full">
-                                    <label for="[%- field.fieldname %]" fluid class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
-                                    <input type="text" pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus fluid" IF field.mandatory -%] pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}"  />
+                                    <label for="[%- field.fieldname %]" class="block font-bold mb-3">{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Label', '[%- field.fieldname -%]') }}</label>
+                                    <input type="text" fluid pInputText id="[%- field.fieldname %]" [(ngModel)]="payload().[%- field.fieldname %]" [%- "required autofocus" IF field.mandatory -%] pTooltip="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Tooltip', '[%- field.fieldname -%]') }}"  />
                             </div>
                         [%- END %]
                     [%- END %]
