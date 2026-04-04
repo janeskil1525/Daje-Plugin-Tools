@@ -229,6 +229,15 @@ sub generate_db_model_super($self, $tools_projects_pkey, $source) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{project_name} = $project_name;
             $table->{fields} = $self->load_active_table_fields($table->{table}->{tools_objects_pkey});
+            $table->{has_company} = 0;
+            my $len = scalar @{$table->{fields}};
+            for (my $j = 0; $j < $len; $j++) {
+                if(@{$table->{fields}}[$j]->{fieldname} eq 'companies' && @{$table->{fields}}[$j]->{foreign_key} == 1) {
+                    $table->{has_company} = 1;
+                    say "Has company";
+                    say Dumper($table->{table});
+                }
+            }
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
             $self->versions($table);

@@ -235,8 +235,8 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
     );
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p()->then(sub($result) {
+
+    $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p($companies_pkey, $users_pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
@@ -256,7 +256,7 @@ sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% tablename %]_list->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% tablename %]_list->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
@@ -274,7 +274,7 @@ sub load_list_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- field.project  -%]_[% tablename %]_list->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- field.project  -%]_[% tablename %]_list->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
@@ -351,7 +351,7 @@ sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% table.table_name %]->load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($pkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]->load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($companies_pkey, $users_pkey, $pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- table.table_name -%]_pkey ' . $err);
@@ -371,7 +371,7 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
@@ -389,7 +389,7 @@ sub load_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
 
     $self->app->log->debug($self->req->headers->header('X-Token-Check'));
     # my $setting = $self->param('setting');
-    $self->v_[%- field.project  -%]_[% tablename %]->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($fkey)->then(sub($result) {
+    $self->v_[%- field.project  -%]_[% tablename %]->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
@@ -983,21 +983,21 @@ has 'table_name' => "v_[%- project_name -%]_[%- table.table_name -%]";
 
 [%- FOREACH field IN fields -%]
 [%- IF field.foreign_key && field.project == '' %]
-async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
-    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_fkey($[%- project_name -%]_[%- field.fieldname -%]_fkey);
+async sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey_p($self, $companies_pkey, $users_pkey, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_fkey($companies_pkey, $users_pkey, $[%- project_name -%]_[%- field.fieldname -%]_fkey);
 }
 
-sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
+sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self, $companies_pkey, $users_pkey, $[%- project_name -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_fkey(
         $self->table_name, $self->fields(), "[%- project_name -%]_[%- field.fieldname -%]_fkey", $[%- project_name -%]_[%- field.fieldname -%]_fkey
     );
 }
 [%- ELSIF field.foreign_key && field.project != '' %]
-async sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey_p($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
-    return $self->load_[%- field.project -%]_[%- field.fieldname -%]_fkey($[%- field.project -%]_[%- field.fieldname -%]_fkey);
+async sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey_p($self, $companies_pkey, $users_pkey, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
+    return $self->load_[%- field.project -%]_[%- field.fieldname -%]_fkey($companies_pkey, $users_pkey, $[%- field.project -%]_[%- field.fieldname -%]_fkey);
 }
 
-sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
+sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $companies_pkey, $users_pkey, $[%- field.project -%]_[%- field.fieldname -%]_fkey) {
     return $self->load_fkey(
         $self->table_name, $self->fields(), "[%- field.project -%]_[%- field.fieldname -%]_fkey", $[%- field.project -%]_[%- field.fieldname -%]_fkey
     );
@@ -1005,11 +1005,11 @@ sub load_[%- field.project -%]_[%- field.fieldname -%]_fkey($self, $[%- field.pr
 [%- END -%]
 [%- END -%]
 
-async sub load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($self, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
-    return $self->load_[%- project_name -%]_[%- table.table_name -%]_pkey($[%- project_name -%]_[%- table.table_name -%]_pkey);
+async sub load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($self, $companies_pkey, $users_pkey, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
+    return $self->load_[%- project_name -%]_[%- table.table_name -%]_pkey($companies_pkey, $users_pkey, $[%- project_name -%]_[%- table.table_name -%]_pkey);
 }
 
-sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
+sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self, $companies_pkey, $users_pkey, $[%- project_name -%]_[%- table.table_name -%]_pkey) {
     return $self->load_pk(
         $self->table_name, $self->fields(), $self->primary_key_name(), $[%- project_name -%]_[%- table.table_name -%]_pkey
     );
@@ -1087,12 +1087,12 @@ has 'fields' => '"[%- project_name -%]_[%- table.table_name -%]_pkey", "editnum"
 [%- project_name -%]_[%- field.fieldname -%]_[%- field.dropfield %],
 "[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' -%]
-[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield %],
-"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
-[%- ELSIF field.foreign_key && field.project == '' %]
-"[%- project_name -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
-[%- ELSIF field.foreign_key && field.project != '' %]
-"[%- field.project -%]_[%- field.fieldname %]_fkey"[% "," IF loop.last() == 0 %]
+[%- field.project -%]_[%- field.fieldname -%]_[%- field.dropfield -%],
+"[%- field.project -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project == '' -%]
+"[%- project_name -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
+[%- ELSIF field.foreign_key && field.project != '' -%]
+"[%- field.project -%]_[%- field.fieldname -%]_fkey"[% "," IF loop.last() == 0 %]
 [%- ELSE -%]
 "[%- field.fieldname %]"[% "," IF loop.last() == 0 %]
 [%- END -%]
@@ -1102,41 +1102,49 @@ has 'table_name' => "v_[%- project_name -%]_[%- table.table_name -%]_list";
 
 [%- FOREACH field IN fields -%]
 [%- IF field.foreign_key && field.project == '' %]
-async sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list_p($self) {
-    return $self->load_all_[%- project_name -%]_[%- field.fieldname -%]_list();
+async sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list_p($self, $companies_pkey, $users_pkey) {
+    return $self->load_all_[%- project_name -%]_[%- field.fieldname -%]_list($companies_pkey, $users_pkey);
 }
 
-sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list($self) {
+sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list($self, $companies_pkey, $users_pkey) {
+
+has_company = [%- has_company -%]
+[%- IF has_company == 1 -%]
+    return $self->load_a_list(
+        $self->table_name, $self->fields(), { companies_companies_fkey => $companies_pkey }
+    );
+[%- ELSE -%]
     return $self->load_a_full_list(
         $self->table_name, $self->fields()
     );
+[%- END -%]
 }
 
-async sub load_[%- project_name -%]_[%- field.fieldname -%]_list_p($self, $key_value) {
-    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_list($key_value);
+async sub load_[%- project_name -%]_[%- field.fieldname -%]_list_p($self, $companies_pkey, $users_pkey, $key_value) {
+    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_list($companies_pkey, $users_pkey, $key_value);
 }
 
-sub load_[%- project_name -%]_[%- field.fieldname -%]_list($self, $key_value) {
+sub load_[%- project_name -%]_[%- field.fieldname -%]_list($self, $companies_pkey, $users_pkey, $key_value) {
     return $self->load_a_list(
         $self->table_name, $self->fields(), $key_value
     );
 }
 [%- ELSIF field.foreign_key && field.project != '' %]
-async sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list_p($self) {
-    return $self->load_all_[%- field.project -%]_[%- field.fieldname -%]_list();
+async sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list_p($self, $companies_pkey, $users_pkey) {
+    return $self->load_all_[%- field.project -%]_[%- field.fieldname -%]_list($companies_pkey, $users_pkey);
 }
 
-sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list($self) {
+sub load_all_[%- field.project -%]_[%- field.fieldname -%]_list($self, $companies_pkey, $users_pkey) {
     return $self->load_a_full_list(
         $self->table_name, $self->fields()
     );
 }
 
-async sub load_[%- field.project -%]_[%- field.fieldname -%]_list_p($self, $key_value) {
-    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_list($key_value);
+async sub load_[%- field.project -%]_[%- field.fieldname -%]_list_p($self, $companies_pkey, $users_pkey, $key_value) {
+    return $self->load_[%- project_name -%]_[%- field.fieldname -%]_list($companies_pkey, $users_pkey,$key_value);
 }
 
-sub load_[%- field.project -%]_[%- field.fieldname -%]_list($self, $key_value) {
+sub load_[%- field.project -%]_[%- field.fieldname -%]_list($self, $companies_pkey, $users_pkey, $key_value) {
     return $self->load_a_list(
         $self->table_name, $self->fields(), $key_value
     );
@@ -1144,11 +1152,11 @@ sub load_[%- field.project -%]_[%- field.fieldname -%]_list($self, $key_value) {
 [%- END -%]
 [%- END -%]
 
-async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self) {
-    return $self->load_all_[%- project_name -%]_[%- table.table_name -%]();
+async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self, $companies_pkey, $users_pkey) {
+    return $self->load_all_[%- project_name -%]_[%- table.table_name -%]($companies_pkey, $users_pkey);
 }
 
-sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
+sub load_all_[%- project_name -%]_[%- table.table_name -%]($self, $companies_pkey, $users_pkey) {
     return $self->load_a_full_list(
         $self->table_name, $self->fields()
     );
