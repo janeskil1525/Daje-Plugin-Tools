@@ -1107,17 +1107,9 @@ async sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list_p($self, $c
 }
 
 sub load_all_[%- project_name -%]_[%- field.fieldname -%]_list($self, $companies_pkey, $users_pkey) {
-
-has_company = [%- has_company -%]
-[%- IF has_company == 1 -%]
     return $self->load_a_list(
         $self->table_name, $self->fields(), { companies_companies_fkey => $companies_pkey }
     );
-[%- ELSE -%]
-    return $self->load_a_full_list(
-        $self->table_name, $self->fields()
-    );
-[%- END -%]
 }
 
 async sub load_[%- project_name -%]_[%- field.fieldname -%]_list_p($self, $companies_pkey, $users_pkey, $key_value) {
@@ -1157,9 +1149,15 @@ async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self, $compa
 }
 
 sub load_all_[%- project_name -%]_[%- table.table_name -%]($self, $companies_pkey, $users_pkey) {
+[%- IF has_company == 1 -%]
+    return $self->load_a_list(
+        $self->table_name, $self->fields(), { companies_companies_fkey => $companies_pkey }
+    );
+[%- ELSE -%]
     return $self->load_a_full_list(
         $self->table_name, $self->fields()
     );
+[%- END -%]
 }
 1;
 
