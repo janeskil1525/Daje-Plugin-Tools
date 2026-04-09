@@ -178,7 +178,9 @@ export interface [%- class_name -%]ListInterface {
     [%- ELSIF field.foreign_key && field.visible && field.dropfield && field.project != '' %]
     [% field.project -%]_[%- field.fieldname -%]_[%- field.dropfield %]: string;
     [% field.project %]_[% field.fieldname %]_fkey: number;
-     [%- ELSIF field.foreign_key %]
+    [%- ELSIF field.foreign_key && field.project != '' %]
+    [% field.project %]_[% field.fieldname %]_fkey: number;
+    [%- ELSIF field.foreign_key %]
     [% project_name %]_[% field.fieldname %]_fkey: number;
      [%- ELSE %]
     [% field.fieldname %]: [% set_datatype(field.datatype) %];
@@ -254,6 +256,7 @@ import { [%- make_interface_name(field.project, field.fieldname, 1) -%] } from '
     [% END %]
 import { Endpoints } from '../[%- project_name -%]_endpoints/[%- project_name -%].endpoints';
 import { ImportWizardService } from 'daje-import';
+import { AuthoritiesService } from 'daje-authorities';
 
 interface Column {
     field: string;
@@ -344,6 +347,7 @@ export class [%- class_name -%]Component extends CommonComponent {
         public translations: TranslationsService,
         private importer: ImportWizardService,
         private router: Router,
+        private authorities: AuthoritiesService,
     ) {
         super();
         this.database.set_endpoints(Endpoints);
@@ -369,7 +373,11 @@ export class [%- class_name -%]Component extends CommonComponent {
         }));
     }
 
-   exportCSV() {
+    has_authority(plugin: string, func: string, permission: string): boolean {
+        return (this.authorities.has_authority(plugin, func, permission));
+    }
+
+    exportCSV() {
         this.dt.exportCSV();
     }
 
@@ -382,16 +390,12 @@ export class [%- class_name -%]Component extends CommonComponent {
         this.router.navigate(['/home/[% project_name -%]/list']);
     }
 
-    importData() {
-
-    }
-
     ngOnInit() {
         this.loadData();
     }
 
     loadData() {
-    this.tableLoading.set(true)
+        this.tableLoading.set(true)
         this.database.load_all_records('[% ufirst(project_name) -%][%- ufirst(table.table_name) -%]ListAll').pipe(takeUntilDestroyed(this.destroyRef)).subscribe((response: [%- class_name -%]ListInterface[]) => {
             this.payload_list = response;
             this.tableLoading.set(false)
@@ -404,9 +408,7 @@ export class [%- class_name -%]Component extends CommonComponent {
 
 
     }
-    loadObject() {
 
-    }
     saveObject() {
         this.submitted = true;
         if(!this.payload().[%- project_name -%]_[%- table.table_name -%]_pkey) this.payload().[%- project_name -%]_[%- table.table_name -%]_pkey = 0;
@@ -449,10 +451,6 @@ export class [%- class_name -%]Component extends CommonComponent {
         }
 
         this.detailDialog.set(false);
-    }
-
-    cancelData() {
-
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -644,14 +642,14 @@ export class [%- class_name -%]Component extends CommonComponent {
     <div class="card">
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'New') }}" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Delete') }}" icon="pi pi-trash" (onClick)="confirmDeleteSelectedLines()" [disabled]="!selectedPayloads" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'New') }}" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'create')" />
+                <p-button severity="secondary" label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Delete') }}" icon="pi pi-trash" (onClick)="confirmDeleteSelectedLines()" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'delete')" />
             </ng-template>
 
             <ng-template #end>
                 <p-multiselect (onChange)="visibleColsChange($event)" (onSelectAllChange)="visibleColsAllChange($event)" display="chip" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" selectedItemsLabel="{0} columns selected" [style]="{ 'min-width': '200px' }" class="mr-2" placeholder="Choose Columns" />
-                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" class="mr-2" (onClick)="showImportData()" />
-                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" class="mr-2" (onClick)="exportCSV()" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Import') }}" icon="pi pi-download" severity="secondary" class="mr-2" (onClick)="showImportData()" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'import')" />
+                <p-button label="{{ translations.get_translation('[%- project_name -%]', '[%- table.table_name -%]', 'Button', 'Export') }}" icon="pi pi-upload" severity="secondary" class="mr-2" (onClick)="exportCSV()" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'export')" />
                 <p-button icon="pi pi-cog" severity="secondary" (onClick)="userConfig('[%- project_name -%]', '[%- table.table_name -%]','Table')" />
             </ng-template>
         </p-toolbar>
@@ -730,8 +728,8 @@ export class [%- class_name -%]Component extends CommonComponent {
                                 }
                             </td>
                         }
-                     <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" />
-                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" />
+                     <p-button icon="pi pi-pencil" class="mx-2" [rounded]="true" [outlined]="true" (onClick)="editSelected(payload_detail)" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'update')" />
+                     <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="confirmDeleteSelected(payload_detail)" [disabled]="!has_authority('[%- project_name -%]', '[%- table.table_name -%]', 'delete')"/>
                 </tr>
             </ng-template>
         </p-table>
