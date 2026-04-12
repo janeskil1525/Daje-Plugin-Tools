@@ -352,7 +352,6 @@ export class [%- class_name -%]Component extends CommonComponent {
         super();
         this.database.set_endpoints(Endpoints);
 
-
 [%- FOREACH field IN fields -%]
     [%- IF field.foreign_key && field.visible && field.project == '' -%]
         this.database.load_all_records('[%- field.fieldname -%]_list_all', false).pipe(takeUntilDestroyed()).subscribe((response: [% make_interface_name(project_name, field.fieldname, 1) %][]) => {
