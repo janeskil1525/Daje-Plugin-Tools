@@ -234,13 +234,11 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
          $self->req->headers->header('X-Token-Check')
     );
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-
     $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p($companies_pkey, $users_pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
 
@@ -254,16 +252,14 @@ sub load_list_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
     );
     my $fkey = $self->param('[%- project_name -%]_[%- field.fieldname -%]_fkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% tablename %]_list->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]_list->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
-[%- ELSIF field.foreign_key && field.project != '' -%]
+[% ELSIF field.foreign_key && field.project != '' -%]
 sub load_list_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
     $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]List::load_list[%- field.project  -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
@@ -272,16 +268,14 @@ sub load_list_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
     );
     my $fkey = $self->param('[%- field.project  -%]_[%- field.fieldname -%]_fkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->v_[%- field.project  -%]_[% tablename %]_list->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
+    $self->v_[%- field.project  -%]_[%- table.table_name -%]_list->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey,$fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
-[%- END -%]
+[% END -%]
 [%- END -%]
 
 1;
@@ -349,18 +343,16 @@ sub load_[%- project_name -%]_[%- table.table_name -%]_pkey($self) {
     );
     my $pkey = $self->param('[%- project_name -%]_[%- table.table_name -%]_pkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
     $self->v_[%- project_name -%]_[% table.table_name %]->load_[%- project_name -%]_[%- table.table_name -%]_pkey_p($companies_pkey, $users_pkey, $pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- table.table_name -%]_pkey ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
 
 [%- FOREACH field IN fields -%]
-[%- IF field.foreign_key && field.project == '' -%]
+[% IF field.foreign_key && field.project == '' -%]
 sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
     $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
@@ -369,16 +361,15 @@ sub load_[%- project_name -%]_[%- field.fieldname -%]_fkey($self) {
     );
     my $fkey = $self->param('[%- project_name -%]_[%- field.fieldname -%]_fkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->v_[%- project_name -%]_[% tablename %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]->[%- project_name -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- project_name -%]_[%- field.fieldname -%]_fkey ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
-[%- ELSIF field.foreign_key && field.project != '' -%]
+
+[% ELSIF field.foreign_key && field.project != '' -%]
 sub load_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
     $self->app->log->debug('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ');
     $self->render_later;
@@ -387,16 +378,14 @@ sub load_[%- field.project  -%]_[%- field.fieldname -%]_fkey($self) {
     );
     my $fkey = $self->param('[%- field.project  -%]_[%- field.fieldname -%]_fkey');
 
-    $self->app->log->debug($self->req->headers->header('X-Token-Check'));
-    # my $setting = $self->param('setting');
-    $self->v_[%- field.project  -%]_[% tablename %]->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
+    $self->v_[%- field.project  -%]_[% table.table_name %]->[%- field.project  -%]_[%- field.fieldname -%]_fkey_p($companies_pkey, $users_pkey, $fkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]::load_[%- field.project  -%]_[%- field.fieldname -%]_fkey ' . $err);
-        $self->render
+        $self->render(json => {'result' => "failed", data => $err});
     });
 }
-[%- END -%]
+[% END -%]
 [%- END -%]
 
 1;

@@ -60,6 +60,7 @@ sub generate_controller($self, $tools_projects_pkey, $source) {
         for (my $i = 0; $i < $length; $i++) {
             my $table->{table} = @{$self->tables}[$i];
             $table->{project_name} = $project_name;
+            $table->{tablename} = $table->{table}->{table_name};
             $table->{project} = camelize $table->{project_name};
             $table->{class_name} = camelize $table->{project_name} . "_" . $table->{table}->{table_name};
             $table->{date_time} = strftime "%Y-%m-%d %H:%M:%S", localtime time;
