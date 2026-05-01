@@ -207,13 +207,13 @@ sub generate_db_model($self, $tools_projects_pkey, $source) {
             $documents = $self->build_documents($source,'db_view_list');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/" . '/v' . $table->{class_name} . 'List.pm';
-            @{ $documents }[0]->{new_only} = 0;
-            @{ $documents }[0]->{new_only} = $table->{table}->{tools_objects_pkey};
+            @{ $documents }[0]->{new_only} = 1;
+            @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
             $documents = $self->build_documents($source,'db_view');
             @{ $documents }[0]->{class_name} = $table->{class_name};
             @{ $documents }[0]->{file} = $self->get_parameter('Perl', 'Base file path', $tools_projects_pkey) . "lib/Daje/Database/View/" . '/v' . $table->{class_name} . '.pm';
-            @{ $documents }[0]->{new_only} = 0;
+            @{ $documents }[0]->{new_only} = 1;
             @{ $documents }[0]->{tools_objects_pkey} = $table->{table}->{tools_objects_pkey};
             push @{$docs}, @{ $documents }[0];
         }

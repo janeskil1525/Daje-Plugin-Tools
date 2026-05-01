@@ -234,7 +234,7 @@ sub load_all_[%- project_name -%]_[%- table.table_name -%]($self) {
          $self->req->headers->header('X-Token-Check')
     );
 
-    $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p($companies_pkey, $users_pkey)->then(sub($result) {
+    $self->v_[%- project_name -%]_[% table.table_name %]_list->load_all_[%- project_name -%]_[%- table.table_name -%]_p($companies_pkey)->then(sub($result) {
         $self->render(json => $result->{data});
     })->catch(sub($err) {
         $self->app->log->error('Daje::Controller::Super::[%- class_name -%]List::load_all_[%- project_name -%]_[%- table.table_name -%] ' . $err);
@@ -1133,16 +1133,16 @@ sub load_[%- field.project -%]_[%- field.fieldname -%]_list($self, $companies_pk
 [%- END -%]
 [%- END -%]
 
-async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self, $companies_pkey, $users_pkey) {
-    return $self->load_all_[%- project_name -%]_[%- table.table_name -%]($companies_pkey, $users_pkey);
+async sub load_all_[%- project_name -%]_[%- table.table_name -%]_p($self, $companies_pkey) {
+    return $self->load_all_[%- project_name -%]_[%- table.table_name -%]($companies_pkey);
 }
 
-sub load_all_[%- project_name -%]_[%- table.table_name -%]($self, $companies_pkey, $users_pkey) {
-[%- IF has_company == 1 -%]
+sub load_all_[%- project_name -%]_[%- table.table_name -%]($self, $companies_pkey) {
+[%- IF has_company == 1 %]
     return $self->load_a_list(
         $self->table_name, $self->fields(), { companies_companies_fkey => $companies_pkey }
     );
-[%- ELSE -%]
+[%- ELSE %]
     return $self->load_a_full_list(
         $self->table_name, $self->fields()
     );
